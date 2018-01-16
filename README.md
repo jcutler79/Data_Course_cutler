@@ -1,1 +1,3 @@
-# Data_Course_cutlerThis repository contains course information
+# Data_Course_cutler
+
+### This repository contains course information
