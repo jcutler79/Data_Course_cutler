@@ -34,8 +34,9 @@ dev.off()
 
 # Part IV
 sort(DNA_Conc_blah2[,6]-DNA_Conc_blah2[,5]) %>% head(1)
-# This is as far as I could get. I don't know how to find out what year that is. :(
-# But you should show me how to do it sometime!
+
+which(DNA_Conc_blah2$Differences == 
+        sort(DNA_Conc_blah2[,6]-DNA_Conc_blah2[,5]) %>% head(1))
 
 # Part V
 DNA3 = DNA_Conc_blah2 %>% group_by(year) %>% summarise(Yearly_means = mean(Ben))
