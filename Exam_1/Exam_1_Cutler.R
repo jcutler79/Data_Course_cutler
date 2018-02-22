@@ -3,7 +3,7 @@
 
 getwd()
 setwd("Course_Materials/Data_Course/Exam_1/")
-DNA_Conc_blah = read.csv("DNA_Conc_by_Extraction_Date.csv.gz")
+DNA_Conc_blah = read.csv("/Users/jamescutler/Desktop/Course_Materials/Data_Course/Exam_1/DNA_Conc_by_Extraction_Date.csv.gz")
 DNA_Conc_blah2 = DNA_Conc_blah
 colnames(DNA_Conc_blah2) = c("number","year","code","date","Katy","Ben","lab")
 ?hist
@@ -37,6 +37,11 @@ sort(DNA_Conc_blah2[,6]-DNA_Conc_blah2[,5]) %>% head(1)
 
 which(DNA_Conc_blah2$Differences == 
         sort(DNA_Conc_blah2[,6]-DNA_Conc_blah2[,5]) %>% head(1))
+
+# This is how to get the year:
+DNA_Conc_blah2[which(DNA_Conc_blah2$Differences == 
+                       +                          sort(DNA_Conc_blah2[,6]-DNA_Conc_blah2[,5]) %>% head(1)),2]
+[1] 2000
 
 # Part V
 DNA3 = DNA_Conc_blah2 %>% group_by(year) %>% summarise(Yearly_means = mean(Ben))

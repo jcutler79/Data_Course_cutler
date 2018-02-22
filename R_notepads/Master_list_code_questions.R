@@ -29,14 +29,6 @@ axis(1, at = 1:4, labels = color.list)
 boxplot(df$uptake ~ df$Treatment*df$Type, col = c("Lightgrey","White"))
 
 
-## cbind vs rbind - binding columns vs binding rows
-sport = c("Hockey", "Baseball", "Football")
-league = c("NHL", "MLB", "NFL")
-trophy = c("Stanley", "Comissioner's", "Lombardi")
-bind.columns1 = cbind(sport, league, trophy); bind.columns1 # It makes sense!
-bind.rows1 = rbind(sport, league, trophy); bind.rows1 # This makes sense too!
-
-
 ## CO2 data set - money code I learned from the CO2_instructor R script:
 # A money boxplot idea (df = CO2):
 boxplot(df$uptake ~ df$Treatment*df$Type, col = c("Lightgrey","White")) # THIS IS MONEY!
@@ -76,18 +68,7 @@ names(M2)
 
 
 ## Cool code (miscellaneous):
-# %in% # This does something cool
-
-
-## Draw function plots:
-curve((1/sqrt(2*pi))*exp((-x^2)/2), from = -4, to = 4,main = "the normal curve",xlab = "x",ylab = "y")
-func.stand = function(x) ((1/sqrt(2*pi))*exp((-x^2)/2))
-integrate(func.stand, lower = -5, upper = 2)
-curve((3*x^3 - 4*x^2 + x -1)/((x^2 + 1)*(x^2 + 2)), from = -30, to = 10, n = 1000,
-      xlab = "x", ylab = "y")
-curve(x-x, from = -30, to = 10, add = TRUE)
-# I can add the x axis but how do you add the y axis??? x=0 doesn't work
-# or you could use plot.function() which works the same exact way
+%in% # This does something cool
 
   
 ## ggplot - How to do a ggplot graph that's pretty okay
@@ -102,22 +83,15 @@ integrate(func, lower = 0, upper = 2)
 # e.g.
 func5 = function(y) (2*pi*y*sqrt(1 + (1+3*y^2)^2))
 integrate(func5, lower = 0, upper = 1)
-# e.g. that's not possible to integrate by hand (actually, it is! Ha I'm an idiot):
+# e.g. that's not possible to integrate by hand:
 func1 = function(x) ((3*x^3 - 4*x^2 + x -1)/((x^2 + 1)*(x^2 + 2)))
 integrate(func1, lower = -30, upper = 1)
 # Probability example (IQ score):
 func.IQ = function(x) ((1/(15*sqrt(2*pi)))*exp((-(x-100)^2)/(2*15^2)))
-integrate(func.IQ, lower = 85, upper = 115)
+integrate(func.IQ, lower = 140, upper = 250)
 # Probability standard normal:
 func.stand = function(x) ((1/sqrt(2*pi))*exp((-x^2)/2))
 integrate(func.stand, lower = -2, upper = 2)
-
-
-## Matrices - creating matrices
-# Simple example:
-n = 2
-input = matrix(c(1,2,3,4,5,6), ncol = n, byrow = TRUE); input # fills up by row  
-input2 = matrix(c(1,2,3,4,5,6), ncol = n, byrow = FALSE); input2 # fills up by column
 
 
 ## Random number generator - How to generate random numbers within a range
@@ -130,14 +104,6 @@ runif(10,min=1,max=155) # This will NOT give you integers
 ?sample
 sample(1:155, each=10)
 sample(1:155,10) # THIS IS HOW YOU DO IT! SIMPLE!!! 10 RANDOM NUMBERS SELECTED BETWEEN 1 AND 155
-# An example: 
-trial1 = rnorm(100,mean = 23,sd = 10); trial1
-trial1b = rnorm(50, mean = 27, sd = 10); trial1b
-trial1c = c(trial1,trial1b); mean(trial1c)
-trial1c
-mean(c(mean(trial1),mean(trial1b)))
-mean(trial1b)
-mean(22.467+28.59)
 
 
 ## tapply - example from rpm data (Stats 4100):
@@ -147,12 +113,3 @@ for (i in 1:5){
   print(stuff)
 }
 rpm.mean.vector = tapply(rpm$liters.minute, rpm$level, mean); rpm.mean.vector
-
-#########
-
-
-
-
-
-
-
