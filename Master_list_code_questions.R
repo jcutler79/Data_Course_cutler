@@ -89,6 +89,58 @@ curve(x-x, from = -30, to = 10, add = TRUE)
 # I can add the x axis but how do you add the y axis??? x=0 doesn't work
 # or you could use plot.function() which works the same exact way
 
+
+### expand.grid (example):
+# Automatically create a data frame in a cool way (cyclic repeats of first vector):
+dudes = expand.grid(height = seq(60,80,5), peso = seq(100,300,50), sex = c("male","female"))
+# For every time the first sequence prints (60,65,70,75,80), the second sequence lines up a
+# column of 100s. Then the first sequence repeats, this time lined up with five 150s. Then
+# another cycle from 60 to 80 with 200s, etc. till it goes through the 300s. All of those
+# are matched with a column of 25 males. Then 25 females (same thing in the first two columns).
+## Another example:
+de = expand.grid(x = 1:3, a = c("male","female","intersex")); de
+
+### for loops - the mysteries and wonders of for loops:
+## GET THE FREAKING OUTPUT OF A FOR LOOP FOR CRYING OUT LOUD AND FREAKING PUT IT IN A DATA FRAME!
+# rbind/cbind and for loops are a weird mix:
+dube = NULL
+for (i in 1:10){
+  what = c(1,2,3)
+  butt = c(3,2,1)
+  dube = rbind(dube, data.frame(what,butt)) # RBIND! IT WORKS!
+}
+dube # FOR SOME ODD REASON IT WORKS!
+######################################
+rollin = NULL
+for (i in 1:10){
+  tut = c(4,5,6)
+  king = c(1,2,3)
+  rollin = cbind(rollin, data.frame(tut,king)) # CBIND DOESN'T WORK!
+}
+rollin # DOESN'T FREAKING WORK!!?!!?!?!? WHY!!?????? IT'S BACKWARDS! RBIND DOES WORK, AND 
+# BINDS WHAT AND BUTT INTO COLUMNS!!! CBIND DOESN'T WORK, AND APPARENTLY DOESN'T BIND
+# THEM INTO COLUMNS!
+## a for loop for creating cyclicly repeating values:
+myfunc = function(){
+  for (i in 1:10){
+    print(1)
+    print(2)
+    print(3)
+  } 
+}
+## compound interest for loops:
+beg = 0
+for (i in 1:12){
+  beg = (beg + 1000)*1.06
+  print(beg)
+} # This gets the right result for compounded interest on 1000 added each month
+for (i in 1:12){
+  beg = 1000
+  ultimo = beg*1.06^i
+  print(ultimo)
+} # Gives you the monthly breakdown of how much it grows with no added money after the initial 1000
+1000*1.06^12
+
   
 ## ggplot - How to do a ggplot graph that's pretty okay
 # An example from the thatch ant colonies data (dat, copied as dat2):
@@ -118,6 +170,41 @@ integrate(func.stand, lower = -2, upper = 2)
 n = 2
 input = matrix(c(1,2,3,4,5,6), ncol = n, byrow = TRUE); input # fills up by row  
 input2 = matrix(c(1,2,3,4,5,6), ncol = n, byrow = FALSE); input2 # fills up by column
+
+
+## Messy_Data_Practice coolest things I learned:
+# 1. Don't forget to load these:
+library(ggplot2)
+library(dplyr)
+library(tidyr) # Needed for the gather() function
+library(MASS)
+####### BIGGEST LESSON OF ALL: HOW TO TURN SEPERATE COLUMNS INTO ONE COLUMN "KEY" WITH 
+# VALUES IN THE COLUMN BESIDE THEM MATCHED TO THEIR "KEY":
+df_long = gather(df, key = "Time", value = "Abs", c("Hr_24","Hr_48","Hr_144"))
+# Then convert the characters to numerics with mapvalues (from the plyr library):
+df_long$Time = as.numeric(plyr::mapvalues(df_long$Time, from =c("Hr_24","Hr_48","Hr_144"), 
+                                          to = c(24,48,144)))
+# How to plot shiz by substrate in that data set with 32 substrates:
+# YAY THIS FOR LOOP FREAKING WORKS!!! ALL BECAUSE I ACTUALLY TOLD IT TO FREAKING PRINT!: 
+for (i in levels(df_long$Substrate)){
+  sub1 = subset(df_long, Substrate == i)
+  stuff = ggplot(sub1, aes(x = Time, y = Abs, col = Sample.ID)) +
+    geom_point() + stat_smooth() + ggtitle(i)
+  print(stuff)
+}
+# How to do the same thing as the for loop with a function and lapply:
+# This is money: 
+substrates = levels(df_long$Substrate)
+substrate.plot = function(x){
+  ggplot(df_long[df_long$Substrate == x,], aes(x = Time, y = Abs, col = Sample.ID)) + geom_point() +
+    stat_smooth() + ggtitle(x)
+}
+lapply(substrates,substrate.plot) # The vector or list you want to apply the function to
+# goes first, then the function (already stored in R, or created and called previously by 
+# you), goes next. Just like in tapply! 
+###### How to create a smaller data frame with just a few substrates that I choose:
+df_short = df_long[which(df_long$Substrate == c("L-Serine","L-Arginine","D-Xylose")),] # HOLY FREAK this did not work
+df_short2 = subset(df_long, Substrate %in% c("L-Serine","L-Arginine","D-Xylose")) # This did work!
 
 
 ## Random number generator - How to generate random numbers within a range
