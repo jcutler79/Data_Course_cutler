@@ -1,0 +1,36 @@
+---
+title: "md_example"
+output: html_document
+---
+```{r}
+
+
+
+# load other libraries
+library(dplyr)
+library(tidyr)
+
+cars = mtcars
+
+summary(cars)
+glimpse(cars)
+
+# Simple Plot
+
+plot(cars$mpg ~ cars$hp, main = "MPG vs Horsepower")
+```
+# Bold title
+
+## smaller
+
+### even smaller
+
+**bold text**
+
+*italics*
+
+_underlined_
+
+~strikethrough~
+
+

@@ -10,14 +10,12 @@ mysat = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/cool_data_sets/S
 ?rbind
 newsat = mysat[order(mysat$sat),]
 
-"par(mar = c(8,4,4,2) + .2)
-barplot(newsat$sat,newsat$state, col = "grey50",
-main = "Average SAT scores by state",
-ylab = "SAT score", ylim = c(0,5+max(newsat$sat)),
-xlab = "", space = 1)
+par(mar = c(8,4,4,2) + .2)
+barplot(newsat$sat,newsat$state, col = "grey50", main = "Average SAT scores by state",
+        ylab = "SAT score", ylim = c(0,5+max(newsat$sat)), xlab = "", space = 1)
 end_point = .5 + nrow(newsat) + nrow(newsat) - 1
 text(seq(1.5, end_point, by=2), par("usr")[3]-.25, srt=60,adj=1,xpd=TRUE, 
-labels = paste(rownames(newsat)), cex = .65)"
+labels = paste(rownames(newsat)), cex = .65)
 
 barplot(newsat$sat, names.arg = newsat$state, las=2)
 

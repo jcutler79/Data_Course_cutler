@@ -1,5 +1,33 @@
 ### MASTER LIST OF ALL THE COOLEST R CODE I LEARN AND QUESTIONS I HAVE ###
-# (Usually in alphabetical order)
+
+### WHAT I FAILED TO UNDERSTAND ON MY SECOND 4100 EXAM:
+## TO GET YOUR P VALUE FROM YOUR F VALUE, ALL YOU NEED IS THE pf FUNCTION:
+pf(12.73,2,15, lower.tail = FALSE) # .00059
+## TO GET A 95% CONFDIENCE BOUND FOR SIGMA^2, ALL YOU NEED IS THE qchisq FUNCTION:
+qchisq(.95,15, lower.tail = FALSE) # 7.26, then divide 164.1 (SSE) by that, and your
+# answer is 22.6! That's your 95% confidence bound for sigma^2.
+## THE TWO WAY COMPLETE ANOVA MODEL!!! ***TWO-WAY COMPLETE***!!!! NOT THE SAME AS
+# THE CELL MEANS! THOSE ARE TWO DIFFERENT MODELS! THEY'RE BOTH EASY TO REMEMBER!
+## DO I NEED TO MEMORIZE THE TUKEY FORMULA FROM THE BOOK???
+## ALSO, I KNOW WHY LOWER.TAIL IS FALSE IN THE F TEST. BUT WHY IS IT FALSE IN 
+# THE SIGMA^2 95% CONFIDENCE BOUND?
+
+
+# PRINCIPLES OF STATISTICS:
+## 1. A p-value is the probability of getting our particular sample by chance when the null hypothesis is true 
+## 2. The significance level is the probability (alpha) that we mistakenly reject the null
+## 3. Yit is a random variable that represents the response obtained on the 't'th observation
+# of the 'i'th treatment.
+
+
+# The limits of R:
+## 1. R cannot compute exp(709.8). It gives infinity as the answer to that. Anything less,
+# and R works great, I think. exp(709.7) = 1.654984e308, for example. That's why it gives 0
+# as the answer to the Planck blackbody equation for a wavelength of 1e-11. That results in an
+# e with an exponent of around 100,000, which is obviously way too high, and the result is 1/e^100,000
+# which is essentially zero.
+## 2. R is worse than python at computing exp(very very small numbers). R only goes to exp(1e-6).
+# At least python can go to exp(1e-15). 
 
 # QUESTIONS:
 ## 1. What can you do about 2 or more data points in a scatter plot of x vs y 
@@ -11,7 +39,57 @@
 # represents? For example, say I see an outlier on the scatter plot. How can I find 
 # out which item in a data.frame it represents?
 ## 4. How can I add a balloon color column with the four colors matching the numbers?
+## 5. How can I adjust the position of each point label in ggplot individually?
 
+## alpha (transparency in ggplot):
+the.rexp.thing = data.frame(rates = c(1,2,3,4,5,6,7,8,9,10,15,20,25,30,40,50), 
+                            the.means = c(.92,.48,.37,.23,.17,.16,.12,.11,.11,.09,.06,.04,.04,.037,.026,.02),
+                            the.sds = c(.86,.48,.39,.20,.2,.15,.12,.115,.14,.11,.06,.04,.037,.039,.02,.02))
+ggplot() + labs(title = "means (red) and stdrd deviations (green) by rate") +
+  geom_point(data = the.rexp.thing, mapping = aes(rates,the.means), col = "blue") + 
+  geom_point(data = the.rexp.thing, mapping = aes(rates,the.sds), col = "green") + 
+  geom_point(alpha = .5) # TRANSPARENCY DOESN'T WORK
+# IF YOU WANT THE TRANSPARENCY FUNCTION TO WORK, YOU HAVE TO TYPE IT IN THIS WAY:
+ggplot(the.rexp.thing, aes(rates,the.means)) + geom_point(col = "blue", size = 4) +
+  geom_point(aes(rates,the.sds), col = "green", size = 4) + geom_point(alpha = .5)
+# SEE SIMILAR EXAMPLE AT THE BOTTOM OF THE FOR LOOPS ENTRY BELOW
+
+
+## Barplots - creating barplots with variables listed in order of their value:
+# Example from cholesterol data:
+Chol = read.csv("/Users/jamescutler/Desktop/Stats_4000/WC.csv")
+colnames(Chol) = c("country","chol","HDI","meat","milk","egg","fish","fat")
+f.C = read.csv("/Users/jamescutler/Desktop/Stats_4000/various_data/CholData.csv")
+colnames(f.C) = colnames(Chol)
+US = data.frame(f.C[which(f.C$country == "United States"),], colnames = colnames(Chol)) # THIS ALMOST WORKS ...
+# ... BUT THERE'S MORE TO DO NOW:
+US = US[1,1:8]
+UC = rbind(Chol, US) # IT WORKED!
+attach(UC)
+barplot(milk, xlab = "countries")
+par(las=2)
+par(mar=c(5,6,4,1))
+# barplot(order(milk, decreasing = TRUE), main = "Milk consumption by country", horiz = TRUE, 
+# names.arg = country, cex.names = .7) # HECK NO THIS DOES NOT WORK ...
+# ... INSTEAD, TRY CREATING A WHOLE NEW DATA BASE JUST FOR MILK TO BE IN ORDER:
+Cmilk = UC[order(UC[,5], decreasing = TRUE),]
+barplot(Cmilk$milk, main = "Milk consumption by country", horiz = TRUE, 
+        names.arg = Cmilk$country, cex.names = .7)
+UC[order(milk),c(1,5)] # GIVES EXACTLY WHAT I WANT TO SEE IN THE CONSOLE
+Cmeat = UC[order(UC[,4], decreasing = TRUE),]
+par(mfrow = c(1,2))
+par(las=2)
+par(mar=c(5,6,3,2))
+barplot(Cmeat$meat, main = "Meat consumption by country", horiz = TRUE,
+        names.arg = Cmeat$country, cex.names = .8)
+barplot(Cmilk$milk, main = "Milk consumption by country", horiz = TRUE, 
+        names.arg = Cmilk$country, cex.names = .7)
+dev.off()
+# CORRELATION COEFFICIENT AND LINEAR REGRESSION LINE:
+r.fat = lm(chol ~ fat)
+plot(fat,chol)
+abline(r.fat)
+cor(fat, chol) # .115869
 
 
 ## Boxplots - How to create a boxplot by converting column values (e.g. years) to as.factor
@@ -35,6 +113,16 @@ league = c("NHL", "MLB", "NFL")
 trophy = c("Stanley", "Comissioner's", "Lombardi")
 bind.columns1 = cbind(sport, league, trophy); bind.columns1 # It makes sense!
 bind.rows1 = rbind(sport, league, trophy); bind.rows1 # This makes sense too!
+# BUT THAT'S NOT ALL THERE IS TO RBIND. YOU WANT TO COMBINE TWO DATA FRAMES? GUESS WHAT, YOUR 
+# LIFE JUST GOT A LITTLE MORE COMPLICATED--YOU GOTTA MAKE SURE THOSE DATA FRAMES HAVE THE EXACT
+# SAME COLUMN NAMES, NOT JUST THE SAME NUMBER OF COLUMNS:
+Chol = read.csv("/Users/jamescutler/Desktop/Stats_4000/WC.csv")
+colnames(Chol) = c("country","chol","HDI","meat","milk","egg","fish","fat")
+f.C = read.csv("/Users/jamescutler/Desktop/Stats_4000/various_data/CholData.csv")
+US = data.frame(t(c("United States",5.05,.93,126.6,256.5,14.6,24.1,5.4)))
+colnames(US) = colnames(Chol)
+# US = data.frame(f.C[which(f.C$country == "United States"),]) # then set colnames
+UC = rbind(Chol, US) # IT WORKED!
 
 
 ## CO2 data set - money code I learned from the CO2_instructor R script:
@@ -67,8 +155,6 @@ p3 # ... THIS ONE IS THE MONEY PLOT OF ALL PLOTS! YOU CAN SEE THE DIFFERENCE BET
 
 ## Columns - How to add a column (example)
 df$Total_Points = rowSums(df[,3:17])
-
-
 ## Column names - How to change them
 # An example from the cholesterol data:
 colnames(M2) <- c("Country","m.t.chol","HDI","meat","milk","eggs","fish","an.fats")
@@ -79,15 +165,38 @@ names(M2)
 # %in% # This does something cool
 
 
+## Data visualization:
+# BEST. DATA. VISUALIZATION. PACKAGE. EVER: RESHAPE2 AND GGPLOT STAT_DENSITY + FACET_WRAP
+bstn = Boston
+library(reshape2)
+melt.boston = melt(bstn)
+head(melt.boston)
+library(ggplot2)
+ggplot(data = melt.boston, aes(x = value)) + stat_density() + facet_wrap(~variable, scales = "free")
+boxplot(bstn)
+
+
 ## Draw function plots:
 curve((1/sqrt(2*pi))*exp((-x^2)/2), from = -4, to = 4,main = "the normal curve",xlab = "x",ylab = "y")
 func.stand = function(x) ((1/sqrt(2*pi))*exp((-x^2)/2))
 integrate(func.stand, lower = -5, upper = 2)
-curve((3*x^3 - 4*x^2 + x -1)/((x^2 + 1)*(x^2 + 2)), from = -30, to = 10, n = 1000,
-      xlab = "x", ylab = "y")
-curve(x-x, from = -30, to = 10, add = TRUE)
-# I can add the x axis but how do you add the y axis??? x=0 doesn't work
-# or you could use plot.function() which works the same exact way
+curve((3*x^3 - 4*x^2 + x -1)/((x^2 + 1)*(x^2 + 2)), from = -30, to = 30, n = 1000,
+      xlab = "x", ylab = "y", ylim = c(-2,2)) # THE n = 1000 ARGUMENT IS THE SECRET TO MAKING THE CURVES LOOK MORE ROUNDED!!!
+# THE OTHER MONEY PART OF WHAT I LEARNED WITH THIS IS THE ylim ARGUMENT!!!!! IT WORKS!!!!!!! WAHOOOOO!!!!!!!!!!!!!!!
+curve(x-x, from = -30, to = 30, add = TRUE) # THIS IS A WASTEFUL WAY TO JUST ADD A VERTICAL LINE FOR THE X AXIS. INSTEAD, TRY:
+abline(h = 0, v = 0) # BEST WAY TO ADD X AND Y AXES IN THE WHOLE FREAKING UNIVERSE.
+## Polar coordinates:
+t.vals = seq(0,10, length.out = 100)
+x = sqrt(t.vals)*cos(2*pi*t.vals)
+y = sqrt(t.vals)*sin(2*pi*t.vals) # cool equations, but this isn't how I write polar curves
+plot(x,y)
+abline(h=0,v=0)
+# IT WORKS! This is how you write r = 2cos(theta): you just use x = r*cos(theta) and y = r*sin(theta)
+t = seq(0,10, length.out = 100)
+x2 = 2*cos(2*pi*t)*cos(2*pi*t)
+y2 = 2*cos(2*pi*t)*sin(2*pi*t)
+plot(x2,y2)
+abline(h=0,v=0)
 
 
 ### expand.grid (example):
@@ -165,12 +274,56 @@ for (i in 1:10){
   print(prblm)
 }
 prblm
+x.ax = as.vector(1:10)
+plot(x.ax, prblm)
+## for loops for series:
+eleven.two.nine = 0
+lvn.t.nn.sum = 0
+for (i in 1:10){
+  eleven.two.nine[i] = 12/(-5)^i
+  lvn.t.nn.sum[i] = sum(eleven.two.nine)
+}
+eleven.two.nine
+lvn.t.nn.sum
+nines.nums = as.vector(1:10)
+plot(nines.nums, eleven.two.nine)
+points(nines.nums, lvn.t.nn.sum)
+datfr = data.frame(nums = nines.nums, sqnce = eleven.two.nine, sries = lvn.t.nn.sum)
+ggplot(datfr, aes(x = nums, y = sqnce)) + geom_point(col = "red") + 
+  geom_point(aes(x = nums, y = sries), col = "green") + geom_point(alpha = .2) # HECK YEAH
+
 
   
 ## ggplot - How to do a ggplot graph that's pretty okay
 # An example from the thatch ant colonies data (dat, copied as dat2):
 ggplot(dat2, mapping = aes(x = Headwidth, y = Mass, col = Colony)) + geom_point() +
   geom_smooth(method = "lm", se = FALSE)
+## Two data sets with their own line colors:
+Husserl.vec = NULL
+lento = 0
+for (i in 1:30){
+  lento = (lento+48000)*1.1
+  print(lento)
+  Husserl.vec = rbind(Husserl.vec, data.frame(lento))
+}
+Phnmnlgy = data.frame(nums = 1:30, stuff = Husserl.vec); Phnmnlgy
+Phnmnlgy$no.intrst = Phnmnlgy$nums*48000
+lento.six = ggplot(Phnmnlgy, aes(x = nums)) + 
+  geom_line(aes(y = Phnmnlgy$lento), col = "red") + 
+  geom_line(aes(y = Phnmnlgy$no.intrst), col = "green")
+# Two data sets with their own point shapes, line and point colors, and labels:
+rad = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/radiation_survival.csv")
+six = tapply(rad$surv,rad$dose,mean)
+rad2 = data.frame(dosage = c(117.5,235,470,705,940,1410), survival = six)
+rad2$percents = c("49.5%","14.5%","4.03%","0.41%","0.05%","0.35%")
+rad2$new = c(47,18,5,1,.5,.4)
+rad2$nper = c("47%","18%","5%","1%","0.5%","0.4%")
+ggplot(rad2, aes(x = dosage)) + 
+  geom_point(aes(y = rad2$survival), col = "blue", shape = 17) + geom_line(aes(y = rad2$survival), col = "blue") + 
+  geom_point(aes(y = rad2$new), col = "purple", shape = 19) + geom_line(aes(y = rad2$new), col = "purple") + 
+  geom_text(y = rad2$survival, label = rad2$percents, hjust = 1.1, vjust = 1.2, size = 3, col = "blue") + 
+  geom_text(y = rad2$new, label = rad2$nper, hjust = -.2, vjust = -.6, size = 3, col = "purple") + 
+  coord_cartesian(xlim = c(0,1600), ylim = c(-1,55)) # BUT HOW DO I MOVE EACH INDIVIDUAL LABEL TO WHERE I WANT IT TO BE?
 
 
 ## Integrals - How to integrate definite integrals
@@ -324,6 +477,7 @@ sqrt(mean((mybos$medv - strng.frm$column2)^2))
 # 8. Convert to numeric
 # 9. Renumber the first column
 # 10. Done. 
+########### TO GET RID OF THE UNRIDDABLE '[' CRAP: yfr$y = gsub("[[]","", yfr$y); (IT'S THE "[[]")
 
 
 ## na.omit
@@ -333,6 +487,96 @@ bad = which(dat$Headwidth == 1)
 dat$Headwidth[bad] = NA
 # NOW, REMOVE ALL THE ROWS OF "dat" THAT HAVE AN "NA" VALUE
 dat2 = na.omit(dat)
+
+
+## Non-standard normal distributions (inspired by Steven Pinker's slide: "The normal distribution
+# falls off according to the negative exponential of the square of difference from the mean. Even
+# with small differences in the means of two distributions, the more extreme the score, the greater
+# the disparity in numbers."):
+curve((1/sqrt(2*pi))*exp(-.5*x^2), from = -5, to = 5, n = 1000, ylim = c(0,.5))
+abline(h = 0, v = c(0,1.64485))
+stnd.nrm = function(x) ((1/sqrt(2*pi))*exp(-.5*x^2))
+integrate(stnd.nrm, lower = 1.644854, upper = 5)
+qnorm(.05, lower.tail = FALSE)
+pnorm(2,lower.tail = FALSE)
+male = rnorm(1000, mean = 69.1, sd = 2.9)
+female = rnorm(1000, mean = 63.7, sd = 2.7)
+hist(male)
+hist(female)
+plot(density(male))
+plot(density(female))
+curve((1/(sigma*sqrt(2*pi)))*exp((-(x-m.mean)^2)/(2*sigma^2)),from = 60, to = 80, n = 1000)
+length(which(male > 68.3)) # 599; pretty close to 612 - 98% accurate
+length(which(female > 68.3)) # 36; not too close to 50 - 72% accurate
+sigma = 2.8
+m.mean = 69.1
+f.mean = 63.7
+curve((1/(sigma*sqrt(2*pi)))*exp((-(x-m.mean)^2)/(2*sigma^2)),from = 50, to = 90, n = 1000)
+curve((1/(sigma*sqrt(2*pi)))*exp((-(x-f.mean)^2)/(2*sigma^2)), add = TRUE)
+m.func = function(x) ((1/(sigma*sqrt(2*pi)))*exp((-(x-m.mean)^2)/(2*sigma^2)))
+qnorm(.05, mean = 63.7, sd = 2.8, lower.tail = FALSE) # the top 5% women height starts at 68.3 inches
+pnorm(68.3, mean = 69.1, sd = 2.8, lower.tail = FALSE) # 61.25% of men are taller than 68.3 inches.
+1000*.05/612
+1000*.612
+
+
+## PLOTS! (for ggplot, see entry above in alphabetical order)
+# How to add two data sets or data series or whatever to the same plot:
+US = data.frame(hshlds.prcnt = c(0,.2,.4,.6,.8,1), prcnt.income = c(0,.034,.12,.266,.498,1)) # data from US census bureau on Gini values for 2010
+x = as.vector(US$hshlds.prcnt)
+y = as.vector(US$prcnt.income)
+# par(mar = c(5,4,4,4))
+plot(x,y, xlab = "fraction of households", ylab = "", col = "red")
+mtext("US 2010", side = 2, line = 2, col = "red")
+par(new=TRUE)
+plot(x,x, xlab = "", ylab = "", col = "green"); mtext("egalitarian", side = 4, col = "green")
+# You can also do:
+plot()
+points()
+# or:
+plot()
+lines()
+# Gini index example:
+US = data.frame(hshlds.prcnt = c(0,.2,.4,.6,.8,1), prcnt.income = c(0,.034,.12,.266,.498,1))
+# x = as.vector(US$hshlds.prcnt)
+# y = as.vector(US$prcnt.income)
+# nls(y ~ b*x^z, start = list(b = 0, z = 1)) # Doesn't work!!!!!
+########## BUT THIS DOES!!!!!!!!!!!!!!!!!:
+nlmodel = nls(US$prcnt.income ~ a*US$hshlds.prcnt^b, data = US, start = list(a = 1, b = 1)) # Not sure if the trick is to set a equal to 1 instead of 0
+nlmodel
+plot(US)
+p = coef(nlmodel)
+curve(p["a"]*x^p["b"], lwd = 2, col = "red", add = TRUE) # AMAZING FIT.
+########## WAHOOO!!!!!!!!!!!!!!!! (See also entry below on the predict function with another non-linear example)
+
+
+## predict function:
+# A non-linear model example with ONE explanatory variable:
+rad = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/radiation_survival.csv")
+colnames(rad)
+attach(rad)
+plot(dose,surv)
+six = tapply(surv,dose,mean)
+rad2 = data.frame(dosage = c(117.5,235,470,705,940,1410), survival = six)
+attach(rad2)
+plot(dosage,survival)
+nlmodel = nls(survival ~ a*dosage^b, data = rad2, start = list(a = 1, b = 1))
+nlmodel
+p = coef(nlmodel)
+curve(p["a"]*x^p["b"], lwd = 2, col = "red", add = TRUE)
+p["a"]*705^p["b"]
+newbie = data.frame(col1 = seq(150,1000,length.out = 10))
+rad.preds = predict(nlmodel, newbie) # IT WORKS!!!!!!!!!!!!!!!!!
+plot(rad.preds) # it works!
+# AN EXAMPLE FROM THE CHOLESTEROL DATA SET (MULTIPLE EXPLANATORY VARIABLES):
+C = read.csv("/Users/jamescutler/Desktop/Stats_4000/various_data/CholData.csv")
+colnames(C) = c("country","chol","HDI","meat","milks","egg","fish","fat")
+C2 = C[-148,]
+modC2 = lm(chol ~ HDI+meat+milks+egg+fish+fat, data = C2) # BIGGEST LESSON I'VE LEARNED SINCE I STARTED USING R: THE FREAKING PREDICT FUNCTION WON'T WORK ON NEW MULTIVARIATE DATA IF YOUR SYNTAX HAS $ IN THE ORIGINAL MODEL
+modC2
+US = data.frame(C[148,3:8])
+predict(modC2, US) # DON'T FORGET THE BIGGEST LESSON TO LEARN ABOUT THE PREDICT FUNCTION THAT TOOK ME FOREVER SEARCHING ON THE INTERNET AND PURE LUCK TO FINALLY FIND THE ANSWER
+
 
 
 ## Random number generator - How to generate random numbers within a range
@@ -353,6 +597,16 @@ trial1c
 mean(c(mean(trial1),mean(trial1b)))
 mean(trial1b)
 mean(22.467+28.59)
+
+
+## Setting a seed:
+# example:
+set.seed(4000)
+trt = sample(rep(1:4, each = 4)); trt
+
+
+## string format specifier (sprintf stuff):
+
 
 
 ## tapply - example from rpm data (Stats 4100):

@@ -62,21 +62,33 @@ thr.prcnt + scale_x_continuous(name = "months",
                                breaks = c(12,24,36,48,60,72,84,96,108,120,132,144,156,168,180,192,204,216,228,240))
 
 
-# add a $1000 a month for 20 years, grow at 6% interest annually 
+# add a $1000 a month for 20 years, grow at 10% interest annually 
 Husserl.vec = NULL
 lento = 0
-for (i in 1:20){
-  lento = (lento+12000)*1.06
+for (i in 1:30){
+  lento = (lento+48000)*1.1
   print(lento)
   Husserl.vec = rbind(Husserl.vec, data.frame(lento))
 }
-Phnmnlgy = data.frame(nums = 1:20, stuff = Husserl.vec); Phnmnlgy
-Phnmnlgy$no.intrst = Phnmnlgy$nums*12000
+Phnmnlgy = data.frame(nums = 1:30, stuff = Husserl.vec); Phnmnlgy
+Phnmnlgy$no.intrst = Phnmnlgy$nums*48000
 
 lento.six = ggplot(Phnmnlgy, aes(x = nums)) + 
   geom_line(aes(y = Phnmnlgy$lento), col = "red") + 
   geom_line(aes(y = Phnmnlgy$no.intrst), col = "green")
 lento.six + geom_point(aes(x = 20, y = 480000), col = "blue", size = .5)
+
+brodog.vec = NULL
+sweet = 10000
+for (i in 1:90){
+  sweet = sweet*1.1
+  print(sweet)
+  brodog.vec = rbind(brodog.vec, data.frame(sweet))
+}
+heckyeah = data.frame(nums = 1:90, stuff = brodog.vec); heckyeah
+
+sweet.stuff = ggplot(heckyeah, aes(x = nums, y = heckyeah$sweet)) + geom_line(); sweet.stuff
+
 
 
 

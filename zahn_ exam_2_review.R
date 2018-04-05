@@ -36,6 +36,13 @@ df.long %>% group_by(stock) %>% summarise(mean.pchnge = mean(PriceChange,),
                                           N = n(),
                                           stdev = sd(PriceChange)) # ALL OF THIS IS HUGELY IMPORTANT!
 
+my.iris = iris
+my.iris %>% group_by(Species) %>% summarise(the.mean = mean(Petal.Length),
+                                            the.var = var(Petal.Length),
+                                            the.n = n(),
+                                            the.median = median(Petal.Length))
+
+
 df2 = iris
 plot(df2) # just to get a bird's eye view
 mod1 = aov(Petal.Length ~ Petal.Width*Species, data = df2)
