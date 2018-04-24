@@ -41,6 +41,7 @@ qchisq(.95,15, lower.tail = FALSE) # 7.26, then divide 164.1 (SSE) by that, and 
 ## 4. How can I add a balloon color column with the four colors matching the numbers?
 ## 5. How can I adjust the position of each point label in ggplot individually?
 
+
 ## alpha (transparency in ggplot):
 the.rexp.thing = data.frame(rates = c(1,2,3,4,5,6,7,8,9,10,15,20,25,30,40,50), 
                             the.means = c(.92,.48,.37,.23,.17,.16,.12,.11,.11,.09,.06,.04,.04,.037,.026,.02),
@@ -55,7 +56,32 @@ ggplot(the.rexp.thing, aes(rates,the.means)) + geom_point(col = "blue", size = 4
 # SEE SIMILAR EXAMPLE AT THE BOTTOM OF THE FOR LOOPS ENTRY BELOW
 
 
+## ANOVA tables - converting the summary(aov model) output into a dataframe:
+twl = read.csv("/Users/jamescutler/Desktop/p.twl.strength.csv")
+twl = twl[,2:7]
+twl$A = as.factor(twl$A)
+twl$B = as.factor(twl$B)
+twl$C = as.factor(twl$C)
+AB.mod = aov(STRENGTH ~ A*B+C, data = twl) # not the full model; experimenters assume (incorrectly!) that only A and B interact 
+summary(AB.mod)
+a.tbl = data.frame(matrix(NA,nrow = 5, ncol = 5))
+for (i in 1:5){
+  for (j in 1:5){
+    a.tbl[i,j] = summary(AB.mod)[[1]][i,j]
+  }
+}
+colnames(a.tbl) = c("Df","Sum Sq","Mean Sq","F value","Pr(>F)")
+rownames(a.tbl) = c("A","B","C","A:B","Residuals")
+a.tbl[,"Pr(>F)", drop = FALSE] # Heck yeah. That's what I'm talking about.
+
+
 ## Barplots - creating barplots with variables listed in order of their value:
+# Example from Pew data on religion ratings in the US:
+Repub = data.frame(religion = c("Evangelicals","Jews","Catholics","Mormons","Buddhists",
+                                "Hindus","Atheists","Muslims"), 
+                   ratings = c(71,67,66,52,49,47,34,33))
+barplot(Repub$ratings, names.arg = Repub$religion, las = 2, 
+        main = "Republicans ratings of religions", ylab = "percent") # LOOKS PRETTY GOOD!
 # Example from cholesterol data:
 Chol = read.csv("/Users/jamescutler/Desktop/Stats_4000/WC.csv")
 colnames(Chol) = c("country","chol","HDI","meat","milk","egg","fish","fat")
@@ -85,11 +111,6 @@ barplot(Cmeat$meat, main = "Meat consumption by country", horiz = TRUE,
 barplot(Cmilk$milk, main = "Milk consumption by country", horiz = TRUE, 
         names.arg = Cmilk$country, cex.names = .7)
 dev.off()
-# CORRELATION COEFFICIENT AND LINEAR REGRESSION LINE:
-r.fat = lm(chol ~ fat)
-plot(fat,chol)
-abline(r.fat)
-cor(fat, chol) # .115869
 
 
 ## Boxplots - How to create a boxplot by converting column values (e.g. years) to as.factor
@@ -123,6 +144,13 @@ US = data.frame(t(c("United States",5.05,.93,126.6,256.5,14.6,24.1,5.4)))
 colnames(US) = colnames(Chol)
 # US = data.frame(f.C[which(f.C$country == "United States"),]) # then set colnames
 UC = rbind(Chol, US) # IT WORKED!
+
+
+## CORRELATION COEFFICIENT AND LINEAR REGRESSION LINE:
+r.fat = lm(chol ~ fat)
+plot(fat,chol)
+abline(r.fat)
+cor(fat, chol) # .115869
 
 
 ## CO2 data set - money code I learned from the CO2_instructor R script:
@@ -162,7 +190,7 @@ names(M2)
 
 
 ## Cool code (miscellaneous):
-# %in% # This does something cool
+# %in% - This does something cool
 
 
 ## Data visualization:
@@ -176,32 +204,9 @@ ggplot(data = melt.boston, aes(x = value)) + stat_density() + facet_wrap(~variab
 boxplot(bstn)
 
 
-## Draw function plots:
-curve((1/sqrt(2*pi))*exp((-x^2)/2), from = -4, to = 4,main = "the normal curve",xlab = "x",ylab = "y")
-func.stand = function(x) ((1/sqrt(2*pi))*exp((-x^2)/2))
-integrate(func.stand, lower = -5, upper = 2)
-curve((3*x^3 - 4*x^2 + x -1)/((x^2 + 1)*(x^2 + 2)), from = -30, to = 30, n = 1000,
-      xlab = "x", ylab = "y", ylim = c(-2,2)) # THE n = 1000 ARGUMENT IS THE SECRET TO MAKING THE CURVES LOOK MORE ROUNDED!!!
-# THE OTHER MONEY PART OF WHAT I LEARNED WITH THIS IS THE ylim ARGUMENT!!!!! IT WORKS!!!!!!! WAHOOOOO!!!!!!!!!!!!!!!
-curve(x-x, from = -30, to = 30, add = TRUE) # THIS IS A WASTEFUL WAY TO JUST ADD A VERTICAL LINE FOR THE X AXIS. INSTEAD, TRY:
-abline(h = 0, v = 0) # BEST WAY TO ADD X AND Y AXES IN THE WHOLE FREAKING UNIVERSE.
-## Polar coordinates:
-t.vals = seq(0,10, length.out = 100)
-x = sqrt(t.vals)*cos(2*pi*t.vals)
-y = sqrt(t.vals)*sin(2*pi*t.vals) # cool equations, but this isn't how I write polar curves
-plot(x,y)
-abline(h=0,v=0)
-# IT WORKS! This is how you write r = 2cos(theta): you just use x = r*cos(theta) and y = r*sin(theta)
-t = seq(0,10, length.out = 100)
-x2 = 2*cos(2*pi*t)*cos(2*pi*t)
-y2 = 2*cos(2*pi*t)*sin(2*pi*t)
-plot(x2,y2)
-abline(h=0,v=0)
-
-
 ### expand.grid (example):
 # Automatically create a data frame in a cool way (cyclic repeats of first vector):
-dudes = expand.grid(height = seq(60,80,5), peso = seq(100,300,50), sex = c("male","female"))
+dudes = expand.grid(height = seq(60,80,5), peso = seq(100,300,50), sex = c("male","female")); dudes
 # For every time the first sequence prints (60,65,70,75,80), the second sequence lines up a
 # column of 100s. Then the first sequence repeats, this time lined up with five 150s. Then
 # another cycle from 60 to 80 with 200s, etc. till it goes through the 300s. All of those
@@ -213,13 +218,13 @@ de = expand.grid(x = 1:3, a = c("male","female","intersex")); de
 ### FOR LOOPS!!!!!!!!!! - the mysteries and wonders of for loops:
 ## GET THE FREAKING OUTPUT OF A FOR LOOP FOR CRYING OUT LOUD AND FREAKING PUT IT IN A DATA FRAME!
 # rbind/cbind and for loops are a weird mix:
-dube = NULL
+works = NULL
 for (i in 1:10){
-  what = c(1,2,3)
-  butt = c(3,2,1)
-  dube = rbind(dube, data.frame(what,butt)) # RBIND! IT WORKS!
+  stuff = c(1,2,3)
+  ffuts = c(3,2,1)
+  works = rbind(dube, data.frame(stuff,ffuts)) # RBIND! IT WORKS!
 }
-dube # FOR SOME ODD REASON IT WORKS!
+works # FOR SOME ODD REASON IT WORKS!
 ######################################
 rollin = NULL
 for (i in 1:10){
@@ -293,6 +298,83 @@ ggplot(datfr, aes(x = nums, y = sqnce)) + geom_point(col = "red") +
   geom_point(aes(x = nums, y = sries), col = "green") + geom_point(alpha = .2) # HECK YEAH
 
 
+## Function plots and 3D function plots (3D examples go after 2D):
+# A Maclauren series example (add more x^pwrs, or take some away; it looks just like the Steward Calculus textbook illustration on page 793):
+curve(1/(1-x), from = -5, to = 5); abline(h = 0, v = 0, lty = 2)
+curve(1+x+x^2+x^3+x^4+x^5+x^6+x^7+x^8+x^9+x^10, from = -5, to = 5, col = "red", add = TRUE)
+abline(v = c(-1,1), col = "blue")
+# arctan(x/3) from the Calculus II midterm 3 exame:
+# curve(atan(x), from = -10, to = 10, ylim = c(-10,10), lty = 2); abline(h = 0, v = 0)
+# curve(x-(x^3)/3+(x^5)/5-(x^7)/7+(x^9)/9-(x^11)/11, from = 10, to = 10, ylim = c(-10,10), lwd = 2, col = "red", add = TRUE)
+# x = x/3 doesn't work!
+curve(x-(x^3)/3+(x^5)/5-(x^7)/7+(x^9)/9-(x^11)/11, from = -p, to = p, ylim = c(-p,p), n = 1000); abline(h = 0, v = 0, lty = 2)
+# Compare x to x/3, and the series - IT WORKS!!!:
+p = 5
+curve(atan(x), from = -p, to = p, ylim = c(-p,p), col = "red"); abline(h = 0, v = 0, lty = 2)
+curve(atan(x/3), from = -p, to = p, ylim = c(-p,p), col = "blue", add = TRUE)
+curve(x-(x^3)/3+(x^5)/5-(x^7)/7+(x^9)/9-(x^11)/11, from = -p, to = p, ylim = c(-p,p), n = 1000, add = TRUE)
+curve(x/3-((x/3)^3)/3+((x/3)^5)/5-((x/3)^7)/7+((x/3)^9)/9-((x/3)^11)/11, from = -p, to = p, ylim = c(-p,p), n = 1000, add = TRUE)
+abline(v = c(-3,-1,1,3), lty = 4, col = "gray", add = TRUE)
+# The standard normal curve:
+curve((1/sqrt(2*pi))*exp((-x^2)/2), from = -4, to = 4,main = "the normal curve",xlab = "x",ylab = "y")
+abline(h = 0, v = c(-1.96,1.96))
+func.stand = function(x) ((1/sqrt(2*pi))*exp((-x^2)/2))
+integrate(func.stand, lower = -5, upper = 2)
+curve((3*x^3 - 4*x^2 + x -1)/((x^2 + 1)*(x^2 + 2)), from = -30, to = 30, n = 1000,
+      xlab = "x", ylab = "y", ylim = c(-2,2)) # THE n = 1000 ARGUMENT IS THE SECRET TO MAKING THE CURVES LOOK MORE ROUNDED!!!
+# THE OTHER MONEY PART OF WHAT I LEARNED WITH THIS IS THE ylim ARGUMENT!!!!! IT WORKS!!!!!!! WAHOOOOO!!!!!!!!!!!!!!!
+## Parametric equations (in polar coordinates?):
+t.vals = seq(0,10, length.out = 100)
+x = sqrt(t.vals)*cos(2*pi*t.vals)
+y = sqrt(t.vals)*sin(2*pi*t.vals) # cool equations, but this isn't how I write polar curves
+plot(x,y)
+abline(h=0,v=0)
+# IT WORKS! This is how you write r = 2cos(theta): you just use x = r*cos(theta) and y = r*sin(theta)
+t = seq(0,10, length.out = 100)
+x2 = 2*cos(2*pi*t)*cos(2*pi*t)
+y2 = 2*cos(2*pi*t)*sin(2*pi*t)
+plot(x2,y2)
+abline(h=0,v=0)
+## More boring examples:
+curve(2*x + 3, from = -5, to = 10, ylim = c(-5,20))
+abline(h = 0, v = 0, lty = 2)
+curve(5*x -10, from = -5, to = 10, ylim = c(-5,20), add = TRUE)
+abline(v = 13/3, col="red")
+## More parametric examples (converting from cartesian to parametric):
+t = seq(-5,5,length.out = 20)
+x = t
+y = 3*t + 5 
+plot(x,y); abline(h = 0, v = 0)
+## 3D function plots:
+library(lattice)
+# Example from https://stackoverflow.com/questions/23852177/how-to-plot-3d-parametric-equations-in-r
+t = seq(-2*pi,2*pi, length.out = 200)
+cloud(z ~ x+y, data.frame(x = 3*cos(t), y = 3*sin(t), z = 2*t))
+# Example from James Stewart Calculus 13.3 problem number 7:
+t = seq(0,2, length.out = 100)
+cloud(z ~ x + y, data.frame(x = t^2, y = t^3, z = t^4)) # I think this is the right way to enter in the equation r(t) = <t^2, t^3, t^4>, 0 <= t <= 2
+my.fun = function(t) t*sqrt(4 + 9*t^2 + 16*t^4)
+integrate(my.fun, lower = 0, upper = 2)
+# Example from James Stewart Calculus 13.3 problem number 9:
+t = seq(0,2, length.out = 100)
+cloud(z ~ x+y, data.frame(x = cos(pi*t), y = 2*t, z = sin(2*pi*t)))
+my.fun = function(t) sqrt((-pi*sin(pi*t))^2 + 4 + (2*pi*cos(2*pi*t))^2)
+integrate(my.fun, lower = 0, upper = 2)
+# Example from James Stewart Calc 13.1 problem number 11:
+t = seq(-5,5, length.out = 100)
+cloud(z ~ x+y, data.frame(x = t^3, y = t, z = 2 - t^2)) # Not the actual problem. x = 3 causes an error (cuz it's not 3D at that point), but solving it by putting in 3*t/t is SO FREAKING WEIRD!!! WHY ARE SOME DOTS OUT OF PLACE?
+# Example from 13.1 number 13:
+t = seq(-5,5, length.out = 100)
+cloud(z ~ x+y, data.frame(x = t^2, y = t^4, z = t^6)) 
+t = seq(-5,5, length.out = 100)
+cloud(z ~ x+y, data.frame(x = t, y = sin(t), z = 2*cos(t))) 
+## plot3D
+library(plot3D)
+example("surf3D") # shows a bunch of cool examples. I'm not really looking to do any of that yet though.
+my.cyl = function(x,y,z) 3*z = x*y
+surf3D(my.cyl)
+?surf3D
+
   
 ## ggplot - How to do a ggplot graph that's pretty okay
 # An example from the thatch ant colonies data (dat, copied as dat2):
@@ -348,6 +430,29 @@ integrate(func.e, lower = -10, upper = 10) # The area under this curve is NOT go
 func.e.norm = function(x) (1/sqrt(2*pi))*exp(-x^2)
 integrate(func.e.norm, lower = -10, upper = 10)
 # But the curve above ("Probability standard normal") does have area under the curve of 1
+## BREAKING UP AN IMPROPER INTEGRAL:
+func.abs = function(x) 1/sqrt(abs(x-1))
+integrate(func.abs, lower = 0, upper = 2) # Error: non-finite function value
+# so ..., break it up!:
+integrate(func.abs, lower = 0, upper = .999999); integrate(func.abs, lower = 1.000001, upper = 2)
+# The answer to the above is 2 + 2 = 4 = the area under the curve from 0 to 2
+
+
+## Libraries
+# What does interaction.ABC.plot?
+library("dae")
+# example: interaction.ABC.plot(STRENGTH, A, B, C, data = twl) # How far apart B1 and B2 are
+# example: interaction.ABC.plot(STRENGTH, B, A, C, data = twl) # How close together A1 and A2 are; A definitely interacts with B
+
+
+## lsmeans - get CIs for contrasts
+# Example from p.twl.strength experiment (4100 HW 6):
+library(lsmeans)
+lsm.Brand = lsmeans(AB.mod, specs = ~B)
+lsm.Brand # does EXACTLY the same thing as simply finding the mean (see line below), PLUS, CIs. That's it!
+foo = tapply(twl$STRENGTH, twl$B, mean)
+max(foo) - min(foo)
+summary(contrast(lsm.Brand, method = "pairwise"), infer = c(TRUE,FALSE)) # LITERALLY ALL THIS DOES IS FIND THE DIFFERENCE BETWEEN THE MEANS (see line above), PLUS, it gives a CI.
 
 
 ## Matrices - creating matrices
@@ -355,6 +460,12 @@ integrate(func.e.norm, lower = -10, upper = 10)
 n = 2
 input = matrix(c(1,2,3,4,5,6), ncol = n, byrow = TRUE); input # fills up by row  
 input2 = matrix(c(1,2,3,4,5,6), ncol = n, byrow = FALSE); input2 # fills up by column
+
+
+## mapvalues in plyr:
+library(plyr)
+colors = as.character(mapvalues(metadata$Ecosystem, from = c("Marine","Terrestrial"), to = c("Blue","Red")))
+heatmap(as.matrix(t(otu_table)), ColSideColors = colors, col = gray.colors(100))
 
 
 ## Messy_Data_Practice coolest things I learned:
@@ -478,6 +589,42 @@ sqrt(mean((mybos$medv - strng.frm$column2)^2))
 # 9. Renumber the first column
 # 10. Done. 
 ########### TO GET RID OF THE UNRIDDABLE '[' CRAP: yfr$y = gsub("[[]","", yfr$y); (IT'S THE "[[]")
+## An example from Stats 4000_C.S._5&6 or whatever it's called:
+stuff = "[1] -1.15324100 -0.64889269  0.29547561  0.28104254  1.39539764 -0.75897769 -0.65830774
+[8] -0.82193237  0.46744033 -0.93985024 -1.11867494 -0.09250948  0.49714821  1.67049386
+[15]  1.27518374 -1.03607522 -0.04761064  0.01403306  0.36681270  1.32552915  0.08422423
+[22]  0.38863590  0.57004986 -0.35972374  0.42068616 -0.31113634 -1.22656500  0.89104704
+[29] -0.30820514 -0.64678868"
+stuff2 = "[1] -1.15324100 -0.64889269  0.29547561  0.28104254  1.39539764 -0.75897769 -0.65830774
+[8] -0.82193237  0.46744033 -0.93985024 -1.11867494 -0.09250948  0.49714821  1.67049386
+[15]  1.27518374 -1.03607522 -0.04761064  0.01403306  0.36681270  1.32552915  0.08422423
+[22] -0.61136410  0.57004986 -0.35972374  0.42068616 -0.31113634 -1.22656500  0.89104704
+[29] -0.30820514 -0.64678868"
+identical(stuff, stuff2)
+stuff = unlist(strsplit(stuff, " ")); length(stuff)
+stuff.df = data.frame(shiz = stuff, cuenta = 1:31)
+stuff.df$shiz = gsub("\\\n","",stuff.df$shiz)
+stuff.df$shiz = gsub("\\[\\d\\d]", "", stuff.df$shiz)
+stuff.df = stuff.df[-1,]
+stuff.df$cuenta = 1:nrow(stuff.df)
+#
+stuff2 = unlist(strsplit(stuff2, " "))
+stuff2.d = data.frame(beotch = stuff2, cuenta = 1:length(stuff2))
+stuff2.d[which(stuff2.d$beotch == ""),] = NA
+stuff2.d = na.omit(stuff2.d)
+stuff$cuenta = 1:nrow(stuff2.d)
+stuff2.d$beotch = gsub("\\\n", "", stuff2.d$beotch)
+stuff2.d$beotch = gsub("\\[\\d]", "", stuff2.d$beotch) # WHY DOESN'T IT REMOVE ALL OF THEM?
+stuff2.d[which(stuff2.d$beotch == ""),] = NA
+stuff2.d = na.omit(stuff2.d)
+stuff2.d$beotch = gsub("\\[\\d\\d", "", stuff2.d$beotch)
+stuff2.d$cuenta = 1:nrow(stuff2.d)
+#
+uno = stuff.df$shiz[! stuff.df$shiz %in% stuff2.d$beotch]
+dos = stuff2.d$beotch[! stuff2.d$beotch %in% stuff.df$shiz]
+as.numeric(uno) - as.numeric(dos)
+stuff.df[which(stuff.df$shiz == uno),]
+stuff2.d[which(stuff2.d$beotch == dos),]
 
 
 ## na.omit
@@ -578,6 +725,18 @@ US = data.frame(C[148,3:8])
 predict(modC2, US) # DON'T FORGET THE BIGGEST LESSON TO LEARN ABOUT THE PREDICT FUNCTION THAT TOOK ME FOREVER SEARCHING ON THE INTERNET AND PURE LUCK TO FINALLY FIND THE ANSWER
 
 
+## prettyNum function (for making R display numbers in the console with commas)
+prettyNum(7.412e8, big.mark = ",", scientific = FALSE)
+
+
+## rbinom, rexp, and other weird r____ functions
+# rbinom random example:
+duh = rbinom(100,3,.5); duh
+length(which(duh == 3))
+length(which(duh == 2))
+length(which(duh == 1))
+length(which(duh == 0))
+
 
 ## Random number generator - How to generate random numbers within a range
 # How to do decimals:
@@ -605,8 +764,13 @@ set.seed(4000)
 trt = sample(rep(1:4, each = 4)); trt
 
 
-## string format specifier (sprintf stuff):
+## ALL THINGS STRINGS
+pet = "UVU mistakenly awarded me a Pell Grant at the beginning of the Spring 2018 semester. Later during the semester, they realized their mistake, and took it back. When they did that, it left my tuition suddenly unpaid, and I only found out after I was emailed that I had failed to pay tuition on time. When I found out what happened, I applied for a loan, but was given a late fee of $200 before the tuition could be covered by the loan. I am petitioning the $200 late fee."
+nchar(pet) # How to count the number of characters in a string
+pet0 = gsub(" ", "", pet); pet0
+nchar(pet0) # So, it does count spaces
 
+## string format specifier (sprintf stuff):
 
 
 ## tapply - example from rpm data (Stats 4100):

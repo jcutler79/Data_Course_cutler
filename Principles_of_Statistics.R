@@ -28,6 +28,17 @@
 
 
 # D
+## "Distances" - "In statistics, a distance can be viewed as a 'physical' or geometric distance
+# between two observations, each variable [x,y,z,etc.?] being a dimension in a hyperspace." - APE book
+## "A well-known property of distances in evolutionary biology is 'ultrametricity'. A distance
+# matrix is ultrametric if it satisfies the following inequality: dxy <= max(dxz,dyz), for all
+# triplets {x,y,z}. Consider the case where there are only three observations: it is clear that 
+# the above condition is met only if all distances are equal. So if we represent these three 
+# observations with a tree, it would have three equal branch lengths, and all tips would be 
+# equally distant from the root, which is the definition of an ultrametric tree. Ultrametricity
+# is appealing for evolutionists because if evolution is homogeneous across lineages--but not
+# necessarily through time--then distances among them are expected to be ultrametric. Several
+# decades of research have shown that this will be not generally true with real data. Fortunately ..." - APE book
 
 
 # E
@@ -63,6 +74,8 @@
 
 
 # N
+## Neighbor-joining (NJ): "NJ is one of the most widely used methods of phylogeny estimation.
+# It is a splitting method." - APE book
 
 
 # O
@@ -90,6 +103,7 @@
 # small, the power of the test will be smaller than the specified pi(Delta). If the guess for 
 # sigma^2 is too high, then the power will be higher than needed, and differences in the Ti's
 # smaller than Delta will cause Hnot to be rejected with high probability.
+
 
 # Q
 

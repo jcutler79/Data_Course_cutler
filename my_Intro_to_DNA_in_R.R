@@ -27,7 +27,7 @@ library(seqinr)
 
 
 setwd("/Users/jamescutler/Desktop/Course_Materials/Data_Course/assignments/Assignment_6/")
-# setwd("/Users/jamescutler/Desktop/Course_Materials/Data_Course/assignments/Assignment_6/fastasgood/")
+setwd("/Users/jamescutler/Desktop/Course_Materials/Data_Course/assignments/Assignment_6/fastasgood/")
 fq.files = dir(path = getwd(), full.names = TRUE, pattern = ".fastq") # ".fastq$" would limit it to just those files ending in fastq
 # dir is like ls -ahl
 # full.names adds the full path to all the file names in the ls -ahl
@@ -61,12 +61,11 @@ rownames(taxa.print)
 
 ### ORRRRRR, ...
 # ... just convert from fastq to fasta in R:
-writeFasta(fq.files) # doesn't work. Error message doesn't make sense. 
+library(ShortRead)
+fq.1 = readFastq(fq.files[1]) # new bizarro data type (not a text file). It's a DNAStringSet class!
+writeFasta(fq.1, file = "/Users/jamescutler/Desktop/Data_Course_cutler/fq.1.fasta") # doesn't work.
+?writeFasta
 
-
-fq.1 = readFastq(fq.files[9]) # new bizarro data type (not a text file). It's a DNAStringSet class!
-fq.2 = readFastq(fq.files[10])
-fq.1$ # WHY THE FUH DOESN'T THIS WORK?
 
 # look at sequence IDs (names)
 id(fq.1) 

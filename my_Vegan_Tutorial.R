@@ -133,8 +133,8 @@ names(otu_table)
 otu_table$Tax_Name
 tax = otu_table$Tax_Name
 library(dplyr)
-otu_table = subset(otu_table, select = -"Tax_name")
-subset(otu_table, select = -Tax_name)
+otu_table = subset(otu_table, select = -"Tax_name") # DOESN'T WORK
+subset(otu_table, select = -Tax_name) # DOESN'T WORK
 
 otu_table = otu_table[,-53]
 

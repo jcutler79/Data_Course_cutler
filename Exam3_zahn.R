@@ -118,10 +118,36 @@ MMDr[which(MMDr == max(MMDr))]
 MMRr = tapply(otu.g$Mg.Ma.R.rz, otu.g$Consensus.lineage, sum)
 MMRr[which(MMRr == max(MMRr))]
 
-MSDr = tapply(otu.g$Mg.Sf.D.rz, otu.g$Consensus.lineage, sum)
+MSDr = tapply(otu.g$Mg.Sf.D.rz, otu.g$Consensus.lineage, sum); length(MSDr)
 MSDr[which(MSDr == max(MSDr))]
 
 # MSRr - done already
+
+
+
+
+################################################################
+
+# How I would have done the above code in a for loop:
+
+# i.sums = NULL
+# genera.maxima = NULL
+for (i in 1:16){
+  i.sums[i] = tapply(otu.g[,i], otu.g$Consensus.lineage, sum)
+  genera.maxima = i.sums[i][which(i.sums[i] == max(i.sums[i]))]
+  print(genera.maxima) # DOESN'T WORK! THIS STUFF IS WEIRD
+}
+
+
+for (i in 1:16){ # FINALLY!!!!!! IT WORKS!!!!!!!!!!!!!!!!!
+  i.sums = tapply(otu.g[,i], otu.g$Consensus.lineage, sum); length(i.sums)
+  genera.max = i.sums[which(i.sums == max(i.sums))]; genera.max
+  print(genera.max) # YAAAAAAAAYYYYYYYYYYY!!!!!!!!
+}
+
+
+
+
 
 
 

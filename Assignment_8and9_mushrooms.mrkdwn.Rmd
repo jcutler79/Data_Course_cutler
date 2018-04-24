@@ -1,0 +1,187 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+
+# Assignment 8 & 9: Creating an R Markdown for the mushrooms
+
+#### Loading libraries
+```{r}
+
+library(fitdistrplus)
+library(ggplot2)
+library(modelr)
+```
+
+#### Loading data
+```{r}
+mushrooms = read.csv("/Users/jamescutler/Desktop/Course_Materials/Data_Course/data/mushroom_growth.csv")
+```
+
+### There are five factors tested here that might affect growth rate:
+```{r}
+boxplot(mushrooms$GrowthRate ~ mushrooms$Nitrogen)
+boxplot(mushrooms$GrowthRate ~ mushrooms$Light)
+boxplot(mushrooms$GrowthRate ~ mushrooms$Humidity)
+boxplot(mushrooms$GrowthRate ~ mushrooms$Temperature)
+boxplot(mushrooms$GrowthRate ~ mushrooms$Species)
+```
+### 20-25 Nitrogen is the better of all the nitrogen levels (barely)
+### 20 light (highest level) is better than other levels of light ... we'll see more definitive analysis later on
+### high humidity is best
+### 20 temperature has more high-growth outliers, similar mean as 25 temp
+### cornucopiae has a slightly higher mean, Q3, max, and it has high outliers where ostreotus has no outliers
+
+#### Plots to check for normality, and to see which kind of normality
+```{r}
+qqnorm(mushrooms$GrowthRate)
+hist(mushrooms$GrowthRate) 
+# Most of them aren't growing very much ...
+plot(density(mushrooms$GrowthRate))
+mean(mushrooms$GrowthRate) 
+# ... in fact, the mean is 113.6 growth units.
+```
+
+## BEST FIT!
+```{r}
+plot(fitdist(log10(mushrooms$GrowthRate), distr = "norm")) 
+```
+
+```{r}
+plot(fitdist(mushrooms$GrowthRate, "norm")) # worst fit
+plot(fitdist(mushrooms$GrowthRate, "gamma")) # gamma is better norm and logistic
+plot(fitdist(mushrooms$GrowthRate, "logis")) # worse than gamma, perhaps better than norm
+length(which(mushrooms$Species == "P.ostreotus")) # Just wanted to see if it was half and half or not. It is.
+```
+
+### Now I'll create models--a main effects model, and a 4-way interaction complete model
+```{r}
+main.effects = aov(GrowthRate ~ Nitrogen + Light + Humidity + Temperature + Species, data = mushrooms)
+summary(main.effects) 
+# light, humidity, and species have the greatest effect on growth.
+# Nitrogen doesn't appear to have much of an effect, and temperature is marginally significant
+
+# Model of interactions between all variables:
+interactions.mod = aov(GrowthRate ~ Nitrogen*Light*Humidity*Temperature*Species, data = mushrooms)
+summary(interactions.mod)
+```
+### As can be seen in the summary of the complete model, there are 3-star (highly significant) interactions between:
+#### humidity and light
+#### humidity and temp
+#### humidity and species
+#### species and light
+#### species and temp
+#### humidity, species, light
+#### humidity, species, temp
+
+# Notice that nitrogen does not show up anywhere as being significant.
+# But this is why we should plot graphs: apparently the interaction model won't catch everything:
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+p1 = ggplot(mushrooms, aes(x = Nitrogen, y = GrowthRate, col = Humidity)) +
+  geom_point() + stat_smooth() + ggtitle("mushroom growth rate") + 
+  facet_grid(facets = ~ Species) 
+
+suppressWarnings(p1)
+```
+## Now I'll create some ggplots of these variables (e.g. humidity or
+## light as X variable, the other as color code, to visualize how both explain growth):
+# Light as X, color-coded by humidity:
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+p2 = ggplot(mushrooms, mapping = aes(x = Light, y = GrowthRate, col = Humidity)) +
+  geom_point() + geom_smooth(method = "aov", se = FALSE) + 
+  ggtitle("Growth as a function of light") + 
+  labs(subtitle = "... color-coded by humidity")
+suppressWarnings(p2)
+# Temp as X, color-coded by humidity:
+p3 = ggplot(mushrooms, mapping = aes(x = Temperature, y = GrowthRate, col = Humidity)) +
+  geom_point() + geom_smooth(method = "aov", se = FALSE) + 
+  ggtitle("Growth as a function of temperature") + 
+  labs(subtitle = "... color-coded by humidity") # 20 degrees is better than 25!
+suppressWarnings(p3)
+# Species as X, color-coded by humidity:
+p4 = ggplot(mushrooms, mapping = aes(x = Species, y = GrowthRate, col = Humidity)) +
+  geom_point() + geom_smooth(method = "aov", se = FALSE) + 
+  ggtitle("Growth as a function of species") + 
+  labs(subtitle = "... color-coded by humidity")
+suppressWarnings(p4)
+# Light as X, color-coded by species:
+p5 = ggplot(mushrooms, mapping = aes(x = Light, y = GrowthRate, col = Species)) +
+  geom_point() + geom_smooth(method = "aov", se = FALSE) + 
+  ggtitle("Growth as a function of light") + 
+  labs(subtitle = "... color-coded by species") # cornucopiae improves at a higher rate. I could have predicted that.
+suppressWarnings(p5)
+# Temperature as X, color-coded by species:
+p6 = ggplot(mushrooms, mapping = aes(x = Temperature, y = GrowthRate, col = Species)) +
+  geom_point() + geom_smooth(method = "aov") + 
+  ggtitle("Growth as a function of temperature") + 
+  labs(subtitle = "... color-coded by species") # Ah HAAA! Cornucopiae may have done worse 
+# at 25 degrees than at 20, but temp does not appear to affect ostreotus.
+suppressWarnings(p6)
+
+## Just for fun, here's some more good stuff we can do with ggplot:
+# Compare the species in a cool way (light = X, colored by humidity, grid the species):
+p7 = ggplot(mushrooms, aes(x = Light, y = GrowthRate, col = Humidity)) +
+  geom_point() + stat_smooth() + ggtitle("mushroom growth rate") + 
+  facet_grid(facets = ~ Species) 
+# We see that cornucopiae does significantly worse in low humidity, but ostreotus does not
+# do all that worse. My next question is, what would this graph look like without a log10
+# transformation?
+suppressWarnings(p7)
+
+p8 = ggplot(mushrooms, aes(x = Light, y = GrowthRate, col = Humidity)) +
+  geom_point() + stat_smooth() + ggtitle("mushroom growth rate") + 
+  facet_grid(facets = ~ Species) 
+# That does look a little different, but the trends appear to be about the same.
+suppressWarnings(p8)
+
+# Temperature is not something I would predict to be as interesting to plot this way,
+# but what the heck:
+p9 = ggplot(mushrooms, aes(x = Temperature, y = GrowthRate, col = Humidity)) +
+  geom_point() + stat_smooth() + ggtitle("mushroom growth rate") + 
+  facet_grid(facets = ~ Species) 
+suppressWarnings(p9)
+```
+
+
+### HOLY! So, under high humidity, cornucopiae does slightly worse at 25 degrees than it does at 20; however, under low humidity, it does slightly BETTER at 25 than at 20. On the other hand, ostreotus does slightly better under high humidity at 25 degrees compared to 20, but shows the exact reverse trend under low humidity.
+
+
+
+### Now on to predictive models!
+#### I'm going to create 2 aov models--one for light*humidity*species, another for nitrogen*humidty*species, because those two looked interesting in the plots:
+```{r}
+int.mod1 = aov((GrowthRate) ~ Light*Humidity*Species, data = mushrooms)
+summary(int.mod1)
+
+int.mod2 = aov((GrowthRate) ~ Nitrogen*Humidity*Species, data = mushrooms)
+summary(int.mod2)
+
+anova(int.mod2,int.mod1)
+
+mushrooms2 = add_predictions(mushrooms, model = int.mod2)
+mushrooms$Log10 = log10(mushrooms$GrowthRate)
+plot(mushrooms$GrowthRate, mushrooms2$pred) # Not very digestible
+plot(mushrooms2$pred, mushrooms$GrowthRate) # Same
+mean(((mushrooms2$GrowthRate - mushrooms2$pred)^2))
+# The mean is 6412.843 for the squared differences between the nitrogen/humidity/species model predictions, whereas the light/humidity/species mean is ...
+mean((mushrooms$GrowthRate - mushrooms2$pred)^2) 
+# The mean is the same!
+
+## Cross validation:
+'%ni%' = Negate('%in%')
+mushrooms$Cross = rnorm(length(mushrooms$Species))
+mush.sample = sample(mushrooms$Cross, 108)
+mush.train = mushrooms[which(mushrooms$Cross %in% mush.sample),]
+mush.cross = mushrooms[which(mushrooms$Cross %ni% mush.sample),]
+
+int.mod1.trained = aov(GrowthRate ~ Light*Humidity*Species, data = mush.train)
+plot(int.mod1.trained)
+summary(int.mod1.trained)
+
+cross.predictions = add_predictions(model = int.mod1.trained, data = mush.cross)
+mean((cross.predictions$pred - cross.predictions$GrowthRate)^2)
+
+```
+
+
