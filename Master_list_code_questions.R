@@ -323,6 +323,28 @@ integrate(func.stand, lower = -5, upper = 2)
 curve((3*x^3 - 4*x^2 + x -1)/((x^2 + 1)*(x^2 + 2)), from = -30, to = 30, n = 1000,
       xlab = "x", ylab = "y", ylim = c(-2,2)) # THE n = 1000 ARGUMENT IS THE SECRET TO MAKING THE CURVES LOOK MORE ROUNDED!!!
 # THE OTHER MONEY PART OF WHAT I LEARNED WITH THIS IS THE ylim ARGUMENT!!!!! IT WORKS!!!!!!! WAHOOOOO!!!!!!!!!!!!!!!
+## Polar Coordinates:
+# library(plotly) # THIS IS BULLSHIZ. HOW DO I GET VERSION 4.7.1.9? IS THAT EVEN GOING TO FIX THE SCATTERPOLAR SITUATION?
+#packageVersion('plotly')
+?plot_ly
+df = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/polar_dataset.csv")
+for (i in 2:6){
+  plot(1:nrow(df),df[,i], ylim = c(0,1), ylab = sprintf("x%s",i-1))
+}
+plot(1:nrow(df),df$x5, ylim = c(0,1))
+# plot_ly(df, type = 'scatter', mode = 'lines') %>% add_trace(r = ~x1, theta = ~y, line = list(color = 'peru')) # THIS IS BULLSHIZ. NO SCATTERPOLAR??? WHY AM I EVEN DOING IT THIS WAY???
+theta = seq(1,360,3)
+x = 2*cos(2*pi*theta/360)/(1 + cos(2*pi*theta/360))
+y = 2*sin(2*pi*theta/360)/(1 + cos(2*pi*theta/360))
+plot(x,y, xlim = c(-14000,14000)); abline(h = 0, v = 0)
+x2 = cos(2*pi*theta/360)/(1 - cos(2*pi*theta/360))
+y2 = sin(2*pi*theta/360)/(1 - cos(2*pi*theta/360))
+points(x2,y2)
+parabola1 = function(x,y,thetas){
+  x = 2*cos(thetas)/(1 + cos(thetas))
+  y = 2*sin(thetas)/(1 + cos(thetas))
+}
+curve(parabola1, from = )
 ## Parametric equations (in polar coordinates?):
 t.vals = seq(0,10, length.out = 100)
 x = sqrt(t.vals)*cos(2*pi*t.vals)
@@ -771,6 +793,7 @@ pet0 = gsub(" ", "", pet); pet0
 nchar(pet0) # So, it does count spaces
 
 ## string format specifier (sprintf stuff):
+# see great course notepad
 
 
 ## tapply - example from rpm data (Stats 4100):

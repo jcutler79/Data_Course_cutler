@@ -328,6 +328,7 @@ mamm.mt.taxa$V3 = NULL
 mamm.mt.taxa$V1 = gsub("#", "", mamm.mt.taxa$V1)
 mamm.mt.taxa$V1 = gsub(" : ", "", mamm.mt.taxa$V1)
 colnames(mamm.mt.taxa) = c("code","species")
+library(ape)
 mt.mamm = read.dna("/Users/jamescutler/Desktop/APER2_Online_Material/mammal_mtGenome.fasta",
                    format = "fasta", skip = 239) # WHY THE SKIP = 239????
 
@@ -383,7 +384,7 @@ length(names(mt.mamm))
 # and they still have the abbreviated species names next to the gene names, and there are no
 # two species-gene combos that are the same. But each gene has up to 233 homologues. 
 unique(gene.names)
-length(unique(mamm.genes)) # only 60 different genes (only 39 of which have 233 homologues)
+length(unique(gene.names)) # only 60 different genes (only 39 of which have 233 homologues)
 
 length(unique((names(mt.mamm)))) # 9087 duh
 i = grep("Sequence does not exist", names(mt.mamm)); str(i)
@@ -642,7 +643,7 @@ names(cox1)
 y = c(6,17,9,10,15,8,27,174,142,1,4,193,192,187,180,117,110,115,120,118,97,119,109,175,140,
       166,128,124,172,28,12,31,16,90,89,29,32,26,11,36,7,13,14,176,72,68,42,121,60,233,232,228,205)
 mamm.mt.taxa$code[y]
-mt.mamm[grep(mamm.mt.taxa$code[c(233,232,228)], names(cox1))] # GREP DOESN'T DO MULTIPLE PATTERNS. THAT MEANS A FOR LOOP IS NECESSARY.
+# mt.mamm[grep(mamm.mt.taxa$code[c(233,232,228)], names(cox1))] # GREP DOESN'T DO MULTIPLE PATTERNS. THAT MEANS A FOR LOOP IS NECESSARY.
 # cox1.sbst53 = mt.mamm[grep(mamm.mt.taxa$code[y], names(cox1))]
 y[3]
 length(y)
@@ -661,7 +662,7 @@ cox1.53.clus = clustal(cox1.53); cox1.53.clus # IT WORKED!! IN LESS THAN 5 MINUT
 image(cox1.53.clus)
 
 # d.cox1.53 = dist.dna(cox1.53) # NOT OF THE SAME LENGTH
-d.cox1.53 = dist.dna(cox1.53.clus)
+# d.cox1.53 = dist.dna(cox1.53.clus) # REMEMBER, THIS IS THE ONE WITH UNINTELLIGIBLE NAMES! SEE BELOW FOR COMMON NAMES
 tr.nj.cox1.53 = nj(d.cox1.53)
 par(mar = c(1,1,1,1))
 plot(tr.nj.cox1.53, cex = .5)
@@ -684,8 +685,17 @@ cox1.53
 names(cox1)
 names(cox1.53) = common.names$common
 cox1.53.clus = clustal(cox1.53); cox1.53.clus
+
+setwd("/Users/jamescutler/Desktop/Data_Course_cutler/")
+save(cox1.53.clus, file = "Cox1_53_clus_common_names.RData")
+
 d.cox1.53 = dist.dna(cox1.53.clus)
 tr.nj.cox1.53 = nj(d.cox1.53)
 plot(tr.nj.cox1.53, cex = .5)
 unique(gene.names)
 table(gene.names)
+
+
+
+
+

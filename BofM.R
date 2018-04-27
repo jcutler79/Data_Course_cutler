@@ -4,7 +4,13 @@
 10151-4076
 10151+25624 - 4076*3
 23547/12
+
+
+
+
 ### The Book of Mormon ###
+
+# website with text: http://textfiles.com/etext/REFERENCE/morman13.txt
 
 bofm = "THE BOOK OF MORMON
 
@@ -39890,25 +39896,96 @@ str_length(bofm)
 str_sub(bofm, 499999, 500189)
 word(bofm, 100:110)
 str_sub(bofm, 129000, 130000)
+
+# 1 (DO THIS LINE):
 bofm.nopunc = gsub("[[:punct:]]", " ", bofm)
+
 str_sub(bofm.nopunc, 129000,130000)
+
+# 2 :
 bofm.np.nd = gsub("\\d", " ", bofm.nopunc)
+
+wit.sub = str_sub(bofm.nopunc, 1411, 4013)
+wit.sub = gsub("\\\n", " ", wit.sub); wit.sub
+wit.sub.sep = unlist(strsplit(wit.sub, " {1,}")); wit.sub.sep
+length(wit.sub.sep)
+267589 + 487 # = 268,076
+
 chunk = str_sub(bofm.np.nd, 129000, 130000)
 chunk
 chunk2 = gsub("     \\\n", "",chunk); chunk2
-
 chunk3 = gsub("\\\n  [[:alpha:]]{,5}", "", chunk2); chunk3
 chunk4 = gsub("\\\n", " ", chunk3); chunk4
 chunk4.sep = unlist(strsplit(chunk4, " {1,}")); chunk4.sep
 length(chunk4.sep)
 length(unique(chunk4.sep))/length(chunk4.sep)
-# 4013
+# 1411 to 4013 = the witnesses part
 # 2873 = the random magical number, past which (i.e., at 2874) it will throw an error
+
+# 3 : 
 sub1 = str_sub(bofm.np.nd, 1411, 2873); sub1
 bofm.nowit = gsub(sub1, "",bofm.np.nd); str_sub(bofm.nowit,1,5000)
 
-duh = "I pledge allegiance to the flag of the United States of America, and to the Republic
-for which it stands--one nation under God, indivisible, with liberty and justice for all."
-subone = str_sub(duh, 107,128); subone
-duh2 = gsub(subone, "",duh)
-duh2
+# str_sub(bofm.np.nd, 1400, 4020)
+# str_sub(bofm.nowit, 1, 3000)
+
+# 4 : 
+sub2 = str_sub(bofm.nowit, 2874-1463, 4013-1460); sub2
+bofm.nowit = gsub(sub2, "", bofm.nowit); str_sub(bofm.nowit, 1, 3000) # GOT IT! PURE BOOK OF MORMON TEXT = bofm.nowit
+
+str_sub(bofm.nowit, 365000, 368000)
+
+# 5 :
+bofm1 = gsub("     \\\n", "", bofm.nowit); str_sub(bofm1, 356500, 362000)
+bofm2 = gsub("\\\n  Nephi", "", bofm1); str_sub(bofm2, 342500, 347000)
+bofm3 = gsub("\\\nMosiah  ", "", bofm2); str_sub(bofm3, 400000, 401000)
+bofm4 = gsub("\\\nJacob  ", "", bofm3); str_sub(bofm4, 320000, 321000)
+bofm5 = gsub("\\\nEnos  ", "", bofm4); str_sub(bofm5, 347000, 348000)
+bofm6 = gsub("\\\nJarom  ", "", bofm5); str_sub(bofm6, 350000, 351000)
+bofm7 = gsub("\\\nOmni  ", "", bofm6); str_sub(bofm7, 360000, 361000)
+bofm8 = gsub("\\\nWords of Mormon  ", "", bofm7); str_sub(bofm8, 360000, 361000)
+bofm9 = gsub("\\\nAlma  ", "", bofm8); str_sub(bofm9, 800000, 801000)
+bofm10 = gsub("\\\nHelaman  ", "", bofm9); str_sub(bofm10, 1000000, 1001000)
+bofm11 = gsub("\\\nMormon  ", "", bofm10); str_sub(bofm11, 1300000, 1301000)
+bofm12 = gsub("\\\nEther  ", "", bofm11); str_sub(bofm12, 1350000, 1351000)
+bofm13 = gsub("\\\nMoroni  ", "", bofm12); str_sub(bofm13, 1400000, 1401000)
+bofm14 = gsub("Chapter", "", bofm13)
+# str_sub(bofm14, 1398000, 1399000)
+bofm15 = gsub("\\\n", " ", bofm14)
+# str_sub(bofm15, 100000, 102000)
+bofm15.sep = unlist(strsplit(bofm15, " {1,}")); bofm15.sep[1:200]
+length(bofm15.sep)
+length(unique(bofm15.sep))/length(bofm15.sep)
+nchar(bofm15)
+
+str_sub(bofm15, 342000, 348000)
+
+title.page = str_sub(bofm15, 1, 1409) # THE TITLE PAGE (MORONI'S COLOPHON)
+# grep("the Lord", title.page) # Doesn't count how many there are; just returns 1
+t.page.sep = unlist(strsplit(title.page, " {1,}")); t.page.sep
+Lord = grep("Lord", t.page.sep)
+the = grep("the", t.page.sep)
+class(Lord)
+
+Lord.m1 = Lord - 1
+Lord.m1 %in% the
+theLord = the %in% Lord.m1
+length(grep("TRUE", theLord))
+
+length(grep("Jesus", bofm15.sep))
+length(grep("Christ", bofm15.sep))
+Jesus = grep("Jesus", bofm15.sep)
+Christ = grep("Christ", bofm15.sep)
+Jesus.p1 = Jesus + 1
+JesusChrist = Christ %in% Jesus.p1
+length(grep("TRUE", JesusChrist))
+as.matrix(JesusChrist)
+JC = data.frame(t_f = JesusChrist)
+JC[which(JC$t_f == TRUE),1] = 1
+JC[which(JC$t_f == FALSE),1] = 0
+ggplot(JC, aes(x = 1:nrow(JC), y = t_f)) + geom_point() + coord_cartesian(ylim = c(0,2))
+str_sub(bofm15, 340000, 343000)
+
+
+
+

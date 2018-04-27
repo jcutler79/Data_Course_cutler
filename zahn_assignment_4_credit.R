@@ -27,16 +27,15 @@ plot(fitdist(log10(mushrooms$GrowthRate), distr = "norm")) # BEST FIT! YAY!
 plot(fitdist(mushrooms$GrowthRate, "norm")) # worst fit
 plot(fitdist(mushrooms$GrowthRate, "gamma")) # gamma is better norm and logistic
 plot(fitdist(mushrooms$GrowthRate, "logis")) # worse than gamma, perhaps better than norm
-length(which(mushrooms$Species == "P.ostreotus")) # Just wanted to see if it was half and half or not. It is.
 
 shroom.model = aov(mushrooms$GrowthRate ~ mushrooms$Nitrogen + mushrooms$Light + 
                     mushrooms$Humidity + mushrooms$Temperature + mushrooms$Species)
-anova(shroom.model) # light, humidity, and species have the greatest effect on growth.
+summary(shroom.model) # light, humidity, and species have the greatest effect on growth.
 # Nitrogen doesn't appear to have much of an effect, and temperature is marinally significant
 
 # crappy model of interactions between ALL variables model:
-crap.model = aov(mushrooms$GrowthRate ~ mushrooms$Nitrogen*mushrooms$Light*mushrooms$Humidity*mushrooms$Temperature*mushrooms$Species)
-anova(crap.model) # Hoooooly crap ...
+intrctn.mod = aov(mushrooms$GrowthRate ~ mushrooms$Nitrogen*mushrooms$Light*mushrooms$Humidity*mushrooms$Temperature*mushrooms$Species)
+summary(intrctn.mod) 
 ## There are 3-star interactions between:
 # humidity and light
 # humidity and temp
@@ -83,12 +82,9 @@ ggplot(mushrooms, mapping = aes(x = Temperature, y = GrowthRate, col = Species))
 # Not sure what to do with the triple interactions that are significant. I guess I'll
 # do some summaries and tidies. 
 mod1 = aov(GrowthRate ~ Humidity + Species + Light, data = mushrooms)
-mod1
 summary(mod1)
-tidy(mod1)
-mod2 = aov(GrowthRate ~ Humidity + Species + Temperature, data = mushrooms); mod2
+mod2 = aov(GrowthRate ~ Humidity + Species + Temperature, data = mushrooms)
 summary(mod2)
-tidy(mod2)
 # But this didn't really add anything meaningful to my analysis that I didn't already 
 # know, right? I'll try interactions between all three in each of the models below.
 
@@ -122,26 +118,21 @@ ggplot(mushrooms, aes(x = Temperature, y = log10(GrowthRate), col = Humidity)) +
 # nitrogen*humidty*species, because those two looked interesting in the plots:
 int.mod1 = aov((GrowthRate) ~ Light*Humidity*Species, data = mushrooms)
 summary(int.mod1)
-plot(int.mod1) # Bunch of hairy stuff
-tidy(int.mod1)
+plot(int.mod1) # Some interesting stuff
 
 int.mod2 = aov((GrowthRate) ~ Nitrogen*Humidity*Species, data = mushrooms)
 summary(int.mod2)
 plot(int.mod2)
-tidy(int.mod2)
 
 
-anova(int.mod2,int.mod1)
-summary(int.mod1)
-summary(int.mod2)
-dev.off() # I FORGET WHY I DO THIS ... ??????????
+anova(int.mod2,int.mod1) # WHAT DOES THIS EVEN TELL ME?
 mushrooms2 = add_predictions(mushrooms, model = int.mod2)
 mushrooms$Log10 = log10(mushrooms$GrowthRate)
-plot(mushrooms$GrowthRate, mushrooms$pred) # Not very digestible
-plot(mushrooms$pred, mushrooms$GrowthRate) # Same
+plot(mushrooms$GrowthRate, mushrooms2$pred) # Not very digestible
+plot(mushrooms2$pred, mushrooms$GrowthRate) # For some reason, this throws an error
 mean(((mushrooms2$GrowthRate - mushrooms2$pred)^2)) # The mean is 6412.843 for the squared differences 
 # between the Nitrogen/humidity/species model predictions, whereas the Light/humidity/species mean is ...
-mean((mushrooms$GrowthRate - mushrooms$pred)^2) # 3726.525, almost twice as close. So I'll go with 
+mean((mushrooms$GrowthRate - mushrooms2$pred)^2) # 3726.525, almost twice as close. So I'll go with 
 # int.mod1 as my model for cross validation:
 
 mushrooms$Log10 = NULL
