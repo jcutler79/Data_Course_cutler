@@ -1,0 +1,211 @@
+### Final Project Biology 490
+
+library(ape)
+library(phangorn)
+
+### Mammalian mito genomes:
+## Link to Andrew Gibson's 2005 paper, "A Comprehensive Analysis of Mammalian Mitochondrial
+# Genome Base Composition and Improved Phylogenetic Methods":
+# https://academic.oup.com/mbe/article/22/2/251/963859
+
+mamm.taxa = read.table("/Users/jamescutler/Desktop/APER2_Online_Material/mammal_mtGenome.fasta", 
+                          skip = 4, nrows = 233, sep = "_", comment.char = "(", as.is = TRUE) # HOW TO MAKE SENSE OF ALL THIS GIBBERISH??
+mamm.taxa[1:5,]
+mamm.taxa$V3 = NULL
+mamm.taxa$V1 = gsub("#", "", mamm.taxa$V1)
+mamm.taxa$V1 = gsub(" : ", "", mamm.taxa$V1)
+colnames(mamm.taxa) = c("code","species")
+
+mito.DNA = read.dna("/Users/jamescutler/Desktop/APER2_Online_Material/mammal_mtGenome.fasta",
+                   format = "fasta", skip = 239) 
+# WHY THE SKIP = 239????
+
+length(mito.DNA)
+class(mito.DNA)
+names(mito.DNA)[1:10]
+# THE GENE NAMES (gene.names) ARE GOING TO BE THE MT.MAMM NAMES WITHOUT THE ABBREVIATED SPECIES NAMES COMPONENT
+gene.names = gsub("^[[:alnum:]]{1,}\\(","",names(mito.DNA)); gene.names[1:10] 
+gene.names = gsub("\\)$","",gene.names); gene.names # IT WORKED
+length(names(mito.DNA))
+
+unique(gene.names)
+length(unique(gene.names)) # only 60 different genes (only 39 of which have 233 homologues)
+
+i = grep("Sequence does not exist", names(mito.DNA)); str(i)
+mito.DNA = mito.DNA[-i]; length(mito.DNA) # REALLY IMPORTANT CODE--THIS IS HOW YOU TRIM A DATAFRAME (OR DNABIN)
+9087-8568 # 519 rows were removed
+## Okay, now there are fewer mt.mamm rows--fewer names. If I do the gene.names code over again,
+# I'll get a different (smaller) set of gene names:
+gene.names = gsub("^[[:alnum:]]{1,}\\(","",names(mito.DNA)) 
+gene.names = gsub("\\)$","",gene.names); length(unique(gene.names)) # NOW THERE ARE ONLY 39 UNIQUE GENE NAMES
+
+table(gene.names) # "table" is a cool function
+sum(table(gene.names)) # should be 8568, and it is!
+
+# What I would like to do is create a phylogeny--a gene tree for a specific mito gene--of some subset of the 233 mammalian species--of mammals I'm particularly interested in.
+
+# I could pick the gene Cox1, or ATP6, or any gene from among the list of 39 or so in this database.
+
+# I could do multiple gene trees and see whether and how any of them differ.
+
+# Before creating a phylogeny, though, I'll start out by simply analyzing base frequency:
+
+## We can analyze base frequencies at three levels of variation:
+# Between species (all genes pooled)
+# Between genes (all species pooled)
+# Between sites for a single protein-coding gene (all species pooled)
+
+# First, between species (wth all genes pooled):
+BF.b_sp = matrix(NA, nrow = 233, ncol = 4)
+rownames(BF.b_sp) = mamm.taxa$species
+colnames(BF.b_sp) = c("A","C","G","T")
+for (i in 1:233){
+  x = grep(mamm.taxa$code[i], names(mito.DNA))
+  BF.b_sp[i,] = base.freq(mito.DNA[x])
+}
+matplot(BF.b_sp, type = "l", col = 1:4, xlab = "Species",
+        ylab = "Base frequency")
+
+# The other analysis I'll show here is between genes (with all species pooled):
+BF.gene = matrix(NA, nrow = 39, ncol = 4)
+rownames(BF.gene) = unique(gene.names)
+colnames(BF.gene) = c("A","C","G","T")
+for (i in 1:nrow(BF.gene)){
+  x = grep(rownames(BF.gene)[i], names(mito.DNA), fixed = TRUE)
+  BF.gene[i,] = base.freq(mito.DNA[x])
+}
+par(mar = c(8,3,3,2))
+barplot(t(BF.gene), las = 2, legend = TRUE, 
+        args.legend = list(horiz = TRUE, bg = "white"))
+dev.off()
+
+# What I'm interested in regarding each specific gene is the gene tree, again, only including a particular subset of all 233 (233 tips would be too massive a tree for me to meaningfully digest or to legibly display in a single plot).
+
+# Here is one list, totaling about 50, of mammals whose Cox1 gene tree I'm curious about:
+
+# Pontoporia blainvillei - La Plata dolphin
+# Lagenorhynchus albirostris - white-beaked dolphin
+# Balaenoptera omurai - Omura’s whale
+# Caperea marginata - pygmy right whale
+# Balaenoptera edeni - Bryde’s whale
+# Monodon monoceros - narwhal
+# Kogia breviceps - pygmy sperm whale
+# Halichoerus grypus - grey seal
+# Phoca largha - spotted seal
+# Oryctolagus cuniculus - European rabbit
+# Lepus europaeus - European hare
+# Cavia porcellus - guinea pig
+# Mus musculus - house mouse
+# Rattus norvegicus - brown rat
+# Jaculus jaculus - lesser Egyptian jerboa (rodent)
+# Lemur catta - ring-tailed lemur
+# Tarsius bancanus - Horsfield’s tarsier
+# Semnopithecus entellus - northern plains gray langur (Old World)
+# Macaca mulatta - rhesus macaque
+# Pongo pygmaeus - Bornean orangutan
+# Gorilla gorilla
+# Pan paniscus - bonobo
+# Homo sapiens
+# Ursus arctos - brown bear
+# Canis lupus - gray wolf
+# Gulo gulo - wolverine
+# Procyon lotor - raccoon
+# Panthera pardus - leopard
+# Felis catus - domestic cat
+# Bos taurus - cow
+# Bubalus bubalis - water buffalo
+# Camelus dromedarius - dromedary
+# Lama pacos - alpaca
+# Equus asinus - donkey
+# Equus caballus
+# Elaphodus cephalophus - tufted deer
+# Pantholops hodgsonii - Tibetan antelope
+# Cervus nippon yesoensis - Yezo Sika deer (Japan)
+# Ovis aries - sheep
+# Ammotragus lervia - Barbary sheep
+# Capra hircus - goat
+# Sus scrofa - wild boar
+# Phacochoerus africanus - common warthog
+# Macroscelides proboscideus - round-eared elephant shrew
+# Loxodonta africana - African elephant
+# Dugong dugon
+# Hippopotamus amphibius
+# Manis tetradactyla - long-tailed pangolin
+# Pteropus scapulatus - little red flying fox
+# Zaglossus bruijni - western long-beaked echidna
+# Ornithorhynchus anatinus - platypus
+# Phascolarctos cinereus - koala
+# Lagostrophus fasciatus - banded-hare wallaby
+
+y = c(6,17,9,10,15,8,27,174,142,1,4,193,192,187,180,117,110,115,120,118,97,119,109,175,140,
+      166,128,124,172,28,12,31,16,90,89,29,32,26,11,36,7,13,14,176,72,68,42,121,60,233,232,228,205)
+mamm.taxa$code[y]
+cox1 = mt.mamm[grep("COX1", names(mt.mamm))]
+cox1 = cox1[y] 
+common.names = data.frame(scientific = mamm.mt.taxa$species[y], 
+                          common = c("La Plata dolphin","white-beaked dolphin","Omura's whale","pygmy right whale",
+                                     "Bryde's whale","narwhal","pygmy sperm whale","grey seal","spotted seal",
+                                     "European rabbit","European hare","guinea pig","house mouse","brown rat",
+                                     "lesser Egyptian jerboa","ring-tailed lemur","Horsfield's tarsier","northern plains gray langur",
+                                     "rhesus macaque","Bornean orangutan","gorilla","bonobo","us","brown bear","gray wolf","wolverine",
+                                     "raccoon","leopard","domestic cat","cow","water buffalo","dromedary","alpaca","donkey","horse",
+                                     "tufted deer","Tibetan antelope","Yezo Sika deer","sheep","Barbary sheep","goat","wild boar",
+                                     "common warthog","round-eared elephant shrew","African elephant","dugong","hippo","long-tailed pangolin",
+                                     "little red flying fox","western long-beaked echidna","platypus","koala","banded-hare wallaby"))
+names(cox1) = common.names$common
+
+########################################################################
+cox1.53.clus = clustal(cox1) # Less than 5 minutes to compute
+setwd("/Users/jamescutler/Desktop/Data_Course_cutler/")
+save(cox1.clus, file = "Cox1_53_clus_common_names.RData")
+########################################################################
+
+load("/Users/jamescutler/Desktop/Data_Course_cutler/Cox1_53_clus_common_names.RData")
+par(mar=c(2,11,4,.5))
+image(cox1.53.clus)
+dev.off()
+
+d.cox1 = dist.dna(cox1.53.clus)
+tr.nj.cox1 = nj(d.cox1)
+plot(tr.nj.cox1, cex = .5)
+
+# Now for maximum likelihood with UPGMA (unweighted pair group method with arithmetic mean):
+class(cox1.53.clus)
+cox1.phydat = as.phyDat(cox1.53.clus)
+dml.cox1 = dist.ml(cox1.phydat)
+trUPGMA.cox1 = upgma(dml.cox1)
+par(mar=c(1,1,1,1))
+plot(trUPGMA.cox1, cex = .7)
+
+
+
+## Now for some cool things you can do with trees:
+# Using a woodmouse phylogeny as an example:
+wm.tre = read.tree("/Users/jamescutler/Desktop/APER2_Online_Material/rodent.tre")
+plot(wm.tre)
+wm.tre$edge.length
+plot(wm.tre, type = "c", use.edge.length = FALSE, direction = "l")
+plot(wm.tre); nodelabels(cex = .3); tiplabels(cex = .3); edgelabels(cex = .3)
+
+# My favorite method for visualizing bootstrap values for the nodes:
+bs.ml = c(NA,88,76,73,71,100,45,81,72,67,63,100,100)
+plot(wm.tre, no.margin = TRUE)
+nodelabels(bs.ml, adj = c(1.2, -.5), frame = "n",
+           cex = .8, font = 2)
+c.code = c("black","grey","white")
+p = character(length(bs.ml))
+p[bs.ml >= 90] = c.code[1]
+p[bs.ml < 90 & bs.ml >= 70] = c.code[2]
+p[bs.ml < 70] = c.code[3]
+p
+nodelabels(node = 16:27, pch = 21, bg = p[-1], cex = 2)
+points(rep(.005,3), 1:3, pch = 21, cex = 2, bg = c.code)
+text(rep(.01,3), 1:3, adj = 0, c("BP >= 90","70 <= BP < 90","BP < 70"))
+
+# Now without the numbers (just the colors):
+plot(wm.tre, no.margin = TRUE)
+nodelabels(node = 16:27, pch = 21, bg = p[-1], cex = 2)
+points(rep(.005,3), 1:3, pch = 21, cex = 2, bg = c.code)
+text(rep(.01,3), 1:3, adj = 0, c("BP >= 90","70 <= BP < 90","BP < 70"))
+
+

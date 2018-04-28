@@ -410,14 +410,14 @@ sum(table(gene.names)) # should be 8568, and it is!
 ## To calculate base frequencies for each species, we first create a matrix:
 nrow(mamm.mt.taxa) # there are 233 rows for 233 species I presume.
 
-BF.sp = matrix(NA, nrow = 233, ncol = 4)
-rownames(BF.sp) = mamm.mt.taxa$species
-colnames(BF.sp) = c("A","C","G","T")
-for (i in 1:233){
-  BF.sp[i,] = base.freq(mt.mamm[i])
-}
-matplot(BF.sp, type = "l", col = 1:4, xlab = "Species",
-        ylab = "Base frequency")
+# BF.sp = matrix(NA, nrow = 233, ncol = 4)
+# rownames(BF.sp) = mamm.mt.taxa$species
+# colnames(BF.sp) = c("A","C","G","T")
+# for (i in 1:233){
+#   BF.sp[i,] = base.freq(mt.mamm[i])
+# }
+# matplot(BF.sp, type = "l", col = 1:4, xlab = "Species",
+#         ylab = "Base frequency")
 
 # Now do it the right way:
 BF.sp.right = matrix(NA, nrow = 233, ncol = 4)

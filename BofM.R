@@ -39953,10 +39953,17 @@ bofm14 = gsub("Chapter", "", bofm13)
 # str_sub(bofm14, 1398000, 1399000)
 bofm15 = gsub("\\\n", " ", bofm14)
 # str_sub(bofm15, 100000, 102000)
-bofm15.sep = unlist(strsplit(bofm15, " {1,}")); bofm15.sep[1:200]
+bofm15.sep = unlist(strsplit(bofm15, " {1,}")); # bofm15.sep[1:200]
 length(bofm15.sep)
 length(unique(bofm15.sep))/length(bofm15.sep)
 nchar(bofm15)
+
+###########################################################
+setwd("/Users/jamescutler/Desktop/Data_Course_cutler/")
+save(bofm15, file = "bofm_words_only.RData") # No testimonies of witnesses in this version. Ancient text only.
+save(bofm15.sep, file = "bofm_word_vector.RData")
+load("/Users/jamescutler/Desktop/Data_Course_cutler/bofm_words_only.RData")
+###########################################################
 
 str_sub(bofm15, 342000, 348000)
 
