@@ -1,16 +1,16 @@
 ### Unemployment rate in US by year since 1947
 
+# DO THIS (1) :
+################################################################################################################
 unempl = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/unemployment.csv")
-
 unempl = unempl[12:82,1:2]
 
 colnames(unempl) = c("year","rate")
-class(unempl$rate)
-class(unempl$year)
 unempl$rate = as.character(unempl$rate)
 unempl$rate = as.numeric(unempl$rate)
 unempl$year = as.character(unempl$year)
 unempl$year = as.numeric(unempl$year)
+################################################################################################################
 
 a = ggplot(data = unempl, aes(x = year, y = rate)) + geom_line() 
 a
@@ -26,9 +26,14 @@ R_HWBush = 1989:1992 # vline at 1989
 D_Clinton = 1993:2000
 R_Bush = 2001:2008
 D_Obama = 2009:20016
+
+# 2 : 
+################################################################################################################
 unempl$presdnts = c(rep("Truman",7),rep("Eisen",8),rep("JFK",3),rep("LBJ",5),rep("Nixon",5),
                     rep("Ford",3),rep("Carter",4),rep("Reagan",8),rep("HWBush",4),rep("Clinton",8),
                     rep("Bush",8),rep("Obama",8))
+################################################################################################################
+
 pres_and_rates = unempl[,c("rate","presdnts")]
 pres_and_rates$presdnts = as.factor(pres_and_rates$presdnts)
 class(pres_and_rates$presdnts)
@@ -38,17 +43,24 @@ master.frame = data.frame()
 
 Democrat = c(1945:1952,1961:1968,1977:1980,1993:2000,2009:2016)
 Republican = c(1953:1960,1969:1976,1981:1992,2001:2008)
+
+# 3 :
+################################################################################################################
 pres.dat = data.frame(years = 1947:2017, party = 
                         c(rep("Democrat",7),rep("Republican",8),rep("Democrat",8),
                           rep("Republican",8),rep("Democrat",4),rep("Republican",12),
                           rep("Democrat",8),rep("Republican",8),rep("Democrat",8)))
 unempl$party = pres.dat$party
-unempl$rows = 1:71
+unempl$rows = 1:nrows(unempl)
+################################################################################################################
+
 colnames(unempl)
 b = a + geom_rect(data = unempl, mapping = aes(xmin=1947,xmax=2017,ymin=2.9,ymax=9.7),
                   color = party, alpha = .2)
 b
 
+# 4 : 
+################################################################################################################
 fr = data.frame(x1 = c(1947,1953,1961,1969,1977,1981,1993,2001,2009), 
                 x2 = c(1953,1961,1969,1977,1981,1993,2001,2009,2017), 
                 y1 = rep(2.9,9), 
@@ -56,8 +68,9 @@ fr = data.frame(x1 = c(1947,1953,1961,1969,1977,1981,1993,2001,2009),
                 prty = c("D","R","D","R","D","R","D","R","D"))
 ggplot() + geom_rect(data = fr, aes(xmin=x1,xmax=x2,ymin=y1,ymax=y2, fill = prty)) + 
   scale_fill_manual(values = alpha(c("blue","red"), .3)) + 
-  geom_line(data = unempl, mapping = aes(x = year, y = rate)) # FINALLY GOT THIS PIECE OF CRAP TO WORK
-
+  geom_line(data = unempl, mapping = aes(x = year, y = rate)) + # FINALLY GOT THIS PIECE OF CRAP TO WORK
+  geom_point(x = 2000, y = 8)
+################################################################################################################
 
 da.prezidents = data.frame(nombres = c("Truman","Eisenhower","JFK","LBJ","Nixon","Ford",
                                        "Carter","Reagan","HW Bush","Clinton","Bush","Obama"))

@@ -39898,7 +39898,8 @@ word(bofm, 100:110)
 str_sub(bofm, 129000, 130000)
 
 # 1 (DO THIS LINE):
-bofm.nopunc = gsub("[[:punct:]]", " ", bofm)
+bofm.nopunc = gsub("[[:punct:]]", " ", bofm) # The punctuation needs to be replaced by a space
+# because there are words only separated by dashes.
 
 str_sub(bofm.nopunc, 129000,130000)
 
@@ -39963,6 +39964,7 @@ setwd("/Users/jamescutler/Desktop/Data_Course_cutler/")
 save(bofm15, file = "bofm_words_only.RData") # No testimonies of witnesses in this version. Ancient text only.
 save(bofm15.sep, file = "bofm_word_vector.RData")
 load("/Users/jamescutler/Desktop/Data_Course_cutler/bofm_words_only.RData")
+load("/Users/jamescutler/Desktop/Data_Course_cutler/bofm_word_vector.RData")
 ###########################################################
 
 str_sub(bofm15, 342000, 348000)
@@ -39992,6 +39994,111 @@ JC[which(JC$t_f == TRUE),1] = 1
 JC[which(JC$t_f == FALSE),1] = 0
 ggplot(JC, aes(x = 1:nrow(JC), y = t_f)) + geom_point() + coord_cartesian(ylim = c(0,2))
 str_sub(bofm15, 340000, 343000)
+
+str_sub(bofm15, 135600, 135800)
+
+hey = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
+gregexpr(pattern = "C", hey)
+gregexpr(pattern = "dog", hey)
+gregexpr(pattern = "THE SECOND BOOK OF NEPHI", bofm15)
+
+gregexpr(pattern = "the Father of heaven and of earth", bofm15)
+gregexpr(pattern = "the Creator of all things from the beginning", bofm15)
+
+str_sub(bofm15, 1086007-300, 1086007+300)
+str_sub(bofm15, 383886-300, 383886+300)
+
+bkofm = gsub(" {1,}", " ", bofm15); str_sub(bkofm, 366978-300, 366978+300)
+gregexpr(pattern = "the Creator of all things from the beginning", bkofm)
+
+################################################################################################################
+setwd("/Users/jamescutler/Desktop/Data_Course_cutler/")
+save(bkofm, file = "real_bofm.RData") # This one fixed the multiple spaces problem
+load("/Users/jamescutler/Desktop/Data_Course_cutler/real_bofm.RData")
+################################################################################################################
+
+
+gregexpr(pattern = "THE FIRST BOOK OF NEPHI", bkofm) # 1381
+gregexpr(pattern = "THE SECOND BOOK OF NEPHI", bkofm) # 129693
+gregexpr(pattern = "THE BOOK OF JACOB", bkofm) # 280201
+gregexpr(pattern = "THE BOOK OF ENOS", bkofm) # 327756
+gregexpr(pattern = "THE BOOK OF JAROM", bkofm) # 333663
+gregexpr(pattern = "THE BOOK OF OMNI", bkofm) # 337564
+gregexpr(pattern = "THE WORDS OF MORMON", bkofm) # 344877
+gregexpr(pattern = "THE BOOK OF MOSIAH", bkofm) # 349458
+gregexpr(pattern = "THE BOOK OF ALMA", bkofm) # 510923
+gregexpr(pattern = "THE BOOK OF HELAMAN", bkofm) # 953229
+gregexpr(pattern = "THIRD NEPHI", bkofm) # 1060145
+gregexpr(pattern = "FOURTH NEPHI", bkofm) # 1207552
+gregexpr(pattern = "THE BOOK OF MORMON", bkofm) # 1217958
+gregexpr(pattern = "THE BOOK OF ETHER", bkofm) # 1266461
+gregexpr(pattern = "THE BOOK OF MORONI", bkofm) # 1351169
+nchar(bkofm)
+
+########
+HOI = gregexpr(pattern = "the Holy One of Israel", bkofm)
+class(HOI)
+HOI[[1]][1:40]
+
+HolyOne.I = data.frame(X = HOI[[1]][1:40], Y = rep(1,40))
+
+books = data.frame(x1 = c(1,1381,129693,280201,327756,333663,337564,344877,349458,510923,953229,1060145,1207552,1217958,1266461,1351169),
+                   x2 = c(1381,129693,280201,327756,333663,337564,344877,349458,510923,953229,1060145,1207552,1217958,1266461,1351169,1382696),
+                   y1 = rep(0,length(x1)),
+                   y2 = rep(2,length(x1)),
+                   book = c("Title","1Nephi","2Nephi","Jacob","Enos","Jarom","Omni","WofM","Mosiah","Alma","Helaman","3Nephi","4Nephi","Mormon","Ether","Moroni"))
+ggplot() + geom_rect(data = books, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = book)) + 
+  scale_fill_manual(values = alpha(c("blue","green","red","yellow","limegreen","purple","khaki","cyan","brown1","violet","olivedrab","coral","orangered","gold","darksalmon","springgreen"),.3)) +
+  theme_classic() + geom_point(data = HolyOne.I, mapping = aes(x = X, y = Y), shape = 3) + 
+  ggtitle("instances of 'the Holy One of Israel'")
+########
+
+########
+DiU = gregexpr(pattern = "dwindle in unbelief", bkofm)
+DiU[[1]][1:12]
+DwinUnb = data.frame(X = DiU[[1]][1:12], Y = rep(1.2,12))
+ggplot() + geom_rect(data = books, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = book)) + 
+  scale_fill_manual(values = alpha(c("blue","green","red","yellow","limegreen","purple","khaki","cyan","brown1","violet","olivedrab","coral","orangered","gold","darksalmon","springgreen"),.3)) +
+  theme_classic() + geom_point(data = DwinUnb, mapping = aes(x = X, y = Y), shape = 3) + 
+  ggtitle("instances of 'dwindle in unbelief'")
+########
+
+########
+CoAp = gregexpr(pattern = "costly apparel", bkofm)
+CoAp[[1]][1:8]
+CosApp = data.frame(X = CoAp[[1]][1:8], Y = rep(1.4,8))
+ggplot() + geom_rect(data = books, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = book)) + 
+  scale_fill_manual(values = alpha(c("blue","green","red","yellow","limegreen","purple","khaki","cyan","brown1","violet","olivedrab","coral","orangered","gold","darksalmon","springgreen"),.3)) +
+  theme_classic() + geom_point(data = CosApp, mapping = aes(x = X, y = Y), shape = 3) + 
+  ggtitle("instances of 'costly apparel'")
+########
+
+########
+Aictp = gregexpr(pattern = "And it came to pass", bkofm)
+Aictp[[1]][1:1113]
+Aictpass = data.frame(X = Aictp[[1]][1:1113], Y = rep(1.6,1113))
+ggplot() + geom_rect(data = books, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = book)) + 
+  scale_fill_manual(values = alpha(c("blue","green","red","yellow","limegreen","purple","khaki","cyan","brown1","violet","olivedrab","coral","orangered","gold","darksalmon","springgreen"),.3)) +
+  theme_classic() + geom_point(data = Aictpass, mapping = aes(x = X, y = Y), shape = 3) + 
+  ggtitle("instances of 'And it came to pass'")
+########
+
+########
+l.TWeS = gregexpr(pattern = "thus we see", bkofm)
+u.TWeS = gregexpr(pattern = "Thus we see", bkofm)
+l.NWeS = gregexpr(pattern = "now we see", bkofm) # Only once--in Alma 12
+u.NWeS = gregexpr(pattern = "Now we see", bkofm)
+str_sub(bkofm, 569850-500,569850+500) # Alma 9
+str_sub(bkofm, 595287-200,595287+200) # Alma 12
+LandF = gregexpr(pattern = "lost and fallen", bkofm)
+IwtysR = gregexpr(pattern = "I would that ye should remember", bkofm)
+IwtysR[[1]][1:15]
+IwtysRemem = data.frame(X = IwtysR[[1]][1:15], Y = rep(1.8,15))
+ggplot() + geom_rect(data = books, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = book)) + 
+  scale_fill_manual(values = alpha(c("blue","green","red","yellow","limegreen","purple","khaki","cyan","brown1","violet","olivedrab","coral","orangered","gold","darksalmon","springgreen"),.3)) +
+  theme_classic() + geom_point(data = IwtysRemem, mapping = aes(x = X, y = Y), shape = 3) + 
+  ggtitle("'I would that ye should remember'")
+
 
 
 

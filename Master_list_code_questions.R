@@ -428,6 +428,34 @@ ggplot(rad2, aes(x = dosage)) +
   geom_text(y = rad2$survival, label = rad2$percents, hjust = 1.1, vjust = 1.2, size = 3, col = "blue") + 
   geom_text(y = rad2$new, label = rad2$nper, hjust = -.2, vjust = -.6, size = 3, col = "purple") + 
   coord_cartesian(xlim = c(0,1600), ylim = c(-1,55)) # BUT HOW DO I MOVE EACH INDIVIDUAL LABEL TO WHERE I WANT IT TO BE?
+## facet_grid for showing interaction in a design involving 3 factors (or 2 txs and a blocking factor):
+p3 = ggplot(df, aes(x=conc, y=log10(uptake), col=Treatment)) +
+  geom_point() +
+  stat_smooth() + ggtitle("CO2 Uptake") +
+  facet_grid(facets = ~ Type)
+p3 # ... THIS ONE IS THE MONEY PLOT OF ALL PLOTS! YOU CAN SEE THE DIFFERENCE BETWEEN CHILLED
+# AND NON-CHILLED, ***AND*** THE DIFFERENCE BETWEEN QUEBEC AND MISSISSIPPI!
+# TO BE TOTALLY CLEAR, THIS IS NOT A JUXTOPOSITION OF THE TWO PREVIOUS PLOTS--THE PREVIOUS
+# TX-COLOR-CODED PLOT SHOWED *ALL* PLANTS, IN MISS AND QUEBEC, MIXED TOGETHER, AND THEIR
+# RESPONSE TO TX. THE PLACE-COLOR CODED PLOT DID THE SAME--IT SHOWED *ALL* PLANTS MIXED
+# TOGETHER, TREATED AND NON-TREATED (CHILLED AND NON-CHILLED), AND THEIR RESPONSE BASED
+# ON PLACE. BUT THIS SHOWS HOW QUEBEC PLANTS RESPONDED TO TX VS NO TX, RIGHT NEXT TO
+# MISS PLANTS' RESPONSE TO TX VS NO TX.
+## How to do interaction plots in ggplot WITH LINES CONNECTING THE DOTS:
+# From the ice cream example from Stats 4100 takehome final:
+ggplot(ic, aes(x = gum, y = rating, col = protein)) + 
+  geom_point() +
+  geom_line(aes(group = protein)) + # THE KEY IS KNOWING WHAT TO PUT IN THIS GEOM_LINE!!
+  ggtitle("ice cream texture rating showing gum and batch interaction") + 
+  facet_grid(facets = ~batch)
+ggplot(ic, aes(x = protein, y = rating, col = gum)) +
+  geom_point() + 
+  geom_line(aes(group = gum)) + # THE KEY IS KNOWING WHAT TO PUT IN THIS GEOM_LINE!!
+  ggtitle("ice cream texture rating showing protein and batch interaction") +
+  facet_grid(facets = ~batch)
+# These two ggplots above look exactly the same as these ABC interaction plots below, respectively:
+interaction.ABC.plot(response = rating, x.factor = gum, groups.factor = protein, trace.factor = batch, data = ic)
+interaction.ABC.plot(response = rating, x.factor = protein, groups.factor = gum, trace.factor = batch, data = ic)
 
 
 ## Integrals - How to integrate definite integrals
