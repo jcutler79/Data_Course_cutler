@@ -13,14 +13,14 @@ qchisq(.95,15, lower.tail = FALSE) # 7.26, then divide 164.1 (SSE) by that, and 
 # THE SIGMA^2 95% CONFIDENCE BOUND?
 
 
-# PRINCIPLES OF STATISTICS:
+### PRINCIPLES OF STATISTICS:
 ## 1. A p-value is the probability of getting our particular sample by chance when the null hypothesis is true 
 ## 2. The significance level is the probability (alpha) that we mistakenly reject the null
 ## 3. Yit is a random variable that represents the response obtained on the 't'th observation
 # of the 'i'th treatment.
 
 
-# The limits of R:
+### The limits of R:
 ## 1. R cannot compute exp(709.8). It gives infinity as the answer to that. Anything less,
 # and R works great, I think. exp(709.7) = 1.654984e308, for example. That's why it gives 0
 # as the answer to the Planck blackbody equation for a wavelength of 1e-11. That results in an
@@ -29,7 +29,7 @@ qchisq(.95,15, lower.tail = FALSE) # 7.26, then divide 164.1 (SSE) by that, and 
 ## 2. R is worse than python at computing exp(very very small numbers). R only goes to exp(1e-6).
 # At least python can go to exp(1e-15). 
 
-# QUESTIONS:
+### QUESTIONS:
 ## 1. What can you do about 2 or more data points in a scatter plot of x vs y 
 # that are exactly the same? They look like a single data point--you can't 
 # tell there's more than one data point there. ANSWER: USE ALPHA IN GGPLOT FOR TRANSPARENCY
@@ -40,6 +40,12 @@ qchisq(.95,15, lower.tail = FALSE) # 7.26, then divide 164.1 (SSE) by that, and 
 # out which item in a data.frame it represents?
 ## 4. How can I add a balloon color column with the four colors matching the numbers?
 ## 5. How can I adjust the position of each point label in ggplot individually?
+
+
+### UNDERSTANDING ERRORS:
+## 1. Error in geom_point(data = Christ, mapping = aes(x = X, y = Y), shape = 3) +  :
+# non-numeric argument to binary operator
+# This means that I either lack a "+" sign or I have a trailing "+" sign in ggplot 
 
 
 ## alpha (transparency in ggplot):
@@ -144,6 +150,19 @@ US = data.frame(t(c("United States",5.05,.93,126.6,256.5,14.6,24.1,5.4)))
 colnames(US) = colnames(Chol)
 # US = data.frame(f.C[which(f.C$country == "United States"),]) # then set colnames
 UC = rbind(Chol, US) # IT WORKED!
+## Another example of rbind:
+df = data.frame(matrix(1:8, nrow = 4, ncol = 2, byrow = TRUE)); df
+df2 = data.frame(matrix(9:14, nrow = 3, ncol = 2, byrow = TRUE)); df2
+rbind(df,df2)
+
+
+## Convert character to object (make the computer read the character strings as objects in a for loop):
+# Example from King_James_Old_Testament.R - the trick is eval(parse(text = ...))
+otbk.wcount = NULL
+for (i in 1:39){
+  otbk.wcount[i] = length(eval(parse(text = nombres[i])))
+}
+otbk.wcount
 
 
 ## CORRELATION COEFFICIENT AND LINEAR REGRESSION LINE:
@@ -299,6 +318,14 @@ ggplot(datfr, aes(x = nums, y = sqnce)) + geom_point(col = "red") +
 
 
 ## Function plots and 3D function plots (3D examples go after 2D):
+curve(2/(3-x), from = -10, to = 10, ylim = c(-10,10)); abline(h = 0, v = 0, lty = 2)
+# pwr1 = numeric(10)
+# x = seq(-10,10, length.out = 1000)
+# for (i in 1:10){
+#   pwr1[i] = 2*sum((x^i)/(3^(i+1))) # CAN'T FIGURE OUT HOW TO GET THIS TO WORK
+# }
+# pwr1
+# plot(-10:10,pwr1, ylim = c(-10,10))
 # A Maclauren series example (add more x^pwrs, or take some away; it looks just like the Steward Calculus textbook illustration on page 793):
 curve(1/(1-x), from = -5, to = 5); abline(h = 0, v = 0, lty = 2)
 curve(1+x+x^2+x^3+x^4+x^5+x^6+x^7+x^8+x^9+x^10, from = -5, to = 5, col = "red", add = TRUE)
@@ -344,7 +371,7 @@ parabola1 = function(x,y,thetas){
   x = 2*cos(thetas)/(1 + cos(thetas))
   y = 2*sin(thetas)/(1 + cos(thetas))
 }
-curve(parabola1, from = )
+curve(parabola1, from )
 ## Parametric equations (in polar coordinates?):
 t.vals = seq(0,10, length.out = 100)
 x = sqrt(t.vals)*cos(2*pi*t.vals)
@@ -456,6 +483,13 @@ ggplot(ic, aes(x = protein, y = rating, col = gum)) +
 # These two ggplots above look exactly the same as these ABC interaction plots below, respectively:
 interaction.ABC.plot(response = rating, x.factor = gum, groups.factor = protein, trace.factor = batch, data = ic)
 interaction.ABC.plot(response = rating, x.factor = protein, groups.factor = gum, trace.factor = batch, data = ic)
+
+
+## Importing data from the internet
+# Data Camp website that TELLS YOU EVERYTHING YOU NEED TO KNOW ABOUT IMPORTING ONLINE DATA!:
+# https://www.datacamp.com/community/tutorials/r-data-import-tutorial#data
+# This link is where I FINALLY learned how to import data from the census.gov international
+# data website HTML tables! It's magic!!
 
 
 ## Integrals - How to integrate definite integrals
@@ -715,6 +749,16 @@ qnorm(.05, mean = 63.7, sd = 2.8, lower.tail = FALSE) # the top 5% women height 
 pnorm(68.3, mean = 69.1, sd = 2.8, lower.tail = FALSE) # 61.25% of men are taller than 68.3 inches.
 1000*.05/612
 1000*.612
+# 
+
+
+## Not-in--a very handy, special command:
+# Basic example (from BofM_research notepad):
+ac = "A B C D E F G H I J K Q R S T U V"
+abc = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"
+vac = unlist(strsplit(ac, " "))
+vabc = unlist(strsplit(abc, " "))
+vabc[! vabc %in% vac]
 
 
 ## PLOTS! (for ggplot, see entry above in alphabetical order)
@@ -820,6 +864,7 @@ nchar(pet) # How to count the number of characters in a string
 pet0 = gsub(" ", "", pet); pet0
 nchar(pet0) # So, it does count spaces
 
+
 ## string format specifier (sprintf stuff):
 # see great course notepad
 
@@ -832,7 +877,170 @@ for (i in 1:5){
 }
 rpm.mean.vector = tapply(rpm$liters.minute, rpm$level, mean); rpm.mean.vector
 
-#########
+
+## Assign variable names in a for loop:
+# Example is from King_James_Old_Testament.R
+nome = NULL
+for (i in 1:39){
+  nome[i] = paste("B",i, sep = "")
+  assign(nome[i], str_sub(theOT, otbkbounds[i,2],otbkbounds[i,3]))
+}
+
+
+
+
+
+#############################################################################################
+
+
+
+### Miscellaneous stuff:
+
+
+## The Euclidean distance function and the weighted non-linear model:
+ds = as.numeric(506)
+predictions2 = function(x){
+  d = function(u,v) (sqrt((u[1] - v[1])^2 + (u[2] - v[2])^2 + (u[3] - v[3])^2 + (u[4] - v[4])^2 + 
+                            (u[5] - v[5])^2 + (u[6] - v[6])^2 + (u[7] - v[7])^2 + (u[8] - v[8])^2 + 
+                            (u[9] - v[9])^2 + (u[10] - v[10])^2 + (u[11] - v[11])^2 + (u[12] - v[12])^2 + 
+                            (u[13] - v[13])^2))
+  for (i in 1:506){
+    ds[i] = d(mybos[i,1:13],x)
+  }
+  ds = (ds - mean(ds))/sd(ds)
+  w = exp(-ds^2)
+  w = w/sum(w)
+  y.pred = t(mybos[,14])%*%w
+}
+
+
+#################################################################
+
+
+bata = data.frame(first.column = x, second.column = y)
+x = c(1,2,3,4,5,6,7,8,9,10,11,12)
+y = c(1,4,3,4,6,4,1,2,5,4,5,1)
+ggplot(bata, aes(x = first.column,y = second.column)) + geom_point() + geom_line()
+
+curve(x^5, from = 1, to = 20)
+curve(exp(x), add = TRUE, col = "red")
+
+
+#################################################################
+
+
+## COMPOUND INTEREST PLOTS:
+my.vector = NULL
+beg = 0
+for (i in 1:40){
+  beg = (beg + 12000)*1.11
+  print(beg)
+  my.vector = rbind(my.vector, data.frame(beg))
+}
+my.vector = as.vector(my.vector)
+stupid = data.frame(numeros = seq(1,40,1), mystuff = my.vector); stupid
+length(stupid$numeros)
+length(stupid$beg)
+stupid$no.intrst = stupid$numeros*12000
+
+ggplot(stupid, aes(x = numeros)) + 
+  geom_line(aes(y = stupid$beg), col = "red") + 
+  geom_line(aes(y = stupid$no.intrst), col = "green")
+
+Carnap.vect = NULL
+inicio = 0
+for (i in 1:240){
+  inicio = (inicio + 100)*1.03
+  print(inicio)
+  Carnap.vect = rbind(Carnap.vect, data.frame(inicio))
+}
+LPositiv = data.frame(nums = 1:240, stuff = Carnap.vect); LPositiv
+LPositiv$no.intrst = LPositiv$nums*100
+
+thr.prcnt = ggplot(LPositiv, aes(x = nums)) + 
+  geom_line(aes(y = LPositiv$inicio), col = "red") +
+  geom_line(aes(y = LPositiv$no.intrst), col = "green")
+
+thr.prcnt + scale_x_continuous(name = "months", 
+                               breaks = c(12,24,36,48,60,72,84,96,108,120,132,144,156,168,180,192,204,216,228,240))
+
+
+# add a $1000 a month for 20 years, grow at 10% interest annually 
+Husserl.vec = NULL
+lento = 0
+for (i in 1:30){
+  lento = (lento+48000)*1.1
+  print(lento)
+  Husserl.vec = rbind(Husserl.vec, data.frame(lento))
+}
+Phnmnlgy = data.frame(nums = 1:30, stuff = Husserl.vec); Phnmnlgy
+Phnmnlgy$no.intrst = Phnmnlgy$nums*48000
+
+lento.six = ggplot(Phnmnlgy, aes(x = nums)) + 
+  geom_line(aes(y = Phnmnlgy$lento), col = "red") + 
+  geom_line(aes(y = Phnmnlgy$no.intrst), col = "green")
+lento.six + geom_point(aes(x = 20, y = 480000), col = "blue", size = .5)
+
+brodog.vec = NULL
+sweet = 10000
+for (i in 1:90){
+  sweet = sweet*1.1
+  print(sweet)
+  brodog.vec = rbind(brodog.vec, data.frame(sweet))
+}
+heckyeah = data.frame(nums = 1:90, stuff = brodog.vec); heckyeah
+
+sweet.stuff = ggplot(heckyeah, aes(x = nums, y = heckyeah$sweet)) + geom_line(); sweet.stuff
+
+
+
+
+####################################################################
+
+
+### Tax brackets 2018
+
+# 12% ... 19,051 to 77,400 ... 58349
+
+# 22% ... 77,401 to 165,000 ... 87599
+
+# 24% ... 165,001 to 315,000 ... 149999
+
+# 32% ... 315,001 to 400,000 ... 84999
+
+library(dplyr)
+taxes = function(income){
+  if (between(income,315001,400001)){
+    remainder = income-315001
+    tax = remainder*.32 + 58349*.12 + 87599*.22 + 149999*.24
+    takehome = income-tax
+  } else if (between(income,165001,315001)){
+    remainder = income-165001
+    tax = remainder*.24 + 58349*.12 + 87599*.22
+    takehome = income-tax
+  } else if (between(income,77401,165001)){
+    remainder = income-77401
+    tax = remainder*.22 + 58349*.12
+    takehome = income-tax
+  } else if (between(income,19051,77401)){
+    remainder = income-19051
+    tax = remainder*.12
+    takehome = income-tax
+  } else if (income < 19051){
+    tax = "congratulations!"
+    takehome = "get a better job"
+  } else if (income > 400001){
+    tax = "a lot"
+    takehome = "you're rich"
+  } 
+  tax = prettyNum(tax, big.mark = ",", scientific = FALSE)
+  takehome = prettyNum(takehome, big.mark = ",", scientific = FALSE)
+  return(cat(sprintf("Your taxes are $%s \nAnd your takehome is $%s",tax,takehome)))
+}
+
+
+
+
 
 
 

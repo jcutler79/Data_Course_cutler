@@ -1,93 +1,177 @@
-ds = as.numeric(506)
-predictions2 = function(x){
-  d = function(u,v) (sqrt((u[1] - v[1])^2 + (u[2] - v[2])^2 + (u[3] - v[3])^2 + (u[4] - v[4])^2 + 
-                            (u[5] - v[5])^2 + (u[6] - v[6])^2 + (u[7] - v[7])^2 + (u[8] - v[8])^2 + 
-                            (u[9] - v[9])^2 + (u[10] - v[10])^2 + (u[11] - v[11])^2 + (u[12] - v[12])^2 + 
-                            (u[13] - v[13])^2))
-  for (i in 1:506){
-    ds[i] = d(mybos[i,1:13],x)
+#########################################
+
+### Cool stuff you can do with ggplot ###
+
+#########################################
+
+
+### Population pyramids! (from census.gov data)
+# df = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/census_Nigeria_age_cohorts.csv")
+# df = df[,c(3,5,6)]
+# str(df)
+# df$Male.Population = as.numeric(df$Male.Population)
+# df$Female.Population = as.numeric(df$Female.Population)
+# str(df)
+# df$Male.Population = as.character(df$Male.Population)
+# df$Female.Population = as.character(df$Female.Population)
+# apply(df[,2:3], 2, function(x) prettyNum(x, big.mark = ","))
+# 
+# myurl = "https://www.census.gov/data-tools/demo/idb/region.php?N=%20Results%20&T=10&A=separate&RT=0&Y=2014&R=-1&C=NI"
+# library(RCurl)
+# urldata = getURL(myurl)
+# mydata = readHTMLTable(urldata, stringsAsFactors = FALSE) # WOW THIS IS INSANE. NOTHING WORKED 
+# # UNTIL I TRIED DOING THIS, AS INSTRUCTED ON A DATA CAMP WEBSITE: https://www.datacamp.com/community/tutorials/r-data-import-tutorial#data
+# mydata$`Mid-year Population by Five Year Age Groups and Sex - Custom Region - Nigeria`
+# mydata[1]
+# class(mydata) # It's a list!
+# str(mydata)
+# # FALSE --> identical(mydata[1],mydata$`Mid-year Population by Five Year Age Groups and Sex - Custom Region - Nigeria`)
+# ngria = mydata[1]; class(ngria)
+# mydata[[1]]
+# identical(mydata[[1]],mydata$`Mid-year Population by Five Year Age Groups and Sex - Custom Region - Nigeria`) # TRUE!!!!!!!
+# Nigeria = mydata$`Mid-year Population by Five Year Age Groups and Sex - Custom Region - Nigeria`
+# class(Nigeria)
+# pyrdf = Nigeria[,c(2,4,5)]
+# pyrdf[,2:3] = apply(pyrdf[,2:3],2, function(x) as.numeric(as.character(gsub(",","",x))))
+# # names(pyrdf)
+# # colnames(pyrdf) # same as names? okay ...
+# colnames(pyrdf) = c("Age","Male","Female")
+# pyrdf = pyrdf[pyrdf$Age != "Total",]
+# pyrdf$Male = -1*pyrdf$Male
+# # pyrdf$Age = as.factor(pyrdf$Age) # THIS IS REALLY IMPORTANT!!! PAY ATTENTION TO THIS! DOING IT
+# # THIS WAY WILL ACTUALLY CAUSE A PROBLEM THAT I'M GLIDE I WAS ABLE TO REALIZE SHOULD BE TRACED
+# # BACK TO THIS STEP! THE PYRAMID ENDS UP HAVING A FUNKY PROBLEM WITH IT. IT'S BECAUSE I DID THE
+# # LAZY, NAIVE THING AND THOUGHT THIS SIMPLE CONVERSION WOULD WORK. INSTEAD I NEED TO DO IT THIS
+# # WAY:
+# pyrdf$Age = factor(pyrdf$Age, levels = pyrdf$Age, labels = pyrdf$Age)
+# pyr.melt = melt(pyrdf, value.name = "Population", variable.name = "Gender", id.vars = "Age")
+# 
+# ggplot(pyr.melt, aes(x = Age, y = Population, fill = Gender)) + 
+#   geom_bar(subset = .(Gender == "Female"), stat = "identity") + 
+#   geom_bar(subset = .(Gender == "Male"), stat = "identity") + 
+#   scale_y_continuous(breaks = seq(-15000000,15000000,5000000), 
+#                      labels = paste0(as.character(c(seq(15,0,-5),seq(5,15,5))), "m")) + 
+#   coord_flip() + 
+#   scale_fill_brewer(palette = "Set1") +
+#   theme_bw()
+
+## Function for creating population pyramids in ggplot from census.gov data:
+library(XML) # To get the HTML Table data off the internet
+library(RCurl) # Because XML's readHTMLTable by itself doesn't work
+library(reshape2) # for the melt function?
+library(plyr) # for ... ???
+library(ggplot2)
+
+get_censdata = function(country, year){
+  c1 = "https://www.census.gov/data-tools/demo/idb/region.php?N=%20Results%20&T=10&A=separate&RT=0&Y="
+  c2 = "&R=-1&C="
+  myurl = paste0(c1, year, c2, country)
+  urldata = getURL(myurl)
+  mydata = readHTMLTable(urldata, stringsAsFactors = FALSE)
+  df = mydata[[1]]
+  keep = c(2,4,5)
+  df = df[,keep]
+  names(df) = c("Age","Male","Female")
+  cols = 2:3
+  df[,cols] = apply(df[,cols],2, function(x) as.numeric(as.character(gsub(",", "", x))))
+  df = df[df$Age != 'Total',]
+  df$Male = -1*df$Male
+  df$Age = factor(df$Age, levels = df$Age, labels = df$Age)
+  df.melt = melt(df, value.name = "Population", variable.name = "Gender", id.vars = "Age")
+  return(df.melt)
+}
+
+nigeria = get_censdata("NI",2014)
+n1 = ggplot(nigeria, aes(x = Age, y = Population, fill = Gender)) + 
+  geom_bar(data = nigeria[which(nigeria$Gender == "Male"),], stat = "identity") + 
+  geom_bar(data = nigeria[which(nigeria$Gender == "Female"),], stat = "identity") + 
+  scale_y_continuous(breaks = seq(-15000000, 15000000, 5000000), 
+                     labels = paste0(as.character(c(15,10,5,0,5,10,15)),"m")) +
+  ggtitle("Nigeria - population pyramid") + 
+  coord_flip() + 
+  scale_fill_brewer(palette = "Set1") +
+  theme_bw()
+n1 # WITHOUT THE STAT = 'IDENTITY' IN EACH OF THE GEOM_BARS, IT DOESN'T WORK ("Error: stat_count() must not be used with a y aesthetic  ")
+
+###
+
+rnd2millions = c(.05,.1,.2,.3,.4,.5,1,2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,
+                 110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260,270,280,290,300,
+                 325,350,375,400,425,450,475,500,525,550,575,600,625,650,675,700,725,750,775,800)
+# plot(1:length(rnd2millions),rnd2millions)
+rnd2millions = rnd2millions*1e6
+the2logs = log10(rnd2millions); the2logs
+
+rnd2num = function(yournum){
+  i = 1
+  while (log10(yournum) > the2logs[i]){
+    i = i+1
   }
-  ds = (ds - mean(ds))/sd(ds)
-  w = exp(-ds^2)
-  w = w/sum(w)
-  y.pred = t(mybos[,14])%*%w
+  return(seq(-10^the2logs[i],10^the2logs[i],length.out = 9))
 }
 
-
-#############
-
-bata = data.frame(first.column = x, second.column = y)
-x = c(1,2,3,4,5,6,7,8,9,10,11,12)
-y = c(1,4,3,4,6,4,1,2,5,4,5,1)
-ggplot(bata, aes(x = first.column,y = second.column)) + geom_point() + geom_line()
-
-curve(x^5, from = 1, to = 20)
-curve(exp(x), add = TRUE, col = "red")
-
-
-#############
-
-my.vector = NULL
-beg = 0
-for (i in 1:40){
-  beg = (beg + 12000)*1.11
-  print(beg)
-  my.vector = rbind(my.vector, data.frame(beg))
+get_censplot = function(country, year){
+  pais = readline(prompt = "Enter name of country you want displayed on graph: ")
+  c1 = "https://www.census.gov/data-tools/demo/idb/region.php?N=%20Results%20&T=10&A=separate&RT=0&Y="
+  c2 = "&R=-1&C="
+  myurl = paste0(c1, year, c2, country)
+  urldata = getURL(myurl)
+  mydata = readHTMLTable(urldata, stringsAsFactors = FALSE)
+  df = mydata[[1]]
+  keep = c(2,4,5)
+  df = df[,keep]
+  names(df) = c("Age","Male","Female")
+  cols = 2:3
+  df[,cols] = apply(df[,cols],2, function(x) as.numeric(as.character(gsub(",", "", x))))
+  df = df[df$Age != 'Total',]
+  df$Male = -1*df$Male
+  df$Age = factor(df$Age, levels = df$Age, labels = df$Age)
+  df.melt = melt(df, value.name = "Population", variable.name = "Gender", id.vars = "Age")
+  mx = max(abs(df.melt$Population))
+  brks = rnd2num(mx)
+  ggplot(df.melt, aes(x = Age, y = Population, fill = Gender)) + 
+    geom_bar(data = df.melt[which(df.melt$Gender == "Male"),], stat = "identity") +
+    geom_bar(data = df.melt[which(df.melt$Gender == "Female"),], stat = "identity") + 
+    scale_y_continuous(breaks = brks, labels = paste0(as.character(abs(brks)/1e6),"m")) + 
+    ggtitle(sprintf("%s - population pyramid",pais)) + 
+    coord_flip() + 
+    scale_fill_brewer(palette = "Set1") +
+    theme_bw()
 }
-my.vector = as.vector(my.vector)
-stupid = data.frame(numeros = seq(1,40,1), mystuff = my.vector); stupid
-length(stupid$numeros)
-length(stupid$beg)
-stupid$no.intrst = stupid$numeros*12000
 
-ggplot(stupid, aes(x = numeros)) + 
-  geom_line(aes(y = stupid$beg), col = "red") + 
-  geom_line(aes(y = stupid$no.intrst), col = "green")
-
-Carnap.vect = NULL
-inicio = 0
-for (i in 1:240){
-  inicio = (inicio + 100)*1.03
-  print(inicio)
-  Carnap.vect = rbind(Carnap.vect, data.frame(inicio))
-}
-LPositiv = data.frame(nums = 1:240, stuff = Carnap.vect); LPositiv
-LPositiv$no.intrst = LPositiv$nums*100
-
-thr.prcnt = ggplot(LPositiv, aes(x = nums)) + 
-  geom_line(aes(y = LPositiv$inicio), col = "red") +
-  geom_line(aes(y = LPositiv$no.intrst), col = "green")
-
-thr.prcnt + scale_x_continuous(name = "months", 
-                               breaks = c(12,24,36,48,60,72,84,96,108,120,132,144,156,168,180,192,204,216,228,240))
+get_censplot("GM",2014)
+get_censplot("US",2014)
+get_censplot("UK",2014)
+get_censplot("CH",2014)
+get_censplot("RS",2014)
+get_censplot("IN",2014)
+get_censplot("MX",2014)
+get_censplot("NI",2014)
+get_censplot("BR",2014)
+get_censplot("NL",2014)
+get_censplot("FR",2014)
+get_censplot("JA",2014)
+get_censplot("PL",2014)
+get_censplot("SA",2014)
 
 
-# add a $1000 a month for 20 years, grow at 10% interest annually 
-Husserl.vec = NULL
-lento = 0
-for (i in 1:30){
-  lento = (lento+48000)*1.1
-  print(lento)
-  Husserl.vec = rbind(Husserl.vec, data.frame(lento))
-}
-Phnmnlgy = data.frame(nums = 1:30, stuff = Husserl.vec); Phnmnlgy
-Phnmnlgy$no.intrst = Phnmnlgy$nums*48000
+# get_censplot("RS",1980) # NO DATA FOR THAT YEAR. TURNS OUT NOT ALL YEARS HAVE DATA
 
-lento.six = ggplot(Phnmnlgy, aes(x = nums)) + 
-  geom_line(aes(y = Phnmnlgy$lento), col = "red") + 
-  geom_line(aes(y = Phnmnlgy$no.intrst), col = "green")
-lento.six + geom_point(aes(x = 20, y = 480000), col = "blue", size = .5)
 
-brodog.vec = NULL
-sweet = 10000
-for (i in 1:90){
-  sweet = sweet*1.1
-  print(sweet)
-  brodog.vec = rbind(brodog.vec, data.frame(sweet))
-}
-heckyeah = data.frame(nums = 1:90, stuff = brodog.vec); heckyeah
 
-sweet.stuff = ggplot(heckyeah, aes(x = nums, y = heckyeah$sweet)) + geom_line(); sweet.stuff
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

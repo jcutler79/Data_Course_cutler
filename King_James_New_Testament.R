@@ -1,3 +1,7 @@
+### THe King James New Testament
+
+# website: http://www.gutenberg.org/files/10/10-h/10-h.htm
+
 NT = "The New Testament of the King James Bible
 The Gospel According to Saint Matthew
 1:1 The book of the generation of Jesus Christ, the son of David, the son of Abraham.
@@ -11755,6 +11759,365 @@ getwd() # Data_Course_cutler
 save(NT, file = "The_KJ_NT.RData")
 load("/Users/jamescutler/Desktop/Data_Course_cutler/The_KJ_NT.RData")
 ########################################################################
+
+library(stringr)
+
+NT.nopunc = gsub("[[:punct:]]", " ", NT)
+NT.no.p.d = gsub("\\d", "", NT.nopunc)
+str_sub(NT.no.p.d, 1, 2000)
+NT.no.p.d = gsub("The New Testament of the King James Bible", "", NT.no.p.d)
+str_sub(NT.no.p.d, 1, 2000)
+NT.npd.nolines = gsub("\\\n", " ", NT.no.p.d)
+str_sub(NT.npd.nolines, 1, 2000)
+theNT = gsub(" {1,}", " ", NT.npd.nolines)
+str_sub(theNT, 500000, 501000)
+nchar(theNT)
+
+########################################################################
+########################################################################
+getwd()
+setwd("/Users/jamescutler/Desktop/Data_Course_cutler/")
+save(theNT, file = "The_real_KJNT.RData")
+load("/Users/jamescutler/Desktop/Data_Course_cutler/The_real_KJNT.RData")
+########################################################################
+########################################################################
+
+gregexpr(pattern = "The Gospel According to", theNT)
+
+str_sub(theNT, 547914-100, 547914+100)
+
+epistles = gregexpr(pattern = "Epistle of", theNT)
+epistles[[1]][17]
+for (i in 1:17){
+  print(str_sub(theNT, epistles[[1]][i]-50,epistles[[1]][i]+50))
+}
+
+ep.genls = gregexpr(pattern = "Epistle General", theNT)
+for (i in 1:4){
+  print(str_sub(theNT, ep.genls[[1]][i]-50, ep.genls[[1]][i]+50))
+}
+
+acts = gregexpr(pattern = "The Acts of the Apostles", theNT); acts
+str_sub(theNT, 421900-50, 421900+50)
+
+revelation = gregexpr(pattern = "The Revelation of Saint John", theNT); revelation
+str_sub(theNT, 860708-50, 860708+50)
+
+n = 547914
+str_sub(theNT, n-50, n+50)
+
+ntbooks = data.frame(x1 = c(1,120395,196936,327243,421900,547914,596692,644181,675269,691055,706951,718216,728671,738112,743469,755827,764785,769792,772084,808362,820126,833234,841753,854154,855691,857272,860708),
+                     x2 = c(120395,196936,327243,421900,547914,596692,644181,675269,691055,706951,718216,728671,738112,743469,755827,764785,769792,772084,808362,820126,833234,841753,854154,855691,857272,860708,920993),
+                     y1 = rep(0,length(x1)),
+                     y2 = rep(2,length(x1)),
+                     libros = c("Matthew","Mark","Luke","John","Acts","Romans","1Cor","2Cor","Gal","Eph","Philipp","Col","1Thess","2Thess","1Tim","2Tim","Titus","Philemon","Hebrews","James","1Peter", "2Peter","1John","2John","3John","Jude","Revelation"))
+
+#########################################################
+
+ntC = gregexpr(pattern = "Christ", theNT)
+length(ntC[[1]])
+ntC[[1]][1:576]
+ntChrist = data.frame(X = ntC[[1]][1:576], Y = rep(1,576))
+ggplot() + geom_rect(data = ntbooks, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = libros)) + 
+  scale_fill_manual(values = alpha(c("deepskyblue","greenyellow","navyblue","steelblue","mediumpurple","slateblue1","darkgoldenrod1","goldenrod1","tan1","olivedrab1","aquamarine","yellow","blue","green","red","yellow","limegreen","purple","purple1","cyan","brown1","violet","olivedrab","coral","orangered","forestgreen","red"),.3)) +
+  theme_classic() + geom_point(data = ntChrist, mapping = aes(x = X, y = Y), shape = 3) + 
+  ggtitle("instances of 'Christ' (576)")
+
+SofM = gregexpr(pattern = "Son of man", theNT)
+length(SofM[[1]])
+SofM[[1]][1:87]
+Sonofman = data.frame(X = SofM[[1]][1:87], Y = rep(.8,87))
+ggplot() + geom_rect(data = ntbooks, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = libros)) + 
+  scale_fill_manual(values = alpha(c("deepskyblue","greenyellow","navyblue","steelblue","mediumpurple","slateblue1","darkgoldenrod1","goldenrod1","tan1","olivedrab1","aquamarine","yellow","blue","green","red","yellow","limegreen","purple","purple1","cyan","brown1","violet","olivedrab","coral","orangered","forestgreen","red"),.3)) +
+  theme_classic() + geom_point(data = Sonofman, mapping = aes(x = X, y = Y), shape = 3) + 
+  ggtitle("instances of 'Son of man' (87)")
+str_sub(theNT, SofM[[1]][87]-100,SofM[[1]][87]+100)
+
+SofG = gregexpr(pattern = "Son of God", theNT)
+length(SofG[[1]])
+SofG[[1]][1:46]
+SonofGod = data.frame(X = SofG[[1]][1:46], Y = rep(1,46))
+ggplot() + geom_rect(data = ntbooks, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = libros)) + 
+  scale_fill_manual(values = alpha(c("deepskyblue","greenyellow","navyblue","steelblue","mediumpurple","slateblue1","darkgoldenrod1","goldenrod1","tan1","olivedrab1","aquamarine","yellow","blue","green","red","yellow","limegreen","purple","purple1","cyan","brown1","violet","olivedrab","coral","orangered","forestgreen","red"),.3)) +
+  theme_classic() + geom_point(data = SonofGod, mapping = aes(x = X, y = Y), shape = 3) + 
+  ggtitle("instances of 'Son of God' (46)")
+str_sub(theNT, 548234-300,548234+300)
+
+# Son of God and Son of man in the NT:
+ggplot() + geom_rect(data = ntbooks, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = libros)) + 
+  scale_fill_manual(values = alpha(c("deepskyblue","greenyellow","navyblue","steelblue","mediumpurple","slateblue1","darkgoldenrod1","goldenrod1","tan1","olivedrab1","aquamarine","yellow","blue","green","red","yellow","limegreen","purple","purple1","cyan","brown1","violet","olivedrab","coral","orangered","forestgreen","red"),.3)) +
+  theme_classic() + ggtitle("instances of 'Son of God' (46, crosses) and 'Son of man' (87, X's)") +
+  geom_point(data = SonofGod, mapping = aes(x = X, y = Y), shape = 3) +
+  geom_point(data = Sonofman, mapping = aes(x = X, y = Y), shape = 4)
+  
+
+##############################################################
+### Word frequency by book (in 7 steps):
+# 1. create book bounds (NT.b)
+# 2. create individual books (indbks, which is a character list(?) of 27 Names)
+# 3. create individual book word vectors (Vindbks, a character list(?) of 27 vNames)
+# 4. get a total word count for each book (NT.wcount)
+## 5. for every target word, get a target word count by book
+## 6. for every target word, divide target count by total count to get frequency
+## 7. for every target word, plot frequency
+
+# Preliminaries:
+load("/Users/jamescutler/Desktop/Data_Course_cutler/The_real_KJNT.RData")
+x1 = c(1,120395,196936,327243,421900,547914,596692,644181,675269,691055,706951,718216,728671,738112,743469,755827,764785,769792,772084,808362,820126,833234,841753,854154,855691,857272,860708)
+x2 = c(120395,196936,327243,421900,547914,596692,644181,675269,691055,706951,718216,728671,738112,743469,755827,764785,769792,772084,808362,820126,833234,841753,854154,855691,857272,860708,920993)
+libros = c("Matthew","Mark","Luke","John","Acts","Romans","1Cor","2Cor","Gal","Eph","Philipp","Col","1Thess","2Thess","1Tim","2Tim","Titus","Philemon","Hebrews","James","1Peter", "2Peter","1John","2John","3John","Jude","Revelation")
+
+# 1.
+NT.b = data.frame(matrix(NA, nrow = 27, ncol = 3))
+for (i in 1:27){
+  NT.b[i,1] = libros[i]
+  NT.b[i,2] = x1[i]
+  NT.b[i,3] = x2[i]-1
+}
+
+# 2.
+indbks = NULL
+for (i in 1:27){
+  indbks[i] = paste0("i",libros[i])
+  assign(indbks[i], str_sub(theNT, NT.b[i,2], NT.b[i,3]))
+}
+indbks
+
+# 3. 
+Vindbks = NULL
+for (i in 1:27){
+  Vindbks[i] = paste0("v",indbks[i])
+  assign(Vindbks[i], unlist(strsplit(eval(parse(text = indbks[i])), " ")))
+}
+
+# 4. 
+NT.wcount = NULL
+for (i in 1:27){
+  NT.wcount[i] = length(eval(parse(text = Vindbks[i])))
+}
+NT.wcount
+
+# Function for steps 5-7:
+NT.wfp = function(aword){
+  gregop = paste0("n",as.character(aword))
+  gregopl = paste0(gregop,".l")
+  assign(gregop, NULL)
+  assign(gregopl, numeric(27))
+  for (i in 1:27){
+    gregop[i] = gregexpr(pattern = aword, eval(parse(text = indbks[i])))
+    if (gregop[[i]][1] < 0){
+      gregopl[i] = 0
+    } else{
+      gregopl[i] = length(gregop[[i]])
+    }
+  }
+  freqaword = paste0("freq.",aword)
+  assign(freqaword, numeric(16))
+  for (i in 1:27){
+    freqaword[i] = as.numeric(gregopl[i])/as.numeric(NT.wcount[i])
+  }
+  freqaword = as.numeric(freqaword)
+  ggplot(as.data.frame(freqaword), aes(x = 1:27, y = freqaword)) + geom_line() +
+    ggtitle(sprintf("frequency of '%s' by book", aword)) + 
+    xlab("") + ylab("frequency") + 
+    scale_x_continuous(breaks = seq(1,27,1), labels = NT.b[,1]) +
+    theme(axis.text.x = element_text(size = 7, angle = 45, vjust = .9, hjust = .9))
+}
+
+mcw = "the be to of and a in that have I it for not on with he as you do at this but his by
+from they we say her she or an will my one all would there their what so up out if about
+who get which go me when make can like time no just him know take people into year your
+good some could them see other than then now look only come its over think also back
+after use how our work first even because any these day most us"
+vmcw = unlist(strsplit(mcw, " "))
+vmcw10 = head(vmcw,10)
+s.vmcw10 = NULL
+for (i in 1:10){
+  s.vmcw10[i] = paste0(" ",vmcw10[i]," ")
+}
+s.vmcw10
+
+for (i in 1:10){
+  print(NT.wf.p(s.vmcw10[i]))
+}
+
+####################################
+
+# Function that just spits out word frequencies (without plots) for any specified subset of books:
+
+NT.wf = function(aword){
+  gregop = paste0("n",as.character(aword))
+  gregopl = paste0(gregop,".l")
+  assign(gregop, NULL)
+  assign(gregopl, numeric(27))
+  for (i in 1:27){
+    gregop[i] = gregexpr(pattern = aword, eval(parse(text = indbks[i])))
+    if (gregop[[i]][1] < 0){
+      gregopl[i] = 0
+    } else{
+      gregopl[i] = length(gregop[[i]])
+    }
+  }
+  freqaword = paste0("freq.",aword)
+  assign(freqaword, numeric(16))
+  for (i in 1:27){
+    freqaword[i] = as.numeric(gregopl[i])/as.numeric(NT.wcount[i])
+  }
+  freqaword = as.numeric(freqaword)
+  return(freqaword[c(3,5,4,27,6,7,15,16)]) # Any NT book numbers can be entered here
+}
+
+dfNT = data.frame(words = rep(c("and","that","the","to","of","a"),each = 8),
+                  books = rep(c("aLuke","bActs","cJohn","dRevelation","eRomans","ffCor","gfTim","hsTim"),6),
+                  freqs = rep(NA,48))
+
+dfNT$words = as.factor(dfNT$words)
+dfNT$books = as.factor(dfNT$books)
+
+dfNT$freqs[1:8] = NT.wf(" and ")
+dfNT$freqs[9:16] = NT.wf(" that ")
+dfNT$freqs[17:24] = NT.wf(" the ")
+dfNT$freqs[25:32] = NT.wf(" to ")
+dfNT$freqs[33:40] = NT.wf(" of ")
+dfNT$freqs[41:48] = NT.wf(" a ")
+
+ggplot(dfNT, aes(x = books, y = freqs, col = words)) + 
+  geom_point() + 
+  geom_line(aes(group = words)) + 
+  ggtitle("frequency of different words in 8 NT books")
+ggplot(dfNT, aes(x = words, y = freqs, col = books)) +
+  geom_point() +
+  geom_line(aes(group = books)) +
+  ggtitle("frequency of different words colored by 8 NT books")
+
+# mod1 = aov(freqs ~ books+words, data = dfNT); summary(mod1int) # NO WAY TO GET STATISTICAL INFERENCE--THERE'S ONLY ONE OBSERVATION PER TREATMENT
+mod1 = aov(freqs ~ books, data = dfNT); summary(mod1) # books are NOT a signficant source of difference
+mod2 = aov(freqs ~ words, data = dfNT); summary(mod2) # words obviously are
+
+### Next set of 6 words:
+df2NT = data.frame(words = rep(c("be","in","have","it","for","not"),each = 8),
+                  books = rep(c("aLuke","bActs","cJohn","dRevelation","eRomans","f1Cor","g1Tim","h2Tim"),6),
+                  freqs = rep(NA,48))
+
+df2NT$words = as.factor(df2NT$words)
+df2NT$books = as.factor(df2NT$books)
+
+df2NT$freqs[1:8] = NT.wf(" be ")
+df2NT$freqs[9:16] = NT.wf(" in ")
+df2NT$freqs[17:24] = NT.wf(" have ")
+df2NT$freqs[25:32] = NT.wf(" it ")
+df2NT$freqs[33:40] = NT.wf(" for ")
+df2NT$freqs[41:48] = NT.wf(" not ")
+
+ggplot(df2NT, aes(x = books, y = freqs, col = words)) + 
+  geom_point() + 
+  geom_line(aes(group = words)) + 
+  ggtitle("frequency of different words in 8 NT books")
+ggplot(df2NT, aes(x = words, y = freqs, col = books)) + 
+  geom_point() + 
+  geom_line(aes(group = books)) + 
+  ggtitle("frequency of different words colored by 8 NT books")
+
+mod3 = aov(freqs ~ books, data = df2NT); summary(mod3)
+mod4 = aov(freqs ~ words, data = df2NT); summary(mod4)
+
+### 6 Christian words:
+gregexpr(pattern = "gospel", theNT) # over 100
+gregexpr(pattern = "repent", theNT) # only around 60
+gregexpr(pattern = "believe", theNT) # over 260
+gregexpr(pattern = "God", theNT) # over 1300
+gregexpr(pattern = "the Lord", theNT) # over 400
+gregexpr(pattern = "save", theNT) # over 100
+
+df3NT = data.frame(words = rep(c("gospel","repent","beleive","God","the Lord","save"), each = 8),
+                   books = rep(c("aLuke","bActs","cJohn","dRevelation","eRomans","f1Cor","g1Tim","h2Tim"),6),
+                   freqs = rep(NA,48))
+
+df3NT$words = as.factor(df3NT$words)
+df3NT$books = as.factor(df3NT$books)
+
+df3NT$freqs[1:8] = NT.wf("gospel")
+df3NT$freqs[9:16] = NT.wf("repent")
+df3NT$freqs[17:24] = NT.wf("believe")
+df3NT$freqs[25:32] = NT.wf("God")
+df3NT$freqs[33:40] = NT.wf("the Lord")
+df3NT$freqs[41:48] = NT.wf("save")
+
+ggplot(df3NT, aes(x = books, y = freqs, col = words)) + 
+  geom_point() + 
+  geom_line(aes(group = words)) + 
+  ggtitle("frequency of 6 gospel words in 8 NT books")
+ggplot(df3NT, aes(x = words, y = freqs, col = books)) + 
+  geom_point() + 
+  geom_line(aes(group = books)) + 
+  ggtitle("frequency of 6 gospel words colored by 8 NT books")
+
+
+########################################################################
+# A function for just plotting target word count by book:
+NT.wcp = function(myword){
+  nt.i = NULL
+  nt.il = numeric(27)
+  for (i in 1:27){
+    nt.i[i] = gregexpr(pattern = myword, eval(parse(text = indbks[i])))
+    if (nt.i[[i]][1] < 0){
+      nt.il[i] = 0
+    } else{
+      nt.il[i] = length(nt.i[[i]])
+    }
+  }
+  ggplot(as.data.frame(nt.il), aes(x = 1:27, y = nt.il)) + geom_line() +
+    ggtitle(sprintf("how many times '%s' occurs in each book",myword)) + 
+    xlab("") + ylab("number of hits") + 
+    scale_x_continuous(breaks = seq(1,27,1), labels = NT.b[,1]) + 
+    theme(axis.text.x = element_text(size = 7, angle = 45, vjust = .9, hjust = .9))
+}
+
+
+#########################################################
+# A function for plotting hits in the color rectangles:
+# Preliminaries:
+ntbooks = data.frame(x1 = c(1,120395,196936,327243,421900,547914,596692,644181,675269,691055,706951,718216,728671,738112,743469,755827,764785,769792,772084,808362,820126,833234,841753,854154,855691,857272,860708),
+                     x2 = c(120395,196936,327243,421900,547914,596692,644181,675269,691055,706951,718216,728671,738112,743469,755827,764785,769792,772084,808362,820126,833234,841753,854154,855691,857272,860708,920993),
+                     y1 = rep(0,length(x1)),
+                     y2 = rep(2,length(x1)),
+                     libros = c("Matthew","Mark","Luke","John","Acts","Romans","1Cor","2Cor","Gal","Eph","Philipp","Col","1Thess","2Thess","1Tim","2Tim","Titus","Philemon","Hebrews","James","1Peter", "2Peter","1John","2John","3John","Jude","Revelation"))
+
+libros = c("Matthew","Mark","Luke","John","Acts","Romans","1Cor","2Cor","Gal","Eph","Philipp","Col","1Thess","2Thess","1Tim","2Tim","Titus","Philemon","Hebrews","James","1Peter", "2Peter","1John","2John","3John","Jude","Revelation")
+
+NT.whclrs = function(myword){
+  gregop = gregexpr(pattern = myword, theNT)
+  gregopl = length(gregop[[1]])
+  ggplot() + geom_rect(data = ntbooks, aes(xmin = x1, xmax = x2, ymin = y1, ymax = y2, fill = libros)) + 
+    scale_fill_manual(values = alpha(c("deepskyblue","greenyellow","navyblue","steelblue","mediumpurple","slateblue1","darkgoldenrod1","goldenrod1","tan1","olivedrab1","aquamarine","yellow","blue","green","red","yellow","limegreen","purple","purple1","cyan","brown1","violet","olivedrab","coral","orangered","forestgreen","red"), .3)) + 
+    theme_classic() + xlab("") + ylab("") +
+    geom_point(data = as.data.frame(gregop[[1]][1:gregopl]), mapping = aes(x = gregop[[1]][1:gregopl], y = rep(1,gregopl)), shape = 3) + 
+    ggtitle(sprintf("instances of '%s' (%s)", myword, gregopl)) + theme(legend.position = "none")
+}
+
+
+#########################################################
+
+# Grid Extra
+# library(gridExtra)
+
+# commandment(s)
+commandment.nt.f = NT.wfp("commandment")
+commandment.nt.n = NT.wcp("commandment")
+commandment.nt.clrs = NT.whclrs("commandment")
+grid.arrange(commandment.nt.f,commandment.nt.n,commandment.nt.clrs)
+
+# covenant(s)
+covenant.nt.f = NT.wfp("covenant")
+covenant.nt.n = NT.wcp("covenant")
+covenant.nt.clrs = NT.whclrs("covenant")
+grid.arrange(covenant.nt.f,covenant.nt.n,covenant.nt.clrs)
+
+# "conditions of repentance" is  a BofM phrase
+condition.nt = gregexpr(pattern = "condition", theNT)
+str_sub(theNT, condition.nt[[1]][1]-300,condition.nt[[1]][1]+300)
+
+
 
 
 

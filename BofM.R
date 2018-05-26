@@ -43,68 +43,6 @@ there are faults they are the mistakes of men; wherefore, condemn
 not the things of God, that ye may be found spotless at the
 judgment-seat of Christ.
 
-TRANSLATED BY JOSEPH SMITH, JUN.
-
-
-THE TESTIMONY OF THREE WITNESSES
-
-Be it known unto all nations, kindreds, tongues, and people, unto
-whom this work shall come: That we, through the grace of God the
-Father, and our Lord Jesus Christ, have seen the plates which
-contain this record, which is a record of the people of Nephi,
-and also of the Lamanites, their brethren, and also of the people
-of Jared, who came from the tower of which hath been spoken.  And
-we also know that they have been translated by the gift and power
-of God, for his voice hath declared it unto us; wherefore we know
-of a surety that the work is true.  And we also testify that we
-have seen the engravings which are upon the plates; and they have
-been shown unto us by the power of God, and not of man.  And we
-declare with words of soberness, that an angel of God came down
-from heaven, and he brought and laid before our eyes, that we
-beheld and saw the plates, and the engravings thereon; and we
-know that it is by the grace of God the Father, and our Lord
-Jesus Christ, that we beheld and bear record that these things
-are true.  And it is marvelous in our eyes.  Nevertheless, the
-voice of the Lord commanded us that we should bear record of it;
-wherefore, to be obedient unto the commandments of God, we bear
-testimony of these things.  And we know that if we are faithful
-in Christ, we shall rid our garments of the blood of all men, and
-be found spotless before the judgment-seat of Christ, and shall
-dwell with him eternally in the heavens.  And the honor be to the
-Father, and to the Son, and to the Holy Ghost, which is one God. 
-Amen.
-
-OLIVER COWDERY
-DAVID WHITMER
-MARTIN HARRIS
-
-
-THE TESTIMONY OF EIGHT WITNESSES
-
-Be it known unto all nations, kindreds, tongues, and people, unto
-whom this work shall come: That Joseph Smith, Jun., the
-translator of this work, has shown unto us the plates of which
-hath been spoken, which have the appearance of gold; and as many
-of the leaves as the said Smith has translated we did handle with
-our hands; and we also saw the engravings thereon, all of which
-has the appearance of ancient work, and of curious workmanship. 
-And this we bear record with words of soberness, that the said
-Smith has shown unto us, for we have seen and hefted, and know of
-a surety that the said Smith has got the plates of which we have
-spoken.  And we give our names unto the world, to witness unto
-the world that which we have seen.  And we lie not, God bearing
-witness of it.
-
-CHRISTIAN WHITMER
-JACOB WHITMER
-PETER WHITMER, JUN.
-JOHN WHITMER
-HIRAM PAGE
-JOSEPH SMITH, SEN.
-HYRUM SMITH
-SAMUEL H. SMITH
-
-1 Nephi
 THE FIRST BOOK OF NEPHI
 HIS REIGN AND MINISTRY
 An account of Lehi and his wife Sariah and his four sons, being
@@ -124,11 +62,7 @@ cross the large waters into the promised land, and so forth. This
 is according to the account of Nephi; or in other words, I,
 Nephi, wrote this record.
 
-1 Nephi 1
-Chapter 1
-
-1 Nephi 1:1
-1 I, Nephi, having been born of goodly parents, therefore I was
+I, Nephi, having been born of goodly parents, therefore I was
 taught somewhat in all the learning of my father; and having seen
 many afflictions in the course of my days, nevertheless, having
 been highly favored of the Lord in all my days; yea, having had a
@@ -39874,28 +39808,24 @@ str_count(bofm, "Jesus")
 
 getwd()
 setwd("/Users/jamescutler/Desktop/")
+
+###############
+# The original bofm string I saved was just as it had been copied and pasted from the website.
 save(bofm, file = "bofm.RData") # PAY VERY CLOSE ATTENTION TO EVERY DETAIL OF EVERY PART OF THE SYNTAX!!!
 # I KEPT GETTING Error in save(bofm, file = bofm.Rdata) : object 'bofm.Rdata' not found
 # I SHOULD KNOW WHAT'S WRONG WITH THE WAY I DID THAT BY NOW!!!
-head(bofm, 20)
+
 load("bofm.RData")
 getwd()
 load("/Users/jamescutler/Desktop/bofm.RData")
 # head(bofm, 20) # YOU DO NOT WANT TO DO THAT!
 
 
-class(bofm)
-a = "I bid unto all farewell."
-class(a)
-a[1]
 
 # Website to learn about stringr (it answered my exact question about viewing small chunks of the text):
 # https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html
 library(stringr)
-str_length(bofm)
-str_sub(bofm, 499999, 500189)
-word(bofm, 100:110)
-str_sub(bofm, 129000, 130000)
+
 
 # 1 (DO THIS LINE):
 bofm.nopunc = gsub("[[:punct:]]", " ", bofm) # The punctuation needs to be replaced by a space
@@ -40008,6 +39938,8 @@ gregexpr(pattern = "the Creator of all things from the beginning", bofm15)
 str_sub(bofm15, 1086007-300, 1086007+300)
 str_sub(bofm15, 383886-300, 383886+300)
 
+
+# 6 : (FINAL, CRUCIAL STEP!)
 bkofm = gsub(" {1,}", " ", bofm15); str_sub(bkofm, 366978-300, 366978+300)
 gregexpr(pattern = "the Creator of all things from the beginning", bkofm)
 
@@ -40037,9 +39969,7 @@ nchar(bkofm)
 
 ########
 HOI = gregexpr(pattern = "the Holy One of Israel", bkofm)
-class(HOI)
 HOI[[1]][1:40]
-
 HolyOne.I = data.frame(X = HOI[[1]][1:40], Y = rep(1,40))
 
 books = data.frame(x1 = c(1,1381,129693,280201,327756,333663,337564,344877,349458,510923,953229,1060145,1207552,1217958,1266461,1351169),
