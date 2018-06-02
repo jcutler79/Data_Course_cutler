@@ -318,6 +318,9 @@ ggplot(datfr, aes(x = nums, y = sqnce)) + geom_point(col = "red") +
 
 
 ## Function plots and 3D function plots (3D examples go after 2D):
+curve(exp(x) + exp(-x), from = -100, to = 100, ylim = c(-10,1000)); abline(h=0, v=0, lty = 2)
+curve(x^2, from = -100, to = 100, ylim = c(-10,1000), col = "red", add = TRUE)
+curve(tan(x), from = -10, to = 10, ylim = c(-10,10)); abline(h = 0, v = 0, lty = 2)
 curve(2/(3-x), from = -10, to = 10, ylim = c(-10,10)); abline(h = 0, v = 0, lty = 2)
 # pwr1 = numeric(10)
 # x = seq(-10,10, length.out = 1000)
@@ -1040,6 +1043,23 @@ taxes = function(income){
 
 
 
+####################################################################
+
+
+### Shiny tutorial #1 
+
+getwd()
+setwd("/Users/jamescutler/Desktop/Data_Science/")
+install.packages("shiny")
+library(shiny)
+shinyUI(fluidPage(
+  titlePanel(title = "This is my first shiny app!"),
+  sidebarLayout(position = "right",
+                sidebarPanel(h3("this is the sidebar panel"),h4("widget4"),h5("widget5")),
+                mainPanel(h4("this is the main panel text, where output is displayed"),
+                          h5("this is the output5"))
+  )
+))
 
 
 

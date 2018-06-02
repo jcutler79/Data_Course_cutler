@@ -236,217 +236,71 @@ miscell = 600
 
 (38000 - 12*sum(rent,utilit,cars,phones,gas,miscell))/12
 
+######
 
+f.utilit = 250
+f.phones = 90
+f.gas = 140
+h.insur = 250
+f.misc = 1000
+food = 1300
+loans = 1200
 
-############################################################################################
+mrtg = 1500
 
-
-
-### Flash card app
-
-emeBM = "1 Nephi 4:17, 2 Nephi 10:15, Alma 9:25 - 'for this cause that' = in order that
-1 Nephi 6:3 - 'desire' = require
-1 Nephi 7:15 - 'choice' = judgment, sound judgment, discernment
-1 Nephi 8:12 - 'desirous' = desirable
-1 Nephi 8:21, Alma 14:27 - 'obtain' = reach (a place)
-1 Nephi 18:9 - 'to that' = until
-1 Nephi 22:13 - 'turn upon' = fall upon
-2 Nephi 1:26 - 'manifest' = expound, declare
-Mosiah 3:19 (original manuscript says 'but if' instead of 'unless') - 'but if' = unless
-Alma 1:9, 5:53, 8:13 - 'withstand ' = oppose, deny, contradict
-Alma 7:5, 15:3 - 'by the cause of' = on account of, by reason of
-Alma 11:2 - 'stripe' = whip, beat
-Alma 11:25, 24:13, 59:19, 3 Nephi 3:10, Moroni 7:8 - 'retain' = hold back
-Alma 37:37 (original manuscript says 'counsel the Lord'), 39:10 - 'counsel' = to consult, ask counsel of
-Alma 44:7 - 'extinct' = dead (individual)
-Alma 46:17 (original manuscript says 'gave' instead of 'named') - 'give' = describe
-Alma 63:5 - 'curious' = ingenious
-Helaman 1:15 - 'pitch' (battle) = set in array
-Helaman 7:16 - 'hurl' = drag
-Helaman 8:11 - 'depart' = divide
-Helaman 9:17 - 'detect' = expose
-3 Nephi 1:29 - 'became' = began to act
-Ether 6:10 - 'mar' = hinder
-Ether 6:10 - 'break' = stop
-Ether 12:41 - 'commend' = recommend (to do a thing)
-Moroni 10:26 - 'do away' = dismiss, reject
-title page - 'scattered' = separated (from the main body)"
-emeBM
-vemeBM = unlist(strsplit(emeBM, "\n")); vemeBM
-length(vemeBM)
-
-BMabbrev = "tpage fN sN Jc E Jr O WM Ms A H tN fthN Mrm Eth Mni"
-
-fN6_3 = c("desire","require")
-fN7_15 = c("choice","judgment")
-fN8_12 = c("desirous","desirable")
-fN8_21_A14_27 = c("obtain","reach (a place)")
-fN18_9 = c("to that","until")
-fN22_13 = c("turn upon","fall upon")
-sN1_26 = c("manifest","expound, declare")
-Ms3_19 = c("but if","unless")
-A1_9_A5_53_A8_13 = c("withstand","oppose, deny, contradict")
-A7_5_A15_3 = c("by the cause of","on account of, by reason of")
-A11_2 = c("stripe","whip, beat")
-A11_25_A24_13_A59_19_tN3_10_Mni7_8 = c("retain","hold back")
-A37_37_A39_10 = c("counsel","to consult, ask counsel of")
-A44_7 = c("extinct","dead (of an individual)")
-A46_17 = c("gave (instead of 'named')","give = describe")
-A63_5 = c("curious","ingenious")
-H1_15 = c("pitch (battle)","set in array")
-H7_16 = c("hurl","drag")
-H8_11 = c("depart","divide")
-H9_17 = c("detect","expose")
-tN1_29 = c("became","began to act")
-Eth6_10a = c("mar","hinder")
-Eth6_10b = c("break","stop")
-Eth12_41 = c("commend","recommend (to do a thing)")
-Mni10_26 = c("do away","dismiss, reject")
-tpage_scattered = c("scattered","separated (from the main body)")
-
-
-# 27 (26) items in the BMList flashcard deck:
-BMList = list(one = "filler",
-              fN6_3 = c("desire","require","And it mattereth not to me that I am particular to give a full account of all the things of my father, for they cannot be written upon these plates, for I desire the room that I may write of the things of God."),
-              fN7_15 = c("choice","judgment","Now behold, I say unto you that if ye will return unto Jerusalem ye shall also perish with them. And now, if ye have choice, go up to the land, and remember the words which I speak unto you, that if ye go ye will also perish"),
-              fN8_12 = c("desirous","desirable",""),
-              fN8_21_A14_27 = c("obtain","reach (a place)","1 Nephi 8:21 - And I saw numberless concourses of people, many of whom were pressing forward, that they might obtain the path which led unto the tree by which I stood. Alma 14:27 - And it came to pass that so great was their fear that they fell to the earth, and did not obtain the outer door of the prison"),
-              fN18_9 = c("to that","until","And after we had been driven forth before the wind for the space of many days, behold, my brethren and the sons of Ishmael and also their wives began to make themselves merry, insomuch that they began to dance, and to sing, and to speak with much rudeness, yea, even **to** that they did forget by what power they had been brought thither"),
-              fN22_13 = c("turn upon","fall upon","And the blood of that great and abominable church, which is the whore of all the earth, shall turn upon their own heads; for they shall war among themselves, and the sword of their own hands shall fall upon their own heads"),
-              sN1_26 = c("manifest","expound, declare","and that which ye call anger was the truth, according to that which is in God, which he could not restrain, manifesting boldly concerning your iniquities"),
-              Ms3_19 = c("but if","unless","For the natural man is an enemy to God, and has been from the fall of Adam, and will be, forever and ever, **but if** he yields to the enticings of the Holy Spirit, and putteth off the natural man and becometh a saint through the atonement of Christ the Lord"),
-              A1_9_A5_53_A8_13 = c("withstand","oppose, deny, contradict","1:9 - Now, because Gideon withstood him with the words of God he was wroth with Gideon, and drew his sword and began to smite him. 5:53 - And now my beloved brethren, I say unto you, can ye withstand these sayings; 8:13 - Now when the people had said this, and withstood all his words, and reviled him, and spit upon him, and caused that he should be cast out of their city, he departed thence"),
-              A7_5_A15_3 = c("by the cause of","on account of, by reason of",""),
-              A11_2 = c("stripe","whip, beat"),
-              A11_25_A24_13_A59_10_tN3_10_Mni7_8 = c("retain","hold back"),
-              A37_37_A39_10 = c("counsel","to consult, ask counsel of"),
-              A44_7 = c("extinct","dead (of an individual)"),
-              A46_17 = c("gave (instead of 'named')","give = describe"),
-              A63_5 = c("curious","ingenious"),H1_15 = c("pitch (battle)","set in array"),
-              H7_16 = c("hurl","drag"),
-              H8_11 = c("depart","divide"),
-              H9_17 = c("detect","expose"),
-              tN1_29 = c("became","began to act"),
-              Eth6_10a = c("mar","hinder"),
-              Eth6_10b = c("break","stop"),
-              Eth12_41 = c("commend","recommend (to do a thing)"),
-              Mni10_26 = c("do away","dismiss, reject"),
-              tpage_scattered = c("scattered","separated (from the main body)"))
-
-flashcards.beta = function(yourlist){
-  continue = readline(prompt = "Hit 'y' to continue, enter to quit: ")
-  while (continue != ""){
-    inum = sample(1:length(yourlist),1)
-    print(names(yourlist)[inum])
-    show = readline(prompt = "Hit 'y' to show other side: ")
-    if (show == "y"){
-      print(yourlist[[inum]])
-    } else{print("Puck you, then.")}
-    continue = readline(prompt = "Hit 'y' to continue, enter to quit: ")
-  }
-  print("Puck you.")
-}
+f.bills = sum(c(f.utilit,f.phones,f.gas,h.insur,f.misc,food,loans)); f.bills*12 # $50,760
 
 
 
-flashcards = function(yourlist){
-  continue = readline(prompt = "Hit 'y' to continue, enter to quit: ")
-  mysamp = 1:length(yourlist)
-  inum = 1
-  inum.cum = c(inum)
-  i = 1
-  while (continue != ""){
-    inum = sample(mysamp[-inum.cum],1)
-    print(c(i, names(yourlist)[inum]))
-    show1 = readline(prompt = "Hit 'y' to show other side: ")
-    if (show1 == "y"){
-      print(yourlist[[inum]][1])
-    } else{print("Alrighty, then.")}
-    show2 = readline(prompt = "Hit 'y' to show the other other side: ")
-    if (show2 == 'y'){
-      print(yourlist[[inum]][2])
-    } else{print("Uh ... WTF.")}
-    inum.cum = c(inum.cum,inum)
-    i = i+1
-    continue = readline(prompt = "Hit 'y' to continue, enter to quit: ")
-  }
-  print("F U.")
-}
-
-mysamp = 1:10
-output = 1
-output.cum = c(output)
-while (length(output.cum) <= 9){
-  output = sample(mysamp[-output.cum],1)
-  print(output)
-  output.cum = c(output.cum,output)
-}
-
-BMList[3] # gives you everything
-BMList[[3]] # gives you just what's "in" scripture reference #3
-BMList[[3]][2] # gives you just the second sub-item in contents of scripture reference #3
-
-flashback = function(yourlist){
-  continue = readline(prompt = "Hit 'y' to continue, enter to quit: ")
-  mysamp = 1:length(yourlist)
-  inum = 1
-  inum.cum = c(inum)
-  i = 1
-  while (continue != ""){
-    inum = sample(mysamp[-inum.cum],1)
-    print(c(i, yourlist[[inum]][2]))
-    show1 = readline(prompt = "Hit 'y' to show other side: ")
-    if (show1 == "y"){
-      print(yourlist[[inum]][1])
-    } else{print("Alrighty, then.")}
-    show2 = readline(prompt = "Hit 'y' to show the other other side: ")
-    if (show2 == 'y'){
-      print(names(yourlist)[inum])
-    } else{print("Uh ... WTF.")}
-    inum.cum = c(inum.cum,inum)
-    i = i+1
-    continue = readline(prompt = "Hit 'y' to continue, enter to quit: ")
-  }
-  print("F U.")
-}
 
 
-####################################################################################
+#########################################################
+## Trial runs for the flashcard app:
+# mysamp = 1:10
+# output = 1
+# output.cum = c(output)
+# while (length(output.cum) <= 9){
+#   output = sample(mysamp[-output.cum],1)
+#   print(output)
+#   output.cum = c(output.cum,output)
+# }
+# 
+# mysamp = 1:5
+# inum.cum = 1:3
+# sample(mysamp[-inum.cum],1)
+# inum.cum = 1:4
+# mysamp[! mysamp %in% inum.cum]
+# 
+# mylist = list("one","two","three","four","five")
+# trial = function(yourlist){
+#   continue = readline(prompt = "Hit 'y' to continue, enter to quit: ")
+#   mysamp = 1:length(yourlist)
+#   inum = 1
+#   inum.cum = c(inum)
+#   i = 1
+#   while (continue != ""){
+#     if (length(inum.cum) == length(yourlist)-1){
+#       inum = mysamp[! mysamp %in% inum.cum]
+#       print(c(length(yourlist)-1, yourlist[[inum]]))
+#       inum.cum = c(inum.cum,inum)
+#       print(inum.cum)
+#       continue = ""
+#     } else {
+#       inum = sample(mysamp[-inum.cum],1)
+#       print(c(i, yourlist[[inum]]))
+#       inum.cum = c(inum.cum,inum)
+#       print(inum.cum)
+#       i = i+1
+#       continue = readline(prompt = "Hit 'y' to continue, enter to quit: ")
+#     }
+#   }
+#   print("see ya later")
+# }
+#########################################################
 
-# 31 (30) items in the PharaohList flaschard deck:
-PharaohList = list(one = "filler", 
-                   BC3100a = c("Narmer","Pharaoh of the 1st dynasty in the Early Dynastic Period. First to unite the lands of upper and lower Egypt."),
-                   BC3100b = c("Menes","Believed to be the same person as Narmer. Founded the 1st dynasty, according to Herodotus."),
-                   BC2670 = c("Djoser","Pharaoh of the 3rd dynasty during the Old Kingdom. Built the step pyramid as part of his funeral complex at Saqqara. Later pharaohs thought his reign to be the beginning of pharaonic history."),
-                   BC2613 = c("Sneferu","First pharaoh of the 4th dynasty, Old Kingdom. Built the first true pyramid, changed the orientation of the funerary complex to east-west. Buried in the Red Pyramid."),
-                   BC2589 = c("Khufu","aka Greek 'Cheops' / 'Suphis'. 4th dynasty, Old Kingdom. Built the Great Pyramid, with burial chamber in the center rather than at the bottom of the pyramid. Depicted as a cruel tyrant by ancient Greek authors, but as a pious, generous ruler by [contemporary?] Egyptian sources. Main protagonist of the famous Westcar Papyrus. The first imprinted papyri originate from his reign."),
-                   BC2558 = c("Khafre","aka Greek 'Cephren'. 4th dynasty, Old Kingdom. Second largest pyramid at Giza. Built the Great Sphinx."),
-                   BC2460 = c("Neferefre","5th dynasty, Old Kingdom. His pyramid only reached its lowest courses. Records state he built a sun-temple. A store of papyri was discovered in his pyramid temple providing information about the economic, administrative, and religious practices of his time."),
-                   BC2278 = c("Neferkare Pepi II","6th dynasty, Old Kingdom. His rule was Egypt's longest at 94 years. The first half of his reign was prosperous, the second half was a time of economic crisis."),
-                   BC2180 = c("Neitiqerty Siptah and Nitocris","Last pharaoh of the 6th dynasty, Old Kingdom. The male king gave rise to the legendary queen mentioned by Herodotus and Manetho. Modern scholars doubt she ever existed."),
-                   BC1971 = c("Kheperkare Senusret I","aka Sesostris I. 12th dynasty, Middle Kingdom. Built the White Chapel. Reigned during a time of peace with no records of military campaigns found to date. First pharaoh to begin irrigating the Faiyum. His statues show signs of his actual appearance, marking a new trend in Egyptian art."),
-                   BC1878 = c("Sesostris III","12th dynasty, Middle Kingdom. Most powerful pharaoh of the 12th dynasty. The pharaoh of Abraham, according to John Gee. Also Amenemhat III, the next pharaoh, could have been a pharaoh of Abraham's day."),
-                   BC1550 = c("Ahmose I","Founder of the 18th dynasty, beginning the New Kingdom. Began the reunification of Egypt after the second intermediate period. Fought battles throughout Egypt, Palestine and Kush as he sought to banish the Hyksos. Goods and artwork show a Minoan influence during this time. He built projects at Memphis and Thebes (his religious capital), especially at Karnak."),
-                   BC1541 = c("Amenhotep I","18th dynasty, New Kingdom. Continued his father's building projects and military campaigns. The workmen at Deir el-Medina (the town of the builders of the tombs in the Valley of the Kings) worshipped him and his mother as their patron gods for centuries."),
-                   BC1492 = c("Thutmose II","18th dynasty, New Kingdom. His wife, Hatshepsut, attempted to replace his name on monuments with hers. His son later tried to restore his father's name, resulting in conflicting information about this pharaoh's life. His mummy was found in the royal cache at the Temple of Hatshepsut, showing signs of diseases that caused his death."),
-                   BC1479 = c("Hatshepsut","18th dynasty, New Kingdom. Second known female ruler of Egypt. Married her uncle. Ruled during the height of Egypt's power. Began her reign merely as regent because her son, the next heir, was still a child. She claimed to be the child of Amun and transformed herself into a king by wearing the symbols of kingship. Known for her building projects. Sent trade missions to the land of Punt and brought back various exotic goods."),
-                   BC1458 = c("Thutmose III","18th dynasty, New Kingdom. Conducted military campaigns in the Levant, conquered most of Palestine. His mother's name and monuments were not dishonored until the end of his reign. Built many monuments."),
-                   BC1425 = c("Amenhotep II","18th dynasty, New Kingdom. Completed the dishonoring of Hatshepsut's monuments to end any claims by her family to the right to rule. Built various temples, including one to worship Horemakhet, a god associated with the Great Sphinx."),
-                   BC1401 = c("Thutmose IV","18th dynasty, New Kingdom. Son of Amenhotep II but not the crown prince. His unexpected rule was legitimized by the Dream Stele, according to which he had a vision of Horemakhet-Khepri-Ra-Atum, while sleeping under the shadow of the Great Sphinx, telling him to restore the Sphinx by removing the sand that had partially buried it, and he would be given the kingship."),
-                   BC1390 = c("Amenhotep III","18th dynasty, New Kingdom. Harvests during his time were rich, and he later became a fertility god. Called his palace 'the gleaming Aten' and emphasized the worship of various solar deities. Built a large tomb in the Valley of the Kings and the Colossi of Memnon near his mortuary temple."),
-                   BC1352 = c("Amenhotep IV","aka Akhenaten. 18th dynasty, New Kingdom. Came to the throne at a time when the priests of Amun were wealthy and powerful. Built a temple to Aten at Karnak during the first few years of his reign. Built a new capital at Akhetaten (now Amarna), changed his name, and declared Aten the only god in Egypt (described as monolatristic, henotheistic, or even quasi-monotheistic. Started what is known as the Amarna Period."),
-                   BC1334 = c("Neferneferuaten","18th dynasty, New Kingdom. Many scholars believe she was Akhenaten's queen, Nefertiti, others that she was Meritaten, the daughter of Akhenaten and Nefertiti."),
-                   BC1332 = c("Tutankhamun","18th dynasty, New Kingdom. Son of Akhenaten, became pharaoh at age 9. During the first year of his reign, he abandoned Amarna and restored the cults of the traditional deities. He restored the power of Thebes. Egyptologists found his treasures and body intact when they excavated his tomb in the 1920s."),
-                   BC1292 = c("Ramesses I","Founded the 19th dynasty, New Kingdom. Succeeded Horemheb, who was born a commoner, and became a general during the Amarna Period, and who obliterated images of the Amarna pharaohs and destroyed buildings and monuments associated with them. And this pharaoh, who succeeded Horemheb, was also of non-royal birth. This pharaoh's reign marked the transition between the stabilizing reign of Horemheb and the rule of the powerful pharaohs of the 19th dynasty (in particular his son Seti I and grandson Ramesses II)."),
-                   BC1290 = c("Seti I","19th dynasty, New Kingdom. Conducted military campaigns to raise money for his building projects. After the enormous social upheavals of Akhenaten's religious reform, Horemheb, Ramesses I and this pharaoh's main priority was to re-establish order in the kingdom and reaffirm Egypt's sovereignty over Canaan and Syria, by confronting the Hittites."),
-                   BC1279 = c("Ramesses II (The Great)","19th, NK. Known as Ozymandias in the Greek sources (transliteration of his throne name, Usermaatre Setepenre - 'The justice of Re is powerful--chosen of Re'). One of the most powerful pharaohs of all time. He had at least 95 children. Reigned for 67 years. Built a massive tomb for his children in the Valley of the Kings. He usurped monuments made by older pharaohs by erasing their names and carving his own instead. He declared himself a god before the tenth year of his reign and outlived his 12 oldest sons. He is famous for the Battle of Kadesh, against the Hittites. During his reign, the Egyptian army is estimated to have totaled 100,000 men."),
-                   BC1213 = c("Merenptah / Merneptah","19th dynasty, New Kingdom. 13th son of Ramesses II. The Israel Stele is a name commonly given to his victory stele in which he is said to have laid waste to 'ysriar'--the earliest apparent textual reference to Israel known to date, and the first from Egypt."),
-                   BC1191 = c("Twosret","19th dynasty, New Kingdom. A female pharaoh, wife of Seti II. Third female pharaoh to rule during the New Kingdom."),
-                   BC1186 = c("Ramesses III","20th dynasty, New Kingdom. Not a relative of the previous Ramesses's. After Twosret's death, there was a period of lawlessness that this pharaoh's father ended. This pharaoh had to fight various invaders trying to take advantage of Egypt's internal turmoil. He reorganized temple administrations and land allocations, giving one third of the farm land over to the temples, causing a food shortage which led to one of the first recorded strikes of the workers at Deir el-Medina. It also led to a weakening of the central government."),
-                   BC530 = c("Cambyses II","1st Persian dynasty (Achaemenid Empire) = 27th dynasty, in the Late Period. First foreign (absentee) pharaoh, ruling from Persia."),
-                   BC332 = c("Alexander the Great","In Egypt, he was portrayed as the son of Nectanebo II, the last pharaoh before the Persian conquest. His defeat of Darius was depicted as Egypt's salvation, 'proving' Egypt was still ruled by an Egyptian. The greatest city he founded was Alexandria, in Egypt. He was regarded as a liberator in Egypt. He was pronounced son of the deity Amun at the Oracle of Siwa Oasis in the Libyan desert. Henceforth, Alexander often referred to Zeus-Ammon as his true father, and after his death, currency depicted him adorned with the horns of a ram as a symbol of his divinity."),
-                   BC51_30 = c("Cleopatra VII","Last pharaoh of the Ptolemaic dynasty. Rome was moving to invade Egypt but Mark Antony, her lover, helped her stand against Rome. Then Augustus invaded Egypt and killed Mark Antony. This pharaoh then committed suicide, marking the end of pharaonic Egypt."))
+##########################################################################################
 
+                  ### Mesopotamian, Egyptian, and Israelite history ###
 
 pharaohs = data.frame(X = c(-3100,-2670,-2613,-2589,-2558,-2460,-2278,-2180,-1971,-1878,-1541,-1479,-1458,-1425,-1390,-1352,-1332,-1292,-1279,-1213,-1186,-943,-530,-332,-51),
                       Y = rep(1.7,25))
@@ -540,80 +394,10 @@ ggplot() + geom_rect(data = periods, aes(xmin = x1, xmax = x2, ymin = y1, ymax =
   scale_x_continuous(breaks = seq(-3000,0,500), sec.axis = dup_axis()) +
   theme(legend.position = "bottom")
 
+
+
 ####################################################################################
 
-
-# 69 (68) dichotomous branchings in this tree of life:
-TreeLifeList = list(one = "filler",
-                    LUCA = c("Eubacteria","Archaea"),
-                    Eubacteria = c("Alphaproteobacteria --> mitochondria","All the other bacteria"),
-                    Archaea = c("Lokiarchaeota --> Eukarya","All the other archaea"),
-                    Eukarya = c("Bikonta --> plants and chromalveolates","Unikonta --> Amoebazoa, Fungi, Choanozoa + Animalia"),
-                    Animalia = c("Porifera, Placozoa, Cnidarians","Eumetazoa"),
-                    Eumetazoa = c("Ctenophora","Bilateria"),
-                    Bilateria = c("Xenacoelomorpha","Nephrozoa --> Kimberella (possibly a protostome?)"),
-                    Nephrozoa = c("Protostomes (~million species alive today)","Deuterostomes (~70,000 species alive today--incliuding 66,000 vertebrates)"),
-                    Protostomes = c("Spiralia","Ecdysozoa"),
-                    Spiralia = c("Rotifers and Platyhelminthes","Mollusks (largest marine phylum--at 23% of all named marine organisms) and Annelids"),
-                    Ecdysozoa = c("Priapulids and Kinorhynchs","Nematodes and Panarthropoda"),
-                    Panarthropoda = c("Onychophora","Tardigrades and Arthropods"),
-                    Mollusca = c("Gastropods (70k)","Bivalves (20k - clams, oysters, scallops, and mussels) and Cephalopods (900)"),
-                    Annelida = c("earthworms","leeches and ragworms"),
-                    Gastropods = c("snails","slugs"),
-                    Cephalopods = c("squid","octopus (and other things: nautilus, cuttlefish"),
-                    Deuterostomes = c("Ambulacraria","Chordates"),
-                    Chordates = c("Cephalochordates","Olfactores"),
-                    Olfactores = c("Urochordates","Vertebrates"),
-                    Vertebrates = c("Cyclostomes","Gnathostomes"),
-                    Gnathostomes = c("Chondrychthyes","Osteichthyes"),
-                    Osteichthyes = c("Actinopterygii (and Teleostomes)","Sarcopterygii"),
-                    Sarcopterygii = c("lobe-finned fish","Tetrapods"),
-                    Tetrapods = c("Anamniotes (amphibians)","Amniotes"),
-                    Amniotes = c("Sauropsids","Synapsids"),
-                    Sauropsids = c("Diapsids","?"),
-                    Diapsids = c("Lepidosaurs","Archosaurs"),
-                    Lepidosaurs = c("lizards (and don't forget tuataras)","snakes"),
-                    Archosaurs = c("Pterosaurs","Dinosaurs"),
-                    Dinosaurs = c("Ornithischia","Saurischia"),
-                    Ornithischia_ = c("Ceratops","Stegasaurs"),
-                    Saurischia = c("Theropods (originated in Middle Triassic, ancestrally carnivorous, but also included other -vores; eventually gave rise to birds)","Sauropods"),
-                    Sauropods = c("Brachiosaurus and Brontosaurus","Diplodocus and Apatosaurus"),
-                    Synapsids = c("Eupelycaosauria","?"),
-                    Therapsids = c("Biarmosuchia","Eutherapsids"),
-                    Eutherapsids = c("Dinocephalia","Neotherapsids"),
-                    Theriodontia = c("Gorgonopsid","Eutheriodontia"),
-                    Cynodontia = c("Cynognathia","Probainognathia"),
-                    Mammaliaformes = c("examples include Morganucodon, Docodonta --> Castorocauda, and Hadrocodium","Mammalia"),
-                    Mammalia = c("Prototheria --> Monotremes","Theria"),
-                    Theria = c("Metatheria --> Marsupials","Eutheria --> Placentals"),
-                    Placentals = c("Atlantogenata","Boreoeutheria"),
-                    Atlantogenata = c("Xenarthra","Afrotheria"),
-                    Xenarthra = c("armadillos","anteaters and sloths"),
-                    Afrotheria = c("elephant shrews, tenrecs, and aardvarks","elephants, hyraxes and manatees"),
-                    Boreoeutheria = c("Laurasiatheria","Euarchontoglires"),
-                    Laurasiatheria = c("Eulipotyphla --> moles, shrews, and hedgehogs","Scrotifera"),
-                    Scrotifera = c("Chiroptera","Ferungulata"),
-                    Ferungulata = c("Euungulata","Ferae"),
-                    Euungulata = c("Cetartiodactyla","Perissodactyla"),
-                    Cetartiodactyla = c("Cetaceans","Artiodactyls"),
-                    Artiodactyls = c("e.g. pigs, peccaries, hippos, camels, llamas","e.g. giraffes, deer, cattle, buffalos, antelopes"),
-                    Perissodactyla = c("horses, donkeys, zebras","rhinos ; and tapirs"),
-                    Ferae = c("Pholidota --> pangolins","Carnivora"),
-                    Carnivora = c("Feliforms","Caniforms"),
-                    Feliforms = c("cats","mongooses; hyenas; civets"),
-                    Caniforms = c("bears, wolves, wolverines/red pandas/skunks/etc.","Pinnipeds"),
-                    Euarchontaglires = c("Glires ... and also treeshrews","Euarchonta"),
-                    Glires = c("rodents","lagomorphs"),
-                    Euarchonta = c("Dermoptera (flying lemurs, aka colugos)","Primates"),
-                    Primates = c("Strepsirrhines --> lemurs and lorises","Haplorhines"),
-                    Haplorhines = c("tarsiers","Simiiformes"),
-                    Simiiformes = c("Platyrrhines","Catarrhines"),
-                    Catarrhines = c("Cercopithicoidea","Hominoidea"),
-                    Hominoidea = c("Hylobates --> gibbons","Hominidae"),
-                    Hominidae = c("Ponginae","Homininae"),
-                    Homininae = c("Gorillas","Hominini"),
-                    Hominini = c("Pan","Homo"))
-length(TreeLifeList)
 
 install.packages("ape")
 library(ape)
@@ -628,47 +412,10 @@ nodelabels("6.4 Ma",14,frame = "c",bg = "white")
 nodelabels("5.4 Ma",15,frame = "c",bg = "white")
 
 
-
-
 ########################################################################################## 
 
-## DE class
 
-## y'' - 9y' + 14y = 3x^2 - 5sin(2x) + 7xe^(6x) ... Find all solutions. Good example of a [non?]-homogeneous problem
-# This is example 6 on page 144. This is something we should know for the test.
-
-## 4.6 - Variation of Parameters
-
-# A2(x)y'' + A1(x)y' + A0(x)y = g(x)
-# y'' + [A1(x)/A2(x)]y' + [A0(x)/A2(x)]y = g(x)/A2(x)
-# y'' + P(x)y' + Q(x)y = f(x)
-# y'' + P(x)y' + Q(x)y = 0
-
-# y' + P(x)y = f(x)
-# y' + P(x)y = 0
-# ...
-# y = ce^(-int[P(x)])
-
-# Yp(x) = u1(x)y1(x) + u2(x)y2(x)
-# Yp' = u1'y1 + u2y2' + u2'y2 + u2y2'
-# Yp'' = u1''y1 + 2u1'y1' + u1y1'' +
-#        u2''y2 + 2u2'y2' + u2y2''
-
-# Cramer's Rule (linear algebra stuff)
-
-## solve: y'' - 4y' + 4y = (x+1)e^(2x)
-
-
-########################################################################################## 
-
-## Ancient peoples known by two phonetically dissimilar names:
-
-ancient.names = list(one = "filler",
-                     Phrygians = c("Mushki","The Mushki were an Iron Age people of Anatolia who appear in sources from Assyria but not from the Hittites. Several authors have connected them with the Moschoi of Greek sources and the Georgian tribe of the Meskhi. Josephus Flavius identified the Moschoi with the Biblical Meshech. ***Assyrian sources identify the Western Mushki with the Phrygians,*** but Greek sources clearly distinguish between the Phrygians and the Moschoi. The Encyclopedia of Indo-European Culture notes that the Armenians according to Diakonoff, are then an amalgam of the Hurrian (and Urartians), Luvians and the Proto-Armenian Mushki (or Armeno-Phrygians) who carried their IE language eastwards across Anatolia.According to Greek mythographers,[9] the first Phrygian Midas had been king of the Moschi (Mushki), also known as Bryges (Brigi) in the western part of archaic Thrace.Assyrian sources from the 8th century BC speak of a king Mita of the Mushki, identified with king Midas of Phrygia. The Phrygians were an ancient Indo-European people, initially dwelling in the southern Balkans – according to Herodotus – under the name of Bryges (Briges), changing it to Phryges after their final migration to Anatolia, via the Hellespont. - Wikipedia 'Mushki' and 'Phrygians'"))
-
-
-########################################################################################## 
-
+# How much can a two-point difference in mean IQ make on the outliers of two populations?
 
 df = data.frame(col1 = rnorm(10000,100,15), 
                 col2 = rnorm(10000,102,15), 
@@ -838,6 +585,71 @@ taxes = function(income){
   return(cat(sprintf("Your taxes are $%s \nAnd your takehome is $%s",tax,takehome)))
 }
 
+
+
+#########################################################################################
+#########################################################################################
+
+### ACCELERATED SEA LEVEL RISE - PNAS STUDY FEB. 2018 ###
+
+######### ######### ######### ######### ######### ######### ######### ######### #########
+
+level = 0
+feetLevel = 0
+rate = 3
+years = 1993:2100; length(years) # 108 years
+for (i in 1:length(years)){
+  print(c(years[i],sprintf(" The level is %s mm. That is %s feet",level,feetLevel)))
+  print(c(years[i],sprintf(" The rate is %s mm per year",rate)))
+  level = level+rate
+  rate = rate+.084
+  feetLevel = level*0.00328084
+} 
+# Shows 2.6 feet of sea level rise from 1993 to 2100. The rate of rise in 2100 shown is 12 mm.
+
+# Now let's try it with the more correct amount of 2.9 mm per year (mentioned in the Nerem et al. study's abstract):
+level = 0
+feetLevel = 0
+rate = 2.9
+years = 1993:2100; length(years) # 108 years
+for (i in 1:length(years)){
+  print(c(years[i],sprintf(" The level is %s mm. That is %s feet",level,feetLevel)))
+  print(c(years[i],sprintf(" The rate is %s mm per year",rate)))
+  level = level+rate
+  rate = rate+.084
+  feetLevel = level*0.00328084
+} 
+## And compare 2100 to 2005, which Nerem et al. also clarify is the interval from which they're
+# getting the 65 cm figure.
+786-40 # Still not down to 65 cm. It's 75 cm of sea level rise from 2005 to 2100.
+
+library(ggplot2)
+years = 1993:2150
+no.acc.ft.lev = numeric(length(years))
+no.acc.ft.lev[1] = 0
+no.acc.rate = 2.9
+no.acc.level = 0
+for (i in 1:length(years)){
+  no.acc.level = no.acc.level + no.acc.rate
+  no.acc.ft.lev[i] = no.acc.level*.00328084
+}
+df.no.acc = data.frame(sea.level_no.acc = no.acc.ft.lev, Year = years)
+
+feet.level = numeric(length(years))
+feet.level[1] = 0
+rate = 2.9
+level = 0
+for (i in 1:length(years)){
+  level = level+rate
+  rate = rate+.084
+  feet.level[i] = level*.00328084
+}
+df.feet = data.frame(sea.level_feet = feet.level, Year = years)
+ggplot(df.feet, aes(x = Year, y = sea.level_feet)) + geom_point() +
+  geom_point(data = df.no.acc, mapping = aes(x = Year, y = sea.level_no.acc), col = "green")
+
+#########################################################################################
+#########################################################################################
 
 
 
