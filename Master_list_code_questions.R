@@ -235,6 +235,49 @@ de = expand.grid(x = 1:3, a = c("male","female","intersex")); de
 
 
 ### FOR LOOPS!!!!!!!!!! - the mysteries and wonders of for loops:
+# For loop for seeing the odds against an event of 1 through 6 sigma:
+sigmas = numeric(6)
+for (i in 1:6){
+  sigmas[i] = (1-2*pnorm(i,lower.tail = FALSE))/(2*pnorm(i,lower.tail = FALSE))
+}
+as.matrix(prettyNum(sigmas, big.mark = ",", scientific = FALSE)) # THE ODDS AGAINST A SIX SIGMA EVENT ARE 500 MILLION TO ONE
+# THE ULTIMATE FOR LOOP MAGIC--ADDING DATAFRAMES TO A LIST!
+dfs = NULL
+for (i in 1:10){
+  z = i
+  dfs[i] = paste0("dfs",z)
+  assign(dfs[i], data.frame(col1 = rnorm(100000,100,15), col2 = rnorm(100000,102,15), col3 = rnorm(100000,104,15), col4 = rnorm(100000,106,15)))
+}
+
+dflist1 = list()
+for (i in 1:10){
+  z = i
+  sdfs = paste0("dfs",z)
+  real.dfs = get(paste0("dfs",z))
+  dflist1[[sdfs]] = real.dfs
+}
+# dflist1[[1]][1]
+
+f = function(){
+  for(i in 1:10){
+    for (j in 1:4){
+      foursds = length(which(dflist1[[i]][j] >= 160))
+      print(foursds)
+    }
+  }
+}
+output = capture.output(f()); output
+df.160s = data.frame(X1 = rep(c(100,102,104,106),10), X2 = output)
+df.160s$X2 = gsub("\\[1] ","",df.160s$X2)
+df.160s$X2 = as.numeric(df.160s$X2)
+tapply(df.160s$X2, df.160s$X1, mean)
+plot(as.factor(df.160s$X1),df.160s$X2)
+plot(df.160s$X1,df.160s$X2)
+
+cum.160s = rbind(cum.160s,df.160s)
+t = tapply(cum.160s$X2, cum.160s$X1, mean); t # After 4 runs (4 million people total, 1 million in each distribution), the 102 mean is 200% the 100 mean
+# par(mar = c(2,4,0,3))
+plot(t, ylim = c(.7,20))
 ## GET THE FREAKING OUTPUT OF A FOR LOOP FOR CRYING OUT LOUD AND FREAKING PUT IT IN A DATA FRAME!
 # rbind/cbind and for loops are a weird mix:
 works = NULL
@@ -254,7 +297,7 @@ for (i in 1:10){
 rollin # DOESN'T FREAKING WORK!!?!!?!?!? WHY!!?????? IT'S BACKWARDS! RBIND DOES WORK, AND 
 # BINDS WHAT AND BUTT INTO COLUMNS!!! CBIND DOESN'T WORK, AND APPARENTLY DOESN'T BIND
 # THEM INTO COLUMNS!
-## a for loop for creating cyclicly repeating values:
+## a for loop for creating cyclicly repeating values (TOTALLY WORTHLESS SINCE rep() DOES THIS! HAHA!!):
 myfunc = function(){
   for (i in 1:10){
     print(1)
@@ -349,7 +392,17 @@ abline(v = c(-3,-1,1,3), lty = 4, col = "gray", add = TRUE)
 curve((1/sqrt(2*pi))*exp((-x^2)/2), from = -4, to = 4,main = "the normal curve",xlab = "x",ylab = "y")
 abline(h = 0, v = c(-1.96,1.96))
 func.stand = function(x) ((1/sqrt(2*pi))*exp((-x^2)/2))
-integrate(func.stand, lower = -5, upper = 2)
+one = integrate(func.stand, lower = -1, upper = 1)
+1-one$value
+one$value/(1-one$value)
+two = integrate(func.stand, lower = -2, upper = 2)
+(1-2*pnorm(1,lower.tail = FALSE))/(2*pnorm(1,lower.tail = FALSE))
+sigmas = numeric(6)
+for (i in 1:6){
+  sigmas[i] = (1-2*pnorm(i,lower.tail = FALSE))/(2*pnorm(i,lower.tail = FALSE))
+}
+as.matrix(prettyNum(sigmas, big.mark = ",", scientific = FALSE)) # THE ODDS AGAINST A SIX SIGMA EVENT ARE 500 MILLION TO ONE
+# random curve:
 curve((3*x^3 - 4*x^2 + x -1)/((x^2 + 1)*(x^2 + 2)), from = -30, to = 30, n = 1000,
       xlab = "x", ylab = "y", ylim = c(-2,2)) # THE n = 1000 ARGUMENT IS THE SECRET TO MAKING THE CURVES LOOK MORE ROUNDED!!!
 # THE OTHER MONEY PART OF WHAT I LEARNED WITH THIS IS THE ylim ARGUMENT!!!!! IT WORKS!!!!!!! WAHOOOOO!!!!!!!!!!!!!!!
@@ -567,6 +620,14 @@ df_long = gather(df, key = "Time", value = "Abs", c("Hr_24","Hr_48","Hr_144"))
 # Then convert the characters to numerics with mapvalues (from the plyr library):
 df_long$Time = as.numeric(plyr::mapvalues(df_long$Time, from =c("Hr_24","Hr_48","Hr_144"), 
                                           to = c(24,48,144)))
+# THAT WAS GATHER, THIS IS SPREAD:
+x = rnorm(10)
+y = rnorm(10)
+z = rnorm(10)
+obs = 1:10
+df = data.frame(obs = obs, x = x, y = y, z = z)
+df.long = gather(df, key = "stock", value = "PriceChange", c("x","y","z")) # But x y and z don't have to be in quotes!!!!!
+spread(df.long, stock, PriceChange) # undoes gather (they're opposites)
 # How to plot shiz by substrate in that data set with 32 substrates:
 # YAY THIS FOR LOOP FREAKING WORKS!!! ALL BECAUSE I ACTUALLY TOLD IT TO FREAKING PRINT!: 
 for (i in levels(df_long$Substrate)){
@@ -765,6 +826,13 @@ vabc[! vabc %in% vac]
 
 
 ## PLOTS! (for ggplot, see entry above in alphabetical order)
+# Really cool trig plots:
+x = 1:400
+y = sin(x/10)*exp(-.01*x)
+plot(x,y, xlim = c(-10,410)); abline(h = 0, v = 0)
+x2 = 1:500
+y2 = sin(x2/5)*exp(-.005*x2)
+plot(x2,y2, xlim = c(-10,510)); abline(h = 0, v = 0)
 # How to add two data sets or data series or whatever to the same plot:
 US = data.frame(hshlds.prcnt = c(0,.2,.4,.6,.8,1), prcnt.income = c(0,.034,.12,.266,.498,1)) # data from US census bureau on Gini values for 2010
 x = as.vector(US$hshlds.prcnt)

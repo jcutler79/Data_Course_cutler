@@ -14,36 +14,36 @@ library(reshape2) # for the melt function?
 library(plyr) # for ... ???
 library(ggplot2)
 
-get_censdata = function(country, year){
-  c1 = "https://www.census.gov/data-tools/demo/idb/region.php?N=%20Results%20&T=10&A=separate&RT=0&Y="
-  c2 = "&R=-1&C="
-  myurl = paste0(c1, year, c2, country)
-  urldata = getURL(myurl)
-  mydata = readHTMLTable(urldata, stringsAsFactors = FALSE)
-  df = mydata[[1]] 
-  keep = c(2,4,5)
-  df = df[,keep]
-  names(df) = c("Age","Male","Female")
-  cols = 2:3
-  df[,cols] = apply(df[,cols],2, function(x) as.numeric(as.character(gsub(",", "", x)))) # The '2' means it's being applied by column, not be row, right?
-  df = df[df$Age != 'Total',]
-  df$Male = -1*df$Male
-  df$Age = factor(df$Age, levels = df$Age, labels = df$Age)
-  df.melt = melt(df, value.name = "Population", variable.name = "Gender", id.vars = "Age")
-  return(df.melt)
-}
-
-nigeria = get_censdata("NI",2014)
-n1 = ggplot(nigeria, aes(x = Age, y = Population, fill = Gender)) + 
-  geom_bar(data = nigeria[which(nigeria$Gender == "Male"),], stat = "identity") + 
-  geom_bar(data = nigeria[which(nigeria$Gender == "Female"),], stat = "identity") + 
-  scale_y_continuous(breaks = seq(-15000000, 15000000, 5000000), 
-                     labels = paste0(as.character(c(15,10,5,0,5,10,15)),"m")) +
-  ggtitle("Nigeria - population pyramid") + 
-  coord_flip() + 
-  scale_fill_brewer(palette = "Set1") +
-  theme_bw()
-n1 # WITHOUT THE STAT = 'IDENTITY' IN EACH OF THE GEOM_BARS, IT DOESN'T WORK ("Error: stat_count() must not be used with a y aesthetic  ")
+# get_censdata = function(country, year){
+#   c1 = "https://www.census.gov/data-tools/demo/idb/region.php?N=%20Results%20&T=10&A=separate&RT=0&Y="
+#   c2 = "&R=-1&C="
+#   myurl = paste0(c1, year, c2, country)
+#   urldata = getURL(myurl)
+#   mydata = readHTMLTable(urldata, stringsAsFactors = FALSE)
+#   df = mydata[[1]] 
+#   keep = c(2,4,5)
+#   df = df[,keep]
+#   names(df) = c("Age","Male","Female")
+#   cols = 2:3
+#   df[,cols] = apply(df[,cols],2, function(x) as.numeric(as.character(gsub(",", "", x)))) # The '2' means it's being applied by column, not be row, right?
+#   df = df[df$Age != 'Total',]
+#   df$Male = -1*df$Male
+#   df$Age = factor(df$Age, levels = df$Age, labels = df$Age)
+#   df.melt = melt(df, value.name = "Population", variable.name = "Gender", id.vars = "Age")
+#   return(df.melt)
+# }
+# 
+# nigeria = get_censdata("NI",2014)
+# n1 = ggplot(nigeria, aes(x = Age, y = Population, fill = Gender)) + 
+#   geom_bar(data = nigeria[which(nigeria$Gender == "Male"),], stat = "identity") + 
+#   geom_bar(data = nigeria[which(nigeria$Gender == "Female"),], stat = "identity") + 
+#   scale_y_continuous(breaks = seq(-15000000, 15000000, 5000000), 
+#                      labels = paste0(as.character(c(15,10,5,0,5,10,15)),"m")) +
+#   ggtitle("Nigeria - population pyramid") + 
+#   coord_flip() + 
+#   scale_fill_brewer(palette = "Set1") +
+#   theme_bw()
+# n1 # WITHOUT THE STAT = 'IDENTITY' IN EACH OF THE GEOM_BARS, IT DOESN'T WORK ("Error: stat_count() must not be used with a y aesthetic  ")
 
 ###
 
@@ -250,9 +250,19 @@ mrtg = 1500
 
 f.bills = sum(c(f.utilit,f.phones,f.gas,h.insur,f.misc,food,loans)); f.bills*12 # $50,760
 
+#######################
 
+wells = 10000
 
-
+fence = 1000
+fridge = 800
+blinds = 700
+moving = 1500
+flight = 400
+matt.two.flights = 400
+hotel = 70
+sum(fence,fridge,blinds,moving,flight,matt.two.flights,hotel)
+sum(fridge,moving,flight,matt.two.flights)
 
 #########################################################
 ## Trial runs for the flashcard app:
@@ -590,7 +600,7 @@ taxes = function(income){
 #########################################################################################
 #########################################################################################
 
-### ACCELERATED SEA LEVEL RISE - PNAS STUDY FEB. 2018 ###
+             #### ACCELERATED SEA LEVEL RISE - PNAS STUDY FEB. 2018 ####
 
 ######### ######### ######### ######### ######### ######### ######### ######### #########
 
@@ -648,19 +658,554 @@ df.feet = data.frame(sea.level_feet = feet.level, Year = years)
 ggplot(df.feet, aes(x = Year, y = sea.level_feet)) + geom_point() +
   geom_point(data = df.no.acc, mapping = aes(x = Year, y = sea.level_no.acc), col = "green")
 
+
+#########################
+### Antarctic ice loss
+
+# 2720 billion tonnes of ice melted raises sea level by 7.6 mm
+
+## Antarctica contains enough ice to raise GMSL by 58 m if it all melted. The rate of annual ice loss in 
+# Antarctica has tripled in the last 25 years (1992 to 2017). It has lost 2710 ± 1390 billion tonnes
+# of ice in that time. If it continues to triple every 25 years, how long will it take until all of its
+# ~20.7 quadrillion tonnes of ice are gone?
+
+7.6*3*3*3*3*3*3 # 100 years to rise .6 m; 125 years to rise 1.8 m; and in 150 years, it will add 5.5 m
+
+anos = seq(1992,1992+1000,25); length(anos)
+ritmo = 53e9
+mass.loss = 0
+for (i in 1:15){
+  print(anos[i])
+  print(mass.loss)
+  mass.loss = mass.loss+ritmo
+  ritmo = ritmo*3
+}
+
 #########################################################################################
 #########################################################################################
 
 
 
+### Linear Algebra
+# chapter 1 example 5:
+ex5 = matrix(data = c(1,3,-2,0,2,0,0,2,6,-5,-2,4,-3,-1,0,0,5,10,0,15,5,2,6,0,8,4,18,6),
+             nrow = 4, byrow = TRUE); ex5
+ex.one = ex5[1,]; ex.one
+ex.two = ex5[2,]
+ex.three = ex5[3,]
+ex.four = ex5[4,]
+ex.two = ex.two+ex.one*-2; ex.two    # get two and four with 0s below one's leading 1
+ex.four = ex.four+ex.one*-2; ex.four # get two and four with 0s below one's leading 1
+ex.new = rbind(ex.one,ex.two,ex.three,ex.four); ex.new
+ex.two = ex.two*-1; ex.two              # two had a leading -1; make it a 1
+ex.three = ex.three+ex.two*-5; ex.three # get three and four with 0s below two's leading 1
+ex.four = ex.four+ex.two*-4; ex.four    # get three and four with 0s below two's leading 1
+ex.new = rbind(ex.one,ex.two,ex.three,ex.four); ex.new
+z = ex.three        # these three lines are for the three/four switch
+ex.three = ex.four  # these three lines are for the three/four switch
+ex.four = z         # these three lines are for the three/four switch
+ex.three = ex.three*(1/6)           # get a leading 1 for three
+ex.new = rbind(ex.one,ex.two,ex.three,ex.four); ex.new
+ex.two = ex.two+ex.three*-3; ex.two # two has the last non-zero to eliminate for three's leading 1
+ex.one = ex.one+ex.two*2; ex.one    # get one with a 0 above two's leading 1
+ex.new = rbind(ex.one,ex.two,ex.three,ex.four); ex.new
+# DONE.
+
+#################################################################
+# matrix multiplication:
+m1 = matrix(data = c(1,2,4,2,6,0),nrow = 2, byrow = TRUE); m1
+m2 = matrix(data = c(4,1,4,3,0,-1,3,1,2,7,3,2),nrow = 3, byrow = TRUE); m2
+m1%*%m2 # it works! haha
+m2%*%m1 # WHOA ... YOU CAN TIMES A 2X3 BY A 3X4, BUT NOT A 3X4 BY A 2X3!?!?!?!? AB != BA !!!!!
+
+m1 = matrix(data = c(1,2,3,4), nrow = 2, byrow = TRUE); m1
+m2 = matrix(data = c(5,6,7,8), nrow = 2, byrow = TRUE); m2
+m1%*%m2
+
+m1 = matrix(data = c(2,1,3,4,5,6), nrow = 3, byrow = TRUE); m1
+m2 = matrix(data = c(1,3,6,2,4,5), nrow = 2, byrow = TRUE); m2
+m1%*%m2
+
+#################################################################
+
+#### CHAPTER 1 LINEAR ALGEBRA - SYSTEMS OF LINEAR EQUATIONS AND MATRICES
+
+### Notes:
+## The associative property of matrices when multiplying more than two matrices: (AB)C = A(BC) = ABC 
+# (It doesn't matter which two matrices you multiply first.)
+## Theorem 1.4.5 ... the definition of A^-1 ... 1/(ad - bc) * [switch a and d and make b and c negative]
+## Theorem 1.4.6 ... (AB)^-1 = B^-1 * A^-1 ... same for ^T
+## Theorem 1.4.9 ... (A^T)^-1 = (A^-1)^T
+
+### Example from 1.2 (page 14):
+
+m = matrix(data = c(0,0,-2,0,7,12,2,4,-10,6,12,28,2,4,-5,6,-5,-1), nrow = 3, byrow = TRUE); m
+m.one = m[1,]
+m.two = m[2,]
+m.three = m[3,]
+
+rbind(m.one,m.two,m.three)
+
+z = m.one
+m.one = m.two
+m.two = z
+
+m.one = m.one*.5; m.one
+m.three = m.three+m.one*-2; m.three
+m.two = m.two*-.5; m.two
+m.three = m.three+m.two*-5; m.three
+m.three = m.three*2; m.three
+m.two = m.two+m.three*7/2; m.two
+m.one = m.one+m.three*-6; m.one
+m.one = m.one+m.two*5; m.one
+# reduced row echelon 
+
+### 1.2 - #3a:
+m = matrix(data = c(1,-3,4,7,0,1,2,2,0,0,1,5), nrow = 3, byrow = TRUE); m
+m.one = m[1,]
+m.two = m[2,]
+m.three = m[3,]
+rbind(m.one,m.two,m.three)
+
+m.two = m.two+m.three*-2; m.two
+m.one = m.one+m.three*-4; m.one
+m.one = m.one+m.two*3; m.one
+
+## 3b:
+m = matrix(data = c(1,0,8,-5,6,0,1,4,-9,3,0,0,1,1,2), nrow = 3, byrow = TRUE); m
+m.one = m[1,]
+m.two = m[2,]
+m.three = m[3,]
+rbind(m.one,m.two,m.three)
+
+m.two = m.two+m.three*-4; m.two
+m.one = m.one+m.three*-8; m.one
+
+## 5:
+m = matrix(data = c(1,1,2,8,-1,-2,3,1,3,-7,4,10), nrow = 3, byrow = TRUE); m
+m.one = m[1,]
+m.two = m[2,]
+m.three = m[3,]
+rbind(m.one,m.two,m.three)
+
+m.two = m.two+m.one; m.two
+m.three = m.three+m.one*-3; m.three
+m.two = m.two*-1; m.two
+m.three = m.three+m.two*10; m.three
+m.three = m.three/(-52); m.three
+m.two = m.two+m.three*5; m.two
+m.one = m.one+m.three*-2; m.one
+m.one = m.one+m.two*-1; m.one
+
+
+### 1.5 example:
+
+A = matrix(data = c(1,2,3,2,5,3,1,0,8), nrow = 3, byrow = TRUE); A
+
+Aa = matrix(data = c(1,2,3,1,0,0,2,5,3,0,1,0,1,0,8,0,0,1), nrow = 3, byrow = TRUE); Aa
+
+aone = Aa[1,]
+atwo = Aa[2,]
+athree = Aa[3,]
+rbind(aone,atwo,athree)
+
+atwo = atwo-2*aone; atwo
+athree = athree-aone; athree
+athree = athree+2*atwo; athree
+athree = athree*-1
+aone = aone+atwo; aone
+atwo = atwo+athree*3; atwo
+aone = aone-atwo*3; aone
+# done
+
+
+### Google example:
+
+G = matrix(data = c(2,4,1,-1,1,-1,1,4,0), nrow = 3, byrow = TRUE); G
+
+Ga = matrix(data = c(2,4,1,1,0,0,-1,1,-1,0,1,0,1,4,0,0,0,1), nrow = 3, byrow = TRUE); Ga
+gone = Ga[1,]
+gtwo = Ga[2,]
+gthree = Ga[3,]
+rbind(gone,gtwo,gthree)
+
+gtwo = gtwo*2+gone; gtwo
+gthree = gthree-.5*gone; gthree
+gthree = gthree*-2; gthree
+gtwo = gtwo+gthree; gtwo
+gone = gone-gthree; gone
+gthree = gthree+2*gtwo; gthree
+gone = gone*.5; gone
+gone = gone-gtwo*2; gone
+gtwo = gtwo*.5
+# done
+
+
+### 1.5 example of matrix that is not invertible:
+
+Ba = matrix(data = c(1,6,4,1,0,0,2,4,-1,0,1,0,-1,2,5,0,0,1), nrow = 3, byrow = TRUE); Ba
+bone = Ba[1,]
+btwo = Ba[2,]
+bthree = Ba[3,]
+rbind(bone,btwo,bthree)
+
+bthree = bthree+bone; bthree
+btwo = btwo-bone*2; btwo
+bthree = bthree+btwo
+# shiz! B is not invertible
 
 
 
+## 1.2 Exercises
+
+a = matrix(data = c(1,-1,2,-1,-1,2,1,-2,-2,-2,-1,2,-4,1,1,3,0,0,-3,-3), nrow = 4, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+afour = a[4,]
+rbind(aone,atwo,athree,afour)
+
+atwo = atwo+aone*-2; atwo
+athree = athree+aone; athree
+afour = afour+aone*-3; afour
+atwo = atwo/3; atwo
+athree = athree+atwo*-1; athree
+afour = afour+atwo*-3; afour
+aone = aone+atwo; aone
+###########
+a = matrix(data = c(2,-1,3,4,9,1,0,-2,7,11,3,-3,1,5,8,2,1,4,4,10), nrow = 4, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+afour = a[4,]
+rbind(aone,atwo,athree,afour)
+
+aone = aone/2; aone
+atwo = atwo-aone; atwo
+athree = athree+aone*-3; athree
+afour = afour+aone*-2; afour
+athree = athree+atwo*3; athree
+afour = afour+atwo*-4; afour
+afour = afour+athree; afour
+atwo = atwo*2; atwo
+athree = athree/-14; athree
+afour = afour-athree; afour
+afour = afour/-5; afour
+athree = athree+afour; athree
+atwo = atwo+afour*-10; atwo
+aone = aone+afour*-2; aone
+atwo = atwo+athree*7; atwo
+aone = aone+athree*-1.5; aone
+aone = aone+atwo/2; aone
+###########
+a = matrix(data = c(1,2,-3,4,3,-1,5,2,4,1,-14,2), nrow = 3, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+rbind(aone,atwo,athree)
+
+atwo = atwo+aone*-3; atwo
+athree = athree+aone*-4; athree
+athree = athree-atwo; athree
+atwo = atwo/-7; atwo
+athree = athree/-16; athree
+atwo = atwo+athree*2; atwo
+aone = aone+athree*3; aone
+aone = aone-atwo*2; aone
+###########
+a = matrix(data = c(1,1,1,6,1,-1,2,2,2,1,-1,3), nrow = 3, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+rbind(aone,atwo,athree)
+
+atwo = atwo-aone; atwo
+athree = athree+aone*-2; athree
+atwo = atwo-athree; atwo
+atwo = atwo*-1; atwo
+athree = athree+atwo; athree
+athree = athree/-7; athree
+atwo = atwo+athree*4; atwo
+aone = aone-athree; aone
+aone = aone-atwo; aone
+###########
+a = matrix(data = c(1,1,1,-3,27,9,3,-21,64,16,4,-24), nrow = 3, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+rbind(aone,atwo,athree)
+
+atwo = atwo-aone*27; atwo
+athree = athree+aone*-64; athree
+atwo = atwo/3; atwo
+athree = athree-atwo*8; athree
+atwo = atwo/-6; atwo
+athree = athree/4; athree
+atwo = atwo-athree*(4/3); atwo
+aone = aone-athree; aone
+aone = aone-atwo; aone
+
+curve(x^3 - 6*x^2 + 2*x + 10, from = -5, to = 8, ylim = c(-30,30), col = "blue", lwd = 2); abline(h = 0, v = 0)
+abline(h = seq(-30,30,5), v = seq(-4,8,1), lty = 2)
+###########
+a = matrix(data = c(3,0,-1,2,1,1), nrow = 3, byrow = TRUE); a
+c = matrix(data = c(1,4,2,3,1,5), nrow = 2, byrow = TRUE); c
+2*t(a)+c
+###########
+d = matrix(c(1,5,2,-1,0,1,3,2,4), nrow = 3, byrow = TRUE); d
+e = matrix(c(6,1,3,-1,1,2,4,1,3), nrow = 3, byrow = TRUE); e
+t(d)-t(e)
+i1 = matrix(c(1,4,2,3,1,5), nrow = 2, byrow = TRUE); i1
+i2 = matrix(c(1,5,2,-1,0,1,3,2,4), nrow = 3, byrow = TRUE); i2
+CD = i1%*%i2
+E = matrix(c(6,1,3,-1,1,2,4,1,3), nrow = 3, byrow = TRUE); E
+CD%*%E
+###########
+c = matrix(c(1,4,2,3,1,5), nrow = 2, byrow = TRUE); c
+c%*%t(c)
+###########
+D = matrix(c(1,5,2,-1,0,1,3,2,4), nrow = 3, byrow = TRUE); D
+t(D%*%t(D)) # Ha! This is actually the same as simply D%*%t(D)!! It's the same as its own transpose.
+# But the trace of this is 30+2+29 = 61
+###########
+a = matrix(c(1,2,4,2,6,0), nrow = 2, byrow = TRUE); a
+b = matrix(c(4,1,4,3,0,-1,3,1,2,7,5,2), nrow = 3, byrow = TRUE); b
+c = a%*%b
+cone = c[1,]
+ctwo = c[2,]
+rbind(cone,ctwo)
+z = cone
+cone = ctwo
+ctwo = z
+ctwo = ctwo+cone*-3/2; ctwo
+cone = cone/8; cone
+ctwo = ctwo/33; ctwo
+cone = cone+ctwo/2; cone
+###########
+a = matrix(c(3,-1,2,4), nrow = 2, byrow = TRUE); a
+b = matrix(c(0,2,1,-4), nrow = 2, byrow = TRUE); b
+c = matrix(c(4,1,-3,-2), nrow = 2, byrow = TRUE); c
+b%*%a + c%*%a
+(b+c)%*%a
+###########
+# 1.4 - inverting matrices
+m = matrix(c(1,2,3,0,1,4,5,6,0), nrow = 3, byrow = TRUE); m
+solve(m) # Finds the inverse! 3x3s are a lot of work to invert
+
+# 1.5 - elementary matrices
+m = matrix(c(1,0,1,0,1,1,1,1,0), nrow = 3, byrow = TRUE); m
+solve(m)
+maug = matrix(c(1,0,1,1,0,0,0,1,1,0,1,0,1,1,0,0,0,1), nrow = 3, byrow = TRUE); maug
+maugone = maug[1,]
+maugtwo = maug[2,]
+maugthree = maug[3,]
+rbind(maugone, maugtwo, maugthree)
+
+maugthree = maugthree-maugone; maugthree
+maugthree = maugthree-maugtwo; maugthree
+maugthree = maugthree/-2; maugthree
+
+a = matrix(c(1,0,0,0,4,0,0,0,1), nrow = 3, byrow = TRUE); a
+b = matrix(c(1,0,0,0,1,3,0,0,1), nrow = 3, byrow = TRUE); b
+c = matrix(c(1,0,-2,0,1,0,0,0,1), nrow = 3, byrow = TRUE); c
+a%*%b%*%c
+c%*%b%*%a
+
+#### CHAPTER 2 
+
+### 2.2
+a = matrix(c(3,-6,9,-2,7,-2,0,1,5), nrow = 3, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+rbind(aone, atwo, athree)
+
+aone = aone/3; aone
+atwo = atwo+aone*2; atwo
+atwo = atwo-athree*2; atwo
+athree = athree-atwo; athree
+
+### 2.3
+a = matrix(c(1,0,2,6,-3,4,6,30,-1,-2,3,8), nrow = 3, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+rbind(aone, atwo, athree)
+
+athree = athree+aone; athree
+atwo = atwo+aone*3; atwo
+atwo = atwo/4; atwo
+athree = athree+atwo*2; athree
+athree = athree/11; athree
+# 3.4545 = 38/11 ... atwo = 12 + 38/11 * -3 ... aone = 6 + 38/11 * -2
+atwo = atwo+athree*-3
+aone = aone+athree*-2
+-10/11
+18/11
+##############
+-96-112-240
+-8*56
+##############
+det(matrix(c(4,5,2,11,1,3,1,5,1),nrow = 3, byrow = TRUE))
+
+#### Chapter 3
+a = matrix(c(1,3,0,-1,-1,2,1,1,0,1,4,19), nrow = 3, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+rbind(aone, atwo, athree)
+
+atwo = atwo+aone; atwo
+atwo = atwo+athree*-4; atwo
+athree = athree-atwo; athree
+athree = athree/19; athree
+atwo = atwo+athree*15; atwo
+aone = aone+atwo*-3; aone
 
 
+#### Chapter 5
+a = matrix(c(1,4,2,3), nrow = 2, byrow = TRUE); a
+e = matrix(c(2,-1), nrow = 2, byrow = TRUE); e
+a%*%e
 
 
+#### Chapter 4
+a = matrix(c(4,1,0,6,0,-1,2,-8,-2,2,1,-1,-2,3,4,-8), nrow = 4, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+afour = a[4,]
+rbind(aone, atwo, athree, afour)
 
+aone = aone/4; aone
+atwo = atwo*-1; atwo
+athree = athree+aone*2; athree
+afour = afour+aone*2; afour
+athree = athree+atwo*-2.5; athree
+afour = afour+atwo*-3.5; afour
+afour = afour+athree*-2; afour
+afour = afour*-1; afour
+athree = athree+afour*-6; athree
+aone = aone+atwo*-.25; aone
+atwo = atwo+afour*2; atwo
+aone = aone+afour*-.5; aone
+#################
+a = matrix(c(4,1,0,-1,0,-1,2,5,-2,2,1,7,-2,3,4,1), nrow = 4, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+afour = a[4,]
+rbind(aone, atwo, athree, afour)
 
+aone = aone+athree; aone
+aone = aone/2; aone
+athree = athree+aone*2; athree
+afour = afour+aone*2; afour
+atwo = atwo*-1; atwo
+athree = athree+atwo*-5; athree
+afour = afour+atwo*-6; afour
+athree = athree/12; athree
+afour = afour+athree*-17; afour # no solution! zero = -16.8333!!
+#################
+a = matrix(c(2,1,3,-9,1,-1,2,-7,4,3,5,-15), nrow = 3, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+rbind(aone, atwo, athree)
+
+aone = aone-atwo; aone
+atwo = atwo-aone; atwo
+athree = athree+aone*-4; athree
+athree = athree-atwo; athree # cool trick I taught myself! I thought it was gonna be ugly but it wasn't!
+atwo = atwo-athree; atwo     # cool trick I taught myself! I thought it was gonna be ugly but it wasn't!
+atwo = atwo*-1; atwo
+athree = athree+atwo*2; athree
+athree = athree/-2; athree
+atwo = atwo+athree; atwo
+aone = aone-athree; aone
+aone = aone+atwo*-2; aone
+#################
+a = matrix(c(1,4,5,0,2,9,8,0,2,9,9,0,-1,-4,-5,0), nrow = 4, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+afour = a[4,]
+rbind(aone, atwo, athree, afour)
+
+atwo = atwo+aone*-2; atwo
+athree = athree+aone*-2; athree
+afour = afour+aone; afour
+athree = athree-atwo; athree
+atwo = atwo+athree*2; atwo
+aone = aone+athree*-5; aone
+aone = aone+atwo*-4; aone
+#################
+a = matrix(c(1,5,3,0,-2,6,2,0,3,-1,1,0), nrow = 3, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+rbind(aone, atwo, athree)
+
+atwo = atwo+aone*2; atwo
+athree = athree+aone*-3; athree
+athree = athree+atwo; athree
+atwo = atwo/16; atwo
+aone = aone+atwo*-6; aone
+#################
+a = matrix(c(1,0,5,7,0,3,1,6,2,0,3,4,3,-1,0), nrow = 3, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+rbind(aone, atwo, athree)
+
+atwo = atwo+aone*-3; atwo
+athree = athree+aone*-3; athree
+athree = athree+atwo*-4; athree
+athree = athree/24; athree
+atwo = atwo+athree*9; atwo
+aone = aone+athree*-5; aone
+#################
+a = matrix(c(1,1,0,0,0,2,1,0,1,2,2,0,2,1,1,0), nrow = 4, byrow = TRUE); a
+aone = a[1,]
+atwo = a[2,]
+athree = a[3,]
+afour = a[4,]
+rbind(aone, atwo, athree, afour)
+
+athree = athree-aone; athree
+afour = afour+aone*-2; afour
+atwo = atwo+afour; atwo
+athree = athree-atwo; athree
+z = athree
+athree = afour
+afour = z
+athree = athree+atwo; athree
+athree = athree/3; athree
+atwo = atwo+athree*-2; atwo
+aone = aone-atwo; aone
+
+#######################################
+# Determinants of 4x4s:
+a = matrix(c(4,-1,0,3,2,0,-3,1,1,-2,1,5,0,4,3,1), nrow = 4, byrow = TRUE); a
+det(a)
+b = matrix(c(1,4,2,3,0,1,4,4,-1,0,1,0,2,0,4,1), nrow = 4, byrow = TRUE); b
+det(b)
+c = matrix(c(2,-1,3,0,-3,1,0,4,-2,1,4,1,-1,3,0,-2), nrow = 4, byrow = TRUE); c
+det(c)
+
+## Randomly, I just realized there is no way to integrate (by hand) an exp(±x^2)!!! haha
+curve(exp(-x^2), from = -5, to = 5, ylim = c(-5,5), col = "blue", lwd = 2); abline(h = 0, v = 0, col = "gray")
+
+#######################################
+# Determinants of 5x5:
+a = matrix(c(-4,1,1,1,1,
+             1,-4,1,1,1,
+             1,1,-4,1,1,
+             1,1,1,-4,1,
+             1,1,1,1,-4), nrow = 5, byrow = TRUE); a
+det(a) # totally wrong answer ... ?????? I just broke R. Actually, the answer is 0. So it's just not very good at knowing the exact answer.
+
+b = matrix(c(1,3,1,5,3,-2,-7,0,-4,2,0,0,1,0,1,0,0,2,1,1,0,0,0,1,1), nrow = 5, byrow = TRUE); b
+det(b)
 
 

@@ -9,7 +9,6 @@ obs = 1:10
 df = data.frame(obs = obs, x = x, y = y, z = z)
 df.long = gather(df, key = "stock", value = "PriceChange", c("x","y","z")) # But x y and z don't have to be in quotes!!!!!
 
-?spread
 spread(df.long, stock, PriceChange) # undoes gather (they're opposites) 
 
 aov1 = aov(PriceChange ~ stock*obs, data = df.long)

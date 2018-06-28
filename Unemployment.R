@@ -2,6 +2,7 @@
 
 # DO THIS (1) :
 ################################################################################################################
+library(ggplot2)
 unempl = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/unemployment.csv")
 unempl = unempl[12:82,1:2]
 
@@ -51,7 +52,7 @@ pres.dat = data.frame(years = 1947:2017, party =
                           rep("Republican",8),rep("Democrat",4),rep("Republican",12),
                           rep("Democrat",8),rep("Republican",8),rep("Democrat",8)))
 unempl$party = pres.dat$party
-unempl$rows = 1:nrows(unempl)
+unempl$rows = 1:nrow(unempl)
 ################################################################################################################
 
 colnames(unempl)
@@ -69,7 +70,9 @@ fr = data.frame(x1 = c(1947,1953,1961,1969,1977,1981,1993,2001,2009),
 ggplot() + geom_rect(data = fr, aes(xmin=x1,xmax=x2,ymin=y1,ymax=y2, fill = prty)) + 
   scale_fill_manual(values = alpha(c("blue","red"), .3)) + 
   geom_line(data = unempl, mapping = aes(x = year, y = rate)) + # FINALLY GOT THIS PIECE OF CRAP TO WORK
-  geom_point(x = 2000, y = 8)
+  geom_point(x = 2000, y = 8) + 
+  scale_x_continuous(breaks = seq(1945,2020,5)) +
+  scale_y_continuous(breaks = seq(3,10,.5))
 ################################################################################################################
 
 da.prezidents = data.frame(nombres = c("Truman","Eisenhower","JFK","LBJ","Nixon","Ford",
