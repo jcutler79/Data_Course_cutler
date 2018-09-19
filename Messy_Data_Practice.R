@@ -50,7 +50,7 @@ for (i in levels(df_long$Substrate)){
 }
 
 
-# This is money: 
+# This is money (ALSO CREATES A LOT OF GGPLOTS WITH ONE FOR LOOP, AS ABOVE): 
 substrates = levels(df_long$Substrate)
 substrate.plot = function(x){
   ggplot(df_long[df_long$Substrate == x,], aes(x = Time, y = Abs, col = Sample.ID)) + geom_point() +

@@ -837,7 +837,7 @@ plot(x2,y2, xlim = c(-10,510)); abline(h = 0, v = 0)
 US = data.frame(hshlds.prcnt = c(0,.2,.4,.6,.8,1), prcnt.income = c(0,.034,.12,.266,.498,1)) # data from US census bureau on Gini values for 2010
 x = as.vector(US$hshlds.prcnt)
 y = as.vector(US$prcnt.income)
-# par(mar = c(5,4,4,4))
+par(mar = c(5,4,4,4))
 plot(x,y, xlab = "fraction of households", ylab = "", col = "red")
 mtext("US 2010", side = 2, line = 2, col = "red")
 par(new=TRUE)
@@ -938,6 +938,18 @@ nchar(pet0) # So, it does count spaces
 
 ## string format specifier (sprintf stuff):
 # see great course notepad
+# from flashcards notepad:
+for (i in 1:length(deck.of.decks)){
+  X = sprintf("%i %7.0f",i,length(deck.of.decks[[i]]))
+  print(X)
+}
+sprintf("%5.1f", pi) # "  3.1"
+sprintf("%4.1f", pi) # " 3.1"
+sprintf("%3.1f", pi) # "3.1"
+sprintf("%-5.1f", pi)# "3.1  "
+sprintf("%-10f", pi)
+sprintf("%-10.6f", pi) # same as above
+
 
 
 ## tapply - example from rpm data (Stats 4100):
@@ -1065,8 +1077,66 @@ sweet.stuff = ggplot(heckyeah, aes(x = nums, y = heckyeah$sweet)) + geom_line();
 
 
 
-
 ####################################################################
+
+
+### Shiny tutorial #1 
+
+getwd()
+setwd("/Users/jamescutler/Desktop/Data_Science/")
+install.packages("shiny")
+library(shiny)
+shinyUI(fluidPage(
+  titlePanel(title = "This is my first shiny app!"),
+  sidebarLayout(position = "right",
+                sidebarPanel(h3("this is the sidebar panel"),h4("widget4"),h5("widget5")),
+                mainPanel(h4("this is the main panel text, where output is displayed"),
+                          h5("this is the output5"))
+  )
+))
+
+
+#########################################################################################
+
+                 ############# MASTER LIST OF FUNCTIONS #############
+
+#########################################################################################
+
+## Alphabetic Table of Contents
+# tangent.line 
+# taxes
+
+
+tangent.line = function(xdata,ydata,plottitle,xlabel,ylabel,smoothcolor,anewx,pointlinecolor){
+  plot(xdata,ydata, main = plottitle, xlab = xlabel, ylab = ylabel)
+  p = smooth.spline(ydata ~ xdata)
+  lines(p, col = smoothcolor)
+  pred0 = predict(p, x = anewx, deriv = 0)
+  pred1 = predict(p, x = anewx, deriv = 1)
+  yint = pred0$y - pred1$y*anewx
+  xint = -yint/pred1$y
+  points(pred0, col = pointlinecolor, pch = 19)
+  lines(xdata, pred1$y*xdata + yint, col = pointlinecolor)
+  print(sprintf("Slope of %s tangent line is %s",pointlinecolor,pred1$y))
+  more.tangents = readline(prompt = "Would you like to add another tangent line? Hit 'y' if yes, anything else if no. ")
+  if (more.tangents != 'y'){
+    print("Cool.")
+  }else{
+    while (more.tangents == 'y'){
+      anewx = as.numeric(readline(prompt = "Enter new x: "))
+      pointlinecolor = readline(prompt = "Enter new point and line color (w/out quotes): ")
+      pred0 = predict(p, x = anewx, deriv = 0)
+      pred1 = predict(p, x = anewx, deriv = 1)
+      yint = pred0$y - pred1$y*anewx
+      xint = -yint/pred1$y
+      points(pred0, col = pointlinecolor, pch = 19)
+      lines(xdata, pred1$y*xdata + yint, col = pointlinecolor)
+      print(sprintf("Slope of %s tangent line is %s",pointlinecolor,pred1$y))
+      more.tangents = readline(prompt = "Would you like to add yet another tangent line? Hit 'y' if yes, anything else if no. ")
+    }
+  }
+}
+
 
 
 ### Tax brackets 2018
@@ -1108,31 +1178,6 @@ taxes = function(income){
   takehome = prettyNum(takehome, big.mark = ",", scientific = FALSE)
   return(cat(sprintf("Your taxes are $%s \nAnd your takehome is $%s",tax,takehome)))
 }
-
-
-
-####################################################################
-
-
-### Shiny tutorial #1 
-
-getwd()
-setwd("/Users/jamescutler/Desktop/Data_Science/")
-install.packages("shiny")
-library(shiny)
-shinyUI(fluidPage(
-  titlePanel(title = "This is my first shiny app!"),
-  sidebarLayout(position = "right",
-                sidebarPanel(h3("this is the sidebar panel"),h4("widget4"),h5("widget5")),
-                mainPanel(h4("this is the main panel text, where output is displayed"),
-                          h5("this is the output5"))
-  )
-))
-
-
-
-
-
 
 
 

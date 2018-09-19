@@ -1,9 +1,37 @@
 #########################################
 
-### Cool stuff you can do with ggplot ###
+       ### TABLE OF CONTENTS ###
 
 #########################################
 
+# celsius to fahrenheit and vice versa
+# Population pyramids
+# keras (deep learning neural networks)
+# 330 - Mesopotamia, Egypt, Levant timelines
+# taxes 
+# Sea level rise, and antarctic ice loss
+# LINEAR ALGEBRA
+
+##################################################################################
+
+temperature = function(cel.or.fahr,temp){
+  if (cel.or.fahr == "celsius"){
+    fahr = (9/5)*temp + 32
+    print(sprintf("The temperature in Fahrenheit is: %s",fahr))
+  } else{
+    cel = (temp - 32)*(5/9)
+    print(sprintf("The temperature in Celsius is: %s",cel))}
+}
+temperature("celsius",40)
+temperature("fahrenheit",122)
+temperature("fahr",451)
+temperature("celsius",100)
+temperature("celsius",1)
+temperature("celsius",2)
+temperature("fahr",0)
+temperature("celsius",-273)
+
+##################################################################################
 
 ### Population pyramids! (from census.gov data; inspired by the fact that tableau is supposed to be worth one's time to learn; in reality, R can make things like population pyramids just fine!) 
 
@@ -308,10 +336,19 @@ sum(fridge,moving,flight,matt.two.flights)
 # }
 #########################################################
 
-##########################################################################################
 
-                  ### Mesopotamian, Egyptian, and Israelite history ###
 
+
+
+#####################################################################################################
+#####################################################################################################
+
+                     ### Mesopotamian, Egyptian, and Israelite history ###
+
+#####################################################################################################
+#####################################################################################################
+
+library(ggplot2)
 pharaohs = data.frame(X = c(-3100,-2670,-2613,-2589,-2558,-2460,-2278,-2180,-1971,-1878,-1541,-1479,-1458,-1425,-1390,-1352,-1332,-1292,-1279,-1213,-1186,-943,-530,-332,-51),
                       Y = rep(1.7,25))
 rownames(pharaohs) = c("Narmer","Djoser","Sneferu","Khufu","Khafre","Neferefre","Pepi II",
@@ -406,6 +443,9 @@ ggplot() + geom_rect(data = periods, aes(xmin = x1, xmax = x2, ymin = y1, ymax =
 
 
 
+
+
+
 ####################################################################################
 
 
@@ -432,8 +472,8 @@ df = data.frame(col1 = rnorm(10000,100,15),
                 col3 = rnorm(10000,104,15), 
                 col4 = rnorm(10000,106,15))
 
-plot(density(df$col2), xlim = c(10,190))
-points(density(df$col1), type = "l", col = "red")
+plot(density(df$col1), xlim = c(10,190))
+points(density(df$col2), type = "l", col = "red")
 points(density(df$col3), type = "l", col = "green")
 points(density(df$col4), type = "l", col = "blue")
 
@@ -597,6 +637,8 @@ taxes = function(income){
 
 
 
+
+
 #########################################################################################
 #########################################################################################
 
@@ -681,9 +723,18 @@ for (i in 1:15){
   ritmo = ritmo*3
 }
 
+
+
+
+
+
 #########################################################################################
 #########################################################################################
 
+                                  ### LINEAR ALGEBRA ###
+
+#########################################################################################
+#########################################################################################
 
 
 ### Linear Algebra

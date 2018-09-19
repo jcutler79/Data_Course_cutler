@@ -788,6 +788,154 @@ get.passages.2("rs of wars",bkofm)
 
 
 
+OT.wfp("poor")
+OT.wcp("poor")
+gregexpr("poor", iPsalms)
+get.passages.2("poor",iPsalms)
+get.passages.2("poor",iProverbs)
+OT.wcp("needy")
+OT.wfp("needy")
+get.passages.2("mourn",theOT)
+OT.whclrs("mourn")
+OT.whclrs("comfort")
+
+####################################################
+# Getting passages with two hit words within a certain distance from each other:
+ot.comfort = gregexpr("comfort",theOT)
+ot.mourn = gregexpr("mourn",theOT)
+class(ot.comfort)
+length(ot.comfort[[1]])
+ifelse(abs(ot.comfort[[1]][2] - ot.mourn[[1]][1]) < 20,1,0)
+# Okay, this is it:
+comfort.mourn = data.frame(matrix(NA, nrow = 81, ncol = 121))
+for (i in 1:81){
+  for (j in 1:121){
+    comfort.mourn[i,j] = ifelse(abs(ot.comfort[[1]][i] - ot.mourn[[1]][j]) < 20, 1, 0)
+  }
+}
+for (i in 1:81){
+  print(c(sum(comfort.mourn[i,]), i)) # You need to sum all the (121) numbers in a row, row by row; the sum will usually 1 at most, but more often zero
+}
+ot.comfort[[1]][c(29,57,62)]
+str_sub(theOT,1892417-200,1892417+200)
+str_sub(theOT,2432023-200,2432023+200)
+str_sub(theOT,2507204-200,2507204+200)
+####################################################
+
+get.passages.2("the meek",iPsalms)
+get.passages.2("hunger",iPsalms)
+get.passages.2("hungry",iPsalms)
+get.passages.2("thirst",iPsalms)
+OT.wcp("righteousness")
+get.passages.2("hunger",iIsaiah)
+
+ot.hunger = gregexpr("hunger", theOT); length(ot.hunger[[1]])
+ot.thirst = gregexpr("thirst", theOT); length(ot.thirst[[1]])
+hunger.thirst = data.frame(matrix(NA, nrow = length(ot.hunger[[1]]), ncol = length(ot.thirst[[1]])))
+for (i in 1:length(ot.hunger[[1]])){
+  for (j in 1:length(ot.thirst[[1]])){
+    hunger.thirst[i,j] = ifelse(abs(ot.hunger[[1]][i] - ot.thirst[[1]][j]) < 40, 1, 0)
+  }
+}
+for (i in 1:length(ot.hunger[[1]])){
+  print(c(sum(hunger.thirst[i,]), i)) 
+}
+ot.hunger[[1]][c(3,9)]
+str_sub(theOT,763050-200,763050+200)
+str_sub(theOT,2400825-200,2400825+200)
+gregexpr("hunger and thirst",theOT)
+gregexpr("hunger and thirst",theNT)
+gregexpr("hunger and thirst",bkofm)
+get.passages.2("hunger and thirst",theNT)
+get.passages.2("hunger and thirst",bkofm)
+
+
+#####################################################################################
+#####################################################################################
+                          ##### WORD PROXIMITY!!! #####
+
+word.proximity = function(word1,word2,proximity,book){
+  gregop1 = gregexpr(word1,book)
+  gregop2 = gregexpr(word2,book)
+  word1.word2 = data.frame(matrix(NA, nrow = length(gregop1[[1]]), ncol = length(gregop2[[1]])))
+  for (i in 1:length(gregop1[[1]])){
+    for (j in 1:length(gregop2[[1]])){
+      word1.word2[i,j] = ifelse(abs(gregop1[[1]][i] - gregop2[[1]][j]) < proximity, 1, 0)
+    }
+  }
+  thesums = vector()
+  for (i in 1:length(gregop1[[1]])){
+    thesums[i] = sum(word1.word2[i,])
+  }
+  theones = which(thesums == 1)
+  for (i in 1:length(theones)){
+    print(str_sub(book,gregop1[[1]][theones[i]]-200,gregop1[[1]][theones[i]]+200))
+  }
+}
+word.proximity("hunger","thirst",40,theOT)
+word.proximity("faith","works",60,theNT)
+word.proximity("thirst","thee",20,theOT)
+word.proximity("pertain","righteousness",20,bkofm)
+get.passages.2("things of righteousness",bkofm)
+word.proximity("pure","heart",20,theOT)
+OT.whclrs("peace")
+OT.whclrs("peacemaker")
+NT.whclrs("adopt")
+get.passages.2("adopt",theNT)
+
+BofM.whclrs("month")
+get.passages.2("month",bkofm)
+
+
+#################################################################
+################ ANALYSIS OF SEASONALITY OF WARS ################ 
+1900 + (100 - (91-11)) # 1920
+1900 + (100 - (91-19)) # 1928
+1900 + (100 - (91-26)) # 1935
+df.wars = data.frame(wars = c(1), dates = c("1920-02-05",
+                                            "1928-11-10",
+                                            "1935-01-01",
+                                            ""))
+df.mnth = data.frame(wars = rep(1,7), dates = c("2000/02/05",
+                                                "2000/11/10",
+                                                "2000/01/01",
+                                                "2000/01/02",
+                                                "2000/02/15",
+                                                "2000/07/03",
+                                                "2000/06/15"))
+df.mnth$dates = as.Date(df.mnth$dates, '%Y/%m/%d')
+rownames(df.mnth) = c("Ammonihah destroyed",
+                      "Armies of Lamanites seen approaching",
+                      "Lamanite army wakes up to dead Amalickiah",
+                      "Moroni gets letter from Helaman",
+                      "Jershonites send provisions to armies",
+                      "Stripling warriors go against Lamanite army",
+                      "Giddianhi's robbers go to war against Nephites")
+
+ggplot(data = df.mnth, aes(dates,wars)) + 
+  geom_point()
+
+ggplot() +
+  geom_point(data = df.mnth, mapping = aes(x = dates, y = wars)) +
+  geom_text(data = df.mnth, mapping = aes(x = dates, y = wars, label = rownames(df.mnth)), 
+            size = 2, angle = 45, vjust = -.1, hjust = -.1) +
+  scale_x_date(date_breaks = "1 month", 
+               date_labels = "%b", 
+               limits = as.Date(c("2000/01/01","2000/12/31"))) +
+  theme_classic()
+
+library(dplyr)
+thewars = sample(12,7)
+length(which(between(thewars,5.1,9.1)))
+thewars = vector()
+for (i in 1:10000){
+  roll = sample(12,7)
+  thewars[i] = length(which(between(roll,5.1,9.1)))
+}
+# thewars
+mean(thewars)
+
+
 
 
 
