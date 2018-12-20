@@ -24,6 +24,7 @@
 library(stringr)
 library(ggplot2)
 library(gridExtra)
+library(pracma) # for the strcmp function for comparing two strings to see if they're identical
 
 ########################################
 
@@ -745,6 +746,9 @@ get.passages.2("the Spirit of the",theOT,todos = FALSE)
 g.OT("holy Spirit")
 get.passages.2("holy Spirit",theOT)
 get.passages.2("Holy Spirit",theNT)
+g.NT("love")
+g.OT("love")
+g.NT("marriage")
 
 get.passages.2("Gentiles",bkofm,todos = FALSE)
 
@@ -798,6 +802,8 @@ OT.wfp("needy")
 get.passages.2("mourn",theOT)
 OT.whclrs("mourn")
 OT.whclrs("comfort")
+
+
 
 ####################################################
 # Getting passages with two hit words within a certain distance from each other:
@@ -887,6 +893,8 @@ BofM.whclrs("month")
 get.passages.2("month",bkofm)
 
 
+
+
 #################################################################
 ################ ANALYSIS OF SEASONALITY OF WARS ################ 
 1900 + (100 - (91-11)) # 1920
@@ -936,9 +944,46 @@ for (i in 1:10000){
 mean(thewars)
 
 
+Ether = str_sub(bkofm,books[15,1],books[15,2])
+strcmp(Ether,iEther)
+gregexpr("anchor",bkofm)
+g.BofM("anchor")
+get.passages.2("anchor",bkofm)
+get.passages.2("anchor",theNT)
 
 
 
+#############################################################################
 
+# Documentary Hypothesis - Anchor Bible Dictionary
+
+# 3. Terminology
+one = c("creation","P","J")
+two = c("animals on ark","J","P")
+three = c("lifespan","J","P")
+four = c("Abraham's home","P"," ")
+five = c("Benjamin's birthplace","E","P")
+six = c("sale of Joseph","E","J")
+seven = c("Jethro vs Reuel","E","J")
+eight = c("God's name - Moses","P","J")
+nine = c("construction of Tent","E","P")
+ten = c("Decalog","P","J")
+eleven = c("manna and birds","E","P")
+twelve = c("faithful spies","J","P")
+thirteen = c("Amalekites","J"," ")
+fourteen = c("Korah's destruction","J","P")
+fifteen = c("Israel at Peor","J","P")
+terms = rbind(one,two,three,four,five,six,seven,eight,nine,ten,eleven,twelve,thirteen,
+      fourteen,fifteen)
+## TWO METHODS FOR FINDING HOW MANY J-P / P-J PAIRS THERE ARE:
+# THE LONGER METHOD:
+length(which(terms[,2] == "J" & terms[,3] == "P"))+
+  length(which(terms[,2] == "P" & terms[,3] == "J"))
+# THE SHORTER METHOD:
+length(which(terms[,2] %in% c("J","P") & terms[,3] %in% c("J","P")))
+
+length(which(terms[,2] %in% c("J","E") & terms[,3] %in% c("J","E")))
+
+length(which(terms[,2] %in% c("E","P") & terms[,3] %in% c("E","P")))
 
 

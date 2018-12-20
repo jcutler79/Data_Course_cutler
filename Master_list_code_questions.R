@@ -923,6 +923,19 @@ mean(trial1b)
 mean(22.467+28.59)
 
 
+## REVERSE THE ORDER OF ROWS IN A DATA FRAME!!!!!!
+df = data.frame(Letter_grade = c("D","C","B","A"),
+                Freqs = c(19,99,76,6))
+dim(df)[1]:1 # I LOVE HOW SIMPLE THIS CODE ENDED UP BEING!!!!
+df = df[dim(df)[1]:1,]
+
+
+## Rounding numbers:
+# round(), floor(), ceiling(), and trunc() in R are cool!
+# between function does x >= left and x <= right (not > and < )
+
+
+
 ## Setting a seed:
 # example:
 set.seed(4000)
@@ -1096,15 +1109,68 @@ shinyUI(fluidPage(
 ))
 
 
+
+
+
+
+#########################################################################################
 #########################################################################################
 
                  ############# MASTER LIST OF FUNCTIONS #############
 
 #########################################################################################
+#########################################################################################
 
-## Alphabetic Table of Contents
-# tangent.line 
-# taxes
+### Alphabetic Table of Contents
+
+## CIfunc - for creating confidence intervals for the population mean based on a 
+# single sample (using sample data)
+
+## CIquiz - for doing the same thing as CIfunc, but without the sample data (just quiz
+# question info like 'here's the sample size, mean and st dev,' etc., but no raw data)
+
+## tangent.line 
+
+## taxes
+
+
+CIfunc = function(df.data,t.CI){
+  t.alpha = 1-t.CI
+  xbar = mean(df.data)
+  t = qt(p = 1-t.alpha/2, df = length(df.data)-1)
+  se = sd(df.data)/sqrt(length(df.data))
+  me = t*se
+  ub = xbar + me
+  lb = xbar - me
+  print(sprintf("The sample mean is %.4f",xbar))
+  print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",t.CI*100,lb,ub))
+}
+# CIfunc(NC$Weight_gain,.95) # This is an example of the parameters you would pass in
+
+
+
+CIquiz = function(CI,xbar,sd,n,t.or.z){
+  alpha = 1 - CI
+  p = 1 - alpha/2
+  if (t.or.z == "t"){
+    t = qt(p, df = n-1)
+    se = sd/sqrt(n)
+    me = t*se
+    ub = xbar + me
+    lb = xbar - me
+    print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",CI*100,lb,ub))
+  } else{
+    z = qnorm(p)
+    se = sd/sqrt(n)
+    me = sd/sqrt(n)
+    ub = xbar + me
+    lb = xbar - me
+    print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",CI*100,lb,ub))
+  }
+}
+# CIquiz(.99,5.8,3.5,20,"t") # This is an example of the parameters you would pass in if
+# you wanted 99% CI, and you were using a t distribution.
+
 
 
 tangent.line = function(xdata,ydata,plottitle,xlabel,ylabel,smoothcolor,anewx,pointlinecolor){

@@ -104,7 +104,7 @@ plot(fitdist(df$uptake, distr = "gamma"))
 plot(fitdist(log10(df$uptake), distr = "norm")) # this looks best; no it doesn't
 plot(fitdist(sqrt(df$uptake), distr = "norm"))
 
-denscomp(fitdist(df$log10_uptake, distr = "norm")) # pulls an error - "data must
+denscomp(fitdist(df$log10_uptake, distr = "norm")) # throws an error - "data must
 # be a numeric vector of length greater than 1"
 
 
@@ -155,10 +155,11 @@ p2 = ggplot(df, aes(x=conc, y=log10_uptake, col=Type)) +
   stat_smooth() + ggtitle("CO2 Uptake")
 p2
 
-p3 = ggplot(df, aes(x=conc, y=log10_uptake, col=Treatment)) +
+p3 = ggplot(df, aes(x=conc, y=uptake, col=Treatment)) + # or try log10_uptake insteand of uptake
   geom_point() +
-  stat_smooth() + ggtitle("CO2 Uptake") +
-  facet_grid(facets = ~ Type)
+  stat_smooth() +  
+  facet_grid(facets = ~ Type) +
+  ggtitle("CO2 Uptake")
 p3
 
 # ANOVA model

@@ -1,8 +1,111 @@
 ### Biostatistics Methods I
 
-## Exam I - Thursday 27 September - Chapters 1-5
-# Look over review problems for this test. 
-# Review at 2:30-5:30 on Tuesday 25 September
+# grades
+Q = 1
+E1 = 1.02
+E2 = .98
+FINAL = .68
+sum(20*Q,25*E1,25*E2,30*FINAL)
+
+
+### Master list of basic functions for statistics:
+
+## P value tests:
+t.meandiff.pooled.var = function(xbar1,xbar2,n1,n2,var1,var2){
+  sp.squared = ( var1*(n1-1) + var2*(n2-1) )/(n1 + n2 - 2)
+  t.statistic = (xbar1-xbar2)/sqrt(sp.squared*(1/n1 + 1/n2))
+  df = n1+n2-2
+  pvalue = pt(t.statistic,df)
+  print(sprintf("The p value is %.4f for left tail or %.4f for right tail",pvalue,1-pvalue))
+  print(sprintf("The t test statistic is %.4f",t.statistic))
+  print(sprintf("The pooled variance is %.4f",sp.squared))
+}
+
+## Confidence intervals:
+t.CI.data.mean = function(df.data,t.CI){
+  t.alpha = 1-t.CI
+  xbar = mean(df.data)
+  t = qt(p = 1-t.alpha/2, df = length(df.data)-1)
+  se = sd(df.data)/sqrt(length(df.data))
+  me = t*se
+  ub = xbar + me
+  lb = xbar - me
+  print(sprintf("The sample mean is %.4f",xbar))
+  print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",t.CI*100,lb,ub))
+}
+
+CI.mean = function(CI,xbar,sd,n,t.or.z){
+  alpha = 1 - CI
+  p = 1 - alpha/2
+  if (t.or.z == "t"){
+    t = qt(p, df = n-1)
+    se = sd/sqrt(n)
+    me = t*se
+    ub = xbar + me
+    lb = xbar - me
+    print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",CI*100,lb,ub))
+  } else{
+    z = qnorm(p)
+    se = sd/sqrt(n)
+    me = sd/sqrt(n)
+    ub = xbar + me
+    lb = xbar - me
+    print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",CI*100,lb,ub))
+  }
+}
+
+CI.propdiff = function(CI,prop1,prop2,n1,n2){
+  alpha = 1 - CI
+  z = qnorm(1 - alpha/2)
+  me = z*sqrt( prop1*(1-prop1)/n1 + prop2*(1-prop2)/n2 )
+  ub = (prop1 - prop2) + me
+  lb = (prop1 - prop2) - me
+  print(sprintf("We are %s percent confident that the true difference between the two population proportions is between %.4f and %.4f",CI*100,lb,ub))
+}
+
+t.CI.meandiff.pooled.var = function(CI,xbar1,xbar2,n1,n2,var1,var2){
+  alpha = 1 - CI
+  df = n1 + n2 - 2
+  t = qt(1 - alpha/2, df)
+  sp.squared = ( (n1 - 1)*var1 + (n2 - 1)*var2 )/(n1+n2-2)
+  me = t*sqrt( sp.squared/n1 + sp.squared/n2 )
+  ub = xbar1 - xbar2 + me
+  lb = xbar1 - xbar2 - me
+  print(sprintf("We are %s percent confident that the true difference between the two population means is between %.4f and %.4f",CI*100,lb,ub))
+  print(sprintf("t is %.4f",t))
+  print(sprintf("pooled variance is %s",sp.squared))
+}
+
+t.CI.data.meandiff.pooled.var = function(CI,df.data1,df.data2){
+  alpha = 1 - CI
+  n1 = length(df.data1)
+  n2 = length(df.data2)
+  df = n1 + n2 - 2
+  t = qt(1 - alpha/2, df)
+  sp = ( (n1 - 1)*var(df.data1) + (n2 - 1)*var(df.data2) )/(n1 + n2 - 2)
+  me = t*sqrt( sp/n1 + sp/n2 )
+  xbar1 = mean(df.data1)
+  xbar2 = mean(df.data2)
+  ub = xbar1 - xbar2 + me
+  lb = xbar1 - xbar2 - me
+  print(sprintf("We are %s percent confident that the true difference between the two population means is between %.4f and %.4f",CI*100,lb,ub))
+}
+
+## Book table of contents:
+# Ch. 1 - intro
+# Ch. 2 - descriptive statistics
+# Ch. 3 - basic probability concepts
+# Ch. 4 - probability distributions
+# Ch. 5 - some important SAMPLING distributions: (xbar - mean)/s.e.
+# Ch. 6 - estimation
+# Ch. 7 - hypothesis testing
+# Ch. 8 - analysis of variance
+# Ch. 9 - simple linear regression and correlation
+# Ch. 10 - multiple regression and correlation
+# Ch. 11 - regression analysis: some additional techniques
+# Ch. 12 - the chi-square distribution and the analysis of frequencies
+# Ch. 13 - non-parametric and distribution-free statistics
+# Ch. 14 - survival analysis
 
 # Ch. 1 - 6, 7
 
@@ -171,8 +274,11 @@ mypermfunc = function(n,r){
 mypermfunc(52,5)
 factorial(52)
 
-##################################################################################
-##################################################################################
+
+
+#######################################################################################
+#######################################################################################
+######################## NORTH CAROLINA BIRTH DATA EXPLORATION ########################
 
 ### Thursday 30 August
 
@@ -325,23 +431,41 @@ as.matrix(birth.weights.summary)
 
 
 
-##################################################################################
-##################################################################################
+#######################################################################################
+#######################################################################################
 
-### Thursday 6 September
-
-
-# probability rules
-
-
-
-##################################################################################
-##################################################################################
-
-### Thursday 13 September
+### Thursday 13 September:
 
 ### Binomial distribution 
 # (there are a lot of applications for the binomial distribution in medicine - dead or alive, success or failure of treatment, etc.)
+
+## Quiz questions on this material:
+
+## We know 25% of adults are overweight. In a random sample of 20 adults, what are the chances
+# that EXACTLY 3 are overweight?
+?dbinom
+dbinom(3,20,.25)
+# Of 15 adults, the odds of getting EXACTLY 5:
+dbinom(5,15,.25)
+ncol(combn(15,5))*(.25^5)*(.75^10) # SAME ANSWER. SO THIS IS THE SLOW WAY
+# Of 20 adults, the odds of getting EXACTLY 8 if the percent is 27% instead of 25:
+dbinom(8,20,.27)
+# 25%, 20 adults, odds of getting between 4 and 6 inclusive:
+odds = vector()
+for (i in 4:6){
+  odds[i] = dbinom(i,20,.25)
+}
+sum(odds)
+odds = odds[4:6]; odds
+sum(odds)
+
+## What is the probability that standard normal random variable z will be between
+# -1.37 and .27
+pnorm(.27) - pnorm(-1.37)
+
+## Baby weighs greater than 8 pounds when average is 7.25 and stdev = 1 pound
+?pnorm
+pnorm(8.5, mean = 7.25, sd = 1, lower.tail = TRUE)
 
 ## Example: We are told the success rate of a given intervention is 45%. This intervention
 # is tried on 8 people in an experiment. What is the probability that only 1 success is
@@ -421,18 +545,627 @@ pbinom(23,100,.15, lower.tail = FALSE)
 # c) P(X>x)=.10 (Find x)
 
 
+#######################################################################################
+#######################################################################################
+
+### EXAM I REVIEW PROBLEMS
+
+## 1. - easy
+
+## 2. make a frequency distribution table of the ages of 30 patients with ...
+# frequency
+# relative frequency
+# cumulative frequency
+# cumulative relative frequency
+
+## Steps:
+# create breaks using seq
+# make your cuts using cut
+# cbind a table of your cuts variable
+# get your relative, cumulative, and cum rel frequencies with cnew[1:end]/N and cumsum
+# create dataframe
+ages = c(35,32,21,43,39,60,36,12,54,45,37,53,45,23,64,10,34,22,
+                          36,45,55,44,55,46,22,38,35,56,45,57)
+length(ages)
+# breaks = seq(from = min(ages), to = max(ages), by = 10); breaks # doesn't work for this one, cuz it stops at 60 and there's a person aged 64 in the list who gets removed!
+breaks = seq(10,70,10); breaks
+mytable = cut(ages, breaks = breaks, right = FALSE, include.lowest = TRUE)
+newtable = table(mytable)
+sum(newtable[1:6])
+cnew = cbind(newtable); cnew
+rel.freq = cnew[1:6]/30; rel.freq # YOU WOULDN'T THINK THE [1:6] MATTERS, BUT IT DOES MAKE IT SO THE COLUMN NAME IS WHAT YOU WANT IT TO BE IN THE DATA FRAM BELOW, INSTEAD OF "newtable"
+cumsum(rel.freq) # Cumulative relative frequency
+cumsum(cnew) # Cumulative frequency
+levels(mytable)
+cnew[1:6]
+freq.table = data.frame(Age_interval = levels(mytable),
+                        Frequency = cnew[1:6],
+                        Relative.Freq = rel.freq,
+                        Cumulative.Freq = cumsum(cnew),
+                        Cum.Rel.Freq = cumsum(rel.freq))
+
+weights = c(62,53,57,55,69,64,60,59,60,60)
+order(weights)
+sort(weights)
+median(weights)
+ncol(combn(5,2))*(.1^2)*.9^3
+.9914 - .9185
+
+1 - pbinom(23, 100, prob = .15, lower.tail = TRUE)
+
+
+### Some binomial distribution histograms:
+
+rbinom(8,12,.27)
+x = rbinom(10000,2,.5)
+length(which(x == 0))
+length(which(x == 1))
+length(which(x == 2))
+a = rbinom(100000,12,.27); a
+hist(a, breaks = 10)
+length(which(a >= 8))/length(a)
+
+
+#######################################################################################
+#######################################################################################
+
+### Chapter 6 - ESTIMATION
+
+## THE RULE OF THUMB FOR DECIDING WHETHER VARIANCES IN TWO SAMPLES ARE SAME OR NOT:
+# IF Sone^2 / Stwo^2 IS LESS THAN 2 then they're the same.
+
+## e.g. The population variance of the variable is known to be 45, variable is normal.
+# A sample of 10 individuals yielded a mean of 22. What is the 95% CI for the true
+# population mean?
+
+n = 10
+xbar = 22
+qt(.95, 777)
+
+# What is the margin of error? t-alpha or z-alpha * s.e., which is sd/sqrt(n)
+
+## Practice using JMP:
+NC = read.csv("/Users/jamescutler/Desktop/Biostats_I/North_Carolina_Births.csv")
+colnames(NC) = c("ID",
+                       "Plurality",
+                       "Sex",
+                       "M_age",
+                       "G_age",
+                       "M_status",
+                       "Race",
+                       "Ethnicity",
+                       "Weight_gain",
+                       "Smoker",
+                       "Alcohol",
+                       "W_ounces",
+                       "W_grams",
+                       "Low_W",
+                       "Premature")
+for (i in 1:ncol(NC)){
+  print(c(colnames(NC[i]),which(is.na(NC[,i]))))
+}
+bad = which(is.na(NC$Weight_gain))
+NC = NC[-bad,]
+
+hist(NC$Weight_gain)
+
+xbar = mean(NC$Weight_gain); xbar
+t = qt(.975,nrow(NC)-1); t # This is key. The t coefficient is t(1 - alpha/2). 
+# If I want a 95% CI, then my alpha is .05, .05/2 is .025, so 1-.025 = .975!!! 
+# The two tail area for this t(.975) is .05!!
+se = sd(NC$Weight_gain)/sqrt(nrow(NC)); se
+me.CI95 = t*se; me.CI95
+ub = xbar + me.CI95; ub # gives the same answer as JMP!
+lb = xbar - me.CI95; lb # gives the same answer as JMP!
+
+CI.data = function(df.data,t.CI){
+  t.alpha = 1-t.CI
+  xbar = mean(df.data)
+  t = qt(p = 1-t.alpha/2, df = length(df.data)-1)
+  se = sd(df.data)/sqrt(length(df.data))
+  me = t*se
+  ub = xbar + me
+  lb = xbar - me
+  print(sprintf("The sample mean is %.4f",xbar))
+  print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",t.CI*100,lb,ub))
+}
+CI.data(NC$Weight_gain,.95)
+
+
+
+#######################################################################################
+
+### Chapter 6 quiz
+
+## We wish to estimate the mean serum indirect bilirubin level of 4-day-old infants. 
+# The mean for a sample of 14 infants was found to be 5.8 mg/100 cc and the standard 
+# deviation was found to be 3.5 mg/100 cc for the sample. Find the 99% confidence 
+# interval for the population mean. Assume a normal distribution for the serum indirect 
+# bilirubin level.
+p = 1-.01/2
+t = qt(p, df = 13)
+se = 3.5/sqrt(14)
+me = t*se
+ub = 5.8 + me; ub
+lb = 5.8 - me; lb
+## If it's a sample size of 20, with a 95% CI:
+CI = .95
+alpha = 1-CI
+p = 1-alpha/2
+n = 20
+t = qt(p, df = n-1)
+se = 3.5/sqrt(n)
+me = t*se
+ub = 5.8 + me; ub
+lb = 5.8 - me; lb
+
+CIquiz = function(CI,xbar,sd,n,t.or.z){
+  alpha = 1 - CI
+  p = 1 - alpha/2
+  if (t.or.z == "t"){
+    t = qt(p, df = n-1)
+    se = sd/sqrt(n)
+    me = t*se
+    ub = xbar + me
+    lb = xbar - me
+    print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",CI*100,lb,ub))
+  } else{
+    z = qnorm(p)
+    se = sd/sqrt(n)
+    me = sd/sqrt(n)
+    ub = xbar + me
+    lb = xbar - me
+    print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",CI*100,lb,ub))
+  }
+}
+
+CIquiz(.99,5.8,3.5,20,"t")
+
+## A sample of 10 twelve-year old girls had a mean weight of 80.0 pounds and a 
+# standard deviation of 15 pounds (estimated from the data). What is the appropriate 
+# reliability coefficient (t or z value), if we're interested in a 90% confidence 
+# interval around the population mean weight? Assume a normal distribution for the weight.
+p = 1 - .1/2; p
+t = qt(p, df = 9); t
+
+## Systolic blood pressure of 12 patients has a mean of 120 mm/Hg. If the population 
+# variance of the systolic blood pressure is 90 and the SBP is approximately normally 
+# distributed in the population, find the reliability coefficient for a 99% confidence 
+# interval for a single population mean.
+p = 1 - .01/2; p
+qnorm(p)
+
+## 
+p = 1-.1/2; p
+t = qt(p, df = 13); t
+
+
+#######################################################################################
+
+
+### Quiz for week 8 (variance and F and chi square):
+
+p = 1-.02/2; p
+t = qt(p,946); t
+p = 1-.1/2; p
+t = qt(p,587); t
+sd1 = 22; v1 = sd1^2
+sd2 = 14; v2 = sd2^2
+v2/v1
+v1/v2
+29-2
+p = 1-.01/2; p
+t = qt(p,514); t
+
+
+#######################################################################################
+#######################################################################################
+
+### JMP cereal - potassium
+
+cereal = read.csv("/Users/jamescutler/Desktop/Biostats_I/cereal_JMP.csv")
+unique(cereal$shelf)
+length(which(cereal$shelf == 2))
+
+shelf1 = cereal[which(cereal$shelf == 1),]
+which(is.na(shelf1$potass))
+shelf1 = shelf1[-which(is.na(shelf1$potass)),]
+
+shelf2 = cereal[which(cereal$shelf == 2),]
+shelf2 = shelf2[-which(is.na(shelf2$potass)),]
+
+# mean and median for shelf 1:
+median(shelf1$potass)
+mean(shelf1$potass)
+
+# mean and sd for shelf 2:
+mean(shelf2$potass)
+sd(shelf2$potass)
+
+# t distribution 95% CI for shelf2 potassium mean:
+CIquiz(.95,87.42857,sd(shelf2$potass),nrow(shelf2),"t")
+
+# re-create shelf1 and 2 for hot and cold comparisons (leaving in the potassium NAs):
+shelf1 = cereal[which(cereal$shelf == 1),]
+shelf2 = cereal[which(cereal$shelf == 2),]
+h1 = length(which(shelf1$type == "H"))/nrow(shelf1)
+h2 = length(which(shelf2$type == "H"))/nrow(shelf2)
+
+## 95% CI for difference between two proportions:
+z = qnorm(1 - .05/2)
+# ub1 = h1 + z*sqrt(h1*(1-h1)/nrow(shelf1)); ub1
+# lb1 = h1 - z*sqrt(h1*(1-h1)/nrow(shelf1)); lb1
+ub = (h1 - h2) + z*sqrt( h1*(1-h1)/nrow(shelf1) + h2*(1-h2)/nrow(shelf2) ); ub
+lb = (h1 - h2) - z*sqrt( h1*(1-h1)/nrow(shelf1) + h2*(1-h2)/nrow(shelf2) ); lb
+
+t.CI.meandiff.pooledvar = function(CI,xbar1,xbar2,n1,n2,var1,var2){
+  alpha = 1 - CI
+  df = n1 + n2 - 2
+  t = qt(1 - alpha/2,df)
+  sp = ( (n1 - 1)*var1 + (n2 - 1)*var2 )/(n1+n2-2)
+  me = t*sqrt( sp/n1 + sp/n2 )
+  ub = xbar1 - xbar2 + me
+  lb = xbar1 - xbar2 - me
+  print(sprintf("We are %s percent confident that the true difference between the two population means is between %.4f and %.4f",CI*100,lb,ub))
+}
+
+## 95% CI for difference in mean using pooled variance:
+hot = cereal[which(cereal$type == "H"),]
+cold = cereal[which(cereal$type == "C"),]
+hot = hot[-which(is.na(hot$potass)),]
+# which(is.na(cold$potass)) # no NAs
+hm = mean(hot$potass); hm
+cm = mean(cold$potass); cm
+hm - cm
+sp = ( (nrow(hot) - 1)*var(hot$potass) + (nrow(cold) - 1)*var(cold$potass) )/(nrow(hot) + nrow(cold) - 2); sp
+df = nrow(hot) + nrow(cold) - 2; df
+t = qt(.975,df); t
+ub = (hm - cm) + t*sqrt(sp/nrow(hot) + sp/nrow(cold)); ub
+lb = (hm - cm) - t*sqrt(sp/nrow(hot) + sp/nrow(cold)); lb
+
+t.CI.datameandiff.pooledvar = function(CI,df.data1,df.data2){
+  alpha = 1 - CI
+  n1 = length(df.data1)
+  n2 = length(df.data2)
+  df = n1 + n2 - 2
+  t = qt(1 - alpha/2, df)
+  sp = ( (n1 - 1)*var(df.data1) + (n2 - 1)*var(df.data2) )/(n1 + n2 - 2)
+  me = t*sqrt( sp/n1 + sp/n2 )
+  xbar1 = mean(df.data1)
+  xbar2 = mean(df.data2)
+  ub = xbar1 - xbar2 + me
+  lb = xbar1 - xbar2 - me
+  print(sprintf("We are %s percent confident that the true difference between the two population means is between %.4f and %.4f",CI*100,lb,ub))
+}
+t.CI.datameandiff.pooledvar(.95,hot$potass,cold$potass) # heck yeah
+
+
+#######################################################################################
+#######################################################################################
+
+### week 10 ppt III
+
+sx = data.frame(subject = 1:10,
+                pre = c(350,700,356,362,361,304,675,367,387,535),
+                post = c(321,483,336,447,214,285,480,330,325,325)
+                )
+sx$diff = sx$pre - sx$post
+mean(sx$diff)
+sd(sx$diff)
+t.test(sx$pre,sx$post,paired = TRUE)
+?qt()
+qt(.025,40)
+qt(.975,28)
+
+
+#######################################################################################
+#######################################################################################
+
+### EXAM II REVIEW PROBLEMS:
+
+## 1.
+t.CI.meandiff.pooled.var(CI=.95,xbar1=21,xbar2=12.1,n1=13,n2=17,var1=4.9^2,var2=5.6^2)
+
+## 2.
+qnorm(.975)
+55/125
+me = 1.96*sqrt(.44*.56/125)
+.44 + me
+.44 - me
+
+## 3.
+qnorm(.95)
+q1 = 1 - 58/215; p1 = 58/215
+q2 = 1 - 217/1140; p2 = 217/1140
+n1 = 215
+n2 = 1140
+me = sqrt(p1*q1/n1 + p2*q2/n2); me
+p1-p2 + 1.645*me
+p1-p2 - 1.645*me
+
+## 4. d)
+(3.3^2)/(1.2^2)
+
+## 5.
+t = (104 - 100)/(20.2/sqrt(87)) # NOT Z!!!
+1 - pt(t,86)
+
+## 6.
+r = 40/25
+
+## 7.
+1-pt(2,19)
+alpha = .05
+PT = 1-alpha/2; PT
+qt(PT,19)
+
+## 8.
+n1 = 57
+xbar1 = 70.63
+s1 = 16.27
+
+n2 = 43
+xbar2 = 64.33
+s2 = 12.99
+
+t.meandiff.pooled.var = function(xbar1,xbar2,n1,n2,var1,var2){
+  sp.squared = ( var1*(n1-1) + var2*(n2-1) )/(n1 + n2 - 2)
+  t.statistic = (xbar1-xbar2)/sqrt(sp.squared*(1/n1 + 1/n2))
+  df = n1+n2-2
+  pvalue = pt(t.statistic,df)
+  print(sprintf("The p value is %.4f for left tail or %.4f for right tail",pvalue,1-pvalue))
+  print(sprintf("The t test statistic is %.4f",t.statistic))
+  print(sprintf("The pooled variance is %.4f",sp.squared))
+}
+t.meandiff.pooled.var(xbar1=70.63,xbar2=64.33,n1=57,n2=43,var1=16.27^2,var2=12.99^2)
+
+## 9. 
+1 - pt(1.498,24)
+1 - pt(4.39,60)
+
+
+
+#######################################################################################
+#######################################################################################
+wheel = data.frame(fn = c(rep("fallers",131+52),rep("nonfallers",14+36)),
+                   chair = c(rep("yes",131),rep("no",52),
+                             rep("yes",14),rep("no",36) ) )
+
+# w2 = wheel[,2:1]
+# table(w2)
+
+w.tab = table(wheel)
+chisq.test(w.tab, correct = FALSE)
+
+qchisq(.05,1, lower.tail = FALSE)
+qchisq(.05,3*4, lower.tail = FALSE)
+pchisq(6.01,2, lower.tail = FALSE)
+### Test for independence
+
+library(tables) # for the function 'tabular'
+library(MASS) # for the dataset 'survey'
+
+smoke = 
+  data.frame(school = 
+               c(rep("c_grad",75),rep("HS",150),rep("nothing",75)),
+             policy = 
+               c(rep("no_reg",5),rep("d_only",44),rep("no_smk",23),rep("no_opin",3),
+                 rep("no_reg",15),rep("d_only",100),rep("no_smk",30),rep("no_opin",5),
+                 rep("no_reg",15),rep("d_only",40),rep("no_smk",10),rep("no_opin",10)
+                              ) )
+smk.tab = table(smoke)
+
+# booyah = margin.table(smk.tab, 1) # row totals
+# bvec = vector()
+# for (i in 1:3){
+#   bvec[i] = booyah[[i]]
+# }
+# sum(bvec) # Is this the only way to get the grand total??
+
+margin.table(smk.tab, 1) # row totals
+margin.table(smk.tab, 2) # column totals
+
+round(prop.table(smk.tab), 2) # cell proportions
+round(prop.table(smk.tab, 1), 2) # row proportions
+round(prop.table(smk.tab, 2), 2) # column proportions
+
+chisq.test(smk.tab)
+##############################
+##############################
+s = survey
+help(survey)
+names(s)
+s.g_s = table(s$Sex, s$Smoke)
+s.g_e = table(s$Sex, s$Exer); s.g_e
+
+margin.table(s.g_e, 1) # row totals (row margin)
+margin.table(s.g_e, 2) # column totals (column margin)
+
+round(prop.table(s.g_e), 2) # cell proportions
+round(prop.table(s.g_e, 1), 2) # row proportions (proportions of genders in each exercise column)
+round(prop.table(s.g_e, 2), 2) # column proportions (proportions of exercise levels in each gender row)
+
+chisq.test(s.g_e)
+##############################
+plot(s$Pulse ~ s$Exer)
+
+##############################
+
+# example of tables package used on Fisher's iris data:
+t = tabular((Species+1) ~ 
+              (n=1) + 
+              Format(digits=2)*(Sepal.Length + Sepal.Width)*(mean+sd), data = iris)
+
+
+
+#######################################################################################
+#######################################################################################
+
+# CORRELATION
+
+BW = data.frame(b.weight = c(2150,
+                             2050,
+                             1000,
+                             2300,
+                             900,
+                             2450,
+                             2350,
+                             2350,
+                             1900,
+                             2400,
+                             1700,
+                             1950,
+                             1250,
+                             1700,
+                             2000,
+                             920,
+                             1270,
+                             1550,
+                             1500,
+                             1900,
+                             2800,
+                             3600,
+                             3250,
+                             3000,
+                             3000,
+                             3050),
+                PAI.2 =    c(185,
+                             200,
+                             125,
+                             25,
+                             25,
+                             78,
+                             290,
+                             60,
+                             65,
+                             125,
+                             122,
+                             75,
+                             25,
+                             180,
+                             170,
+                             12,
+                             25,
+                             25,
+                             30,
+                             24,
+                             200,
+                             300,
+                             300,
+                             200,
+                             200,
+                             230))
+plot(BW$PAI.2,BW$b.weight, xlim = c(0,400), ylim = c(0,4000), 
+     xlab = "PAI-2", ylab = "BW", pch = 18, col = "blue")
+mod1 = lm(b.weight ~ PAI.2, data = BW); mod1
+abline(mod1, col = "red")
+r = cor(BW$PAI.2, BW$b.weight); r # r = .753
+cor.test(BW$PAI.2, BW$b.weight, alternative = "two.sided", method = "pearson")
+# WHY IS THE T STATISTIC AND DF THE SAME UNDER GREATER AND TWO.SIDED, BUT THE P-VALUE IS DIFFERENT?????
+t = r*sqrt((nrow(BW) - 2)/(1 - r^2)); t
+t2 = .71*sqrt((nrow(BW) - 2)/(1 - .71^2)); t2
+x.diff = vector()
+for (i in 1:nrow(BW)){
+  x.diff[i] = BW[i,1] - mean(BW$b.weight)
+}
+# x.diff
+y.diff = vector()
+for (i in 1:nrow(BW)){
+  y.diff[i] = BW[i,2] - mean(BW$PAI.2)
+}
+# y.diff
+Sxy = sum(x.diff*y.diff)/25; Sxy
+Sx = sd(BW$b.weight); Sx
+Sy = sd(BW$PAI.2); Sy
+r2 = Sxy/(Sx*Sy); r2
+r
+
+
+
+
+#######################################################################################
+#######################################################################################
+
+ 
+# Quiz 8
+
+qf(.05,3,20,lower.tail = FALSE) # correct
+
+smoke = data.frame(A_nonsmoke = c(12,10,11,13,9,9),
+                   B_light = c(9,8,5,9,9,10),
+                   C_mod = c(9,4,7,9,5,7),
+                   D_heavy = c(3,2,1,5,4,6))
+# library(tidyr)
+s.long = gather(smoke, key = "type", value = "HDL", c("A_nonsmoke","B_light","C_mod","D_heavy"))
+
+mod1 = aov(HDL ~ factor(type), data = s.long); summary(mod1)
+pf(16.15,3,20, lower.tail = FALSE) # same as the p-value in summary(mod1)
+attach(s.long)
+plot(factor(type),HDL, ylab = "HDL")
 
 
 
 
 
 
+#########
+
+# Quiz 9
+BP = data.frame(systolic = c(138,130,135,140,120,125,120,130,144,143,140,130,150),
+                diastolic = c(82,91,100,100,80,90,80,80,98,105,85,70,100))
+attach(BP)
+
+plot(systolic,diastolic)
+rBP = lm(diastolic ~ systolic); rBP
+abline(rBP,col = "red")
+r = cor(systolic,diastolic); r
+64.7/(9.3*10.7)
+beta1 = r*(sd(diastolic)/sd(systolic))
+betanot = mean(diastolic) - beta1*mean(systolic); betanot
+
+###############
+
+cotin = data.frame(cigs = c(30,10,4,15,10,1,20,8,7,10,10,20),
+                   cotinine = c(179,283,75.6,174,209,9.5,350,1.9,43.4,25.1,408,344))
+sd(cotin$cigs)
+r = cor(cotin$cigs,cotin$cotinine); r
+Sy = sd(cotin$cotinine)
+Sx = sd(cotin$cigs)
+r*Sx*Sy
+
+Xdiffs = vector()
+for (i in 1:nrow(cotin)){
+  Xdiffs[i] = cotin[i,1] - mean(cotin$cigs)
+}
+
+Ydiffs = vector()
+for (i in 1:nrow(cotin)){
+  Ydiffs[i] = cotin[i,2] - mean(cotin$cotinine)
+}
+sum(Xdiffs*Ydiffs)/11
+
+
+#######################################################################################
+#######################################################################################
+
+# Independence vs Goodness of fit vs Homogeneity
+
+## Stattrek examples:
+
+## goodness of fit: Acme claims 30% of cards are rookies, 60% are normal veterans, 10% are all stars
+# random sample of 100 cards has 50 rookies, 45 vets, 5 all stars:
+cards = data.frame()
 
 
 
 
 
+#######################################################################################
+#######################################################################################
 
+(1-.9854)*2
+
+1.833*2
 
 
 

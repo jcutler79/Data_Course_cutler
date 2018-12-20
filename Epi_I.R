@@ -118,7 +118,8 @@ length(colSums(M)) # WHY DID IT CREATE AN EXTRA EVENT OUT OF THIN AIR????
 M[,4] = 0 # Now I have to remove the extra event.
 # TO SHIFT BARS TO THE LEFT (they would be too far to the right otherwise):
 class(ints)
-lt.ints = as.POSIXlt(ints)
+?as.POSIXlt
+lt.ints = as.POSIXlt(ints) # What is as.POSIXlt? Documentation: 'Character input is first converted to class "POSIXlt" by strptime: numeric input is first converted to "POSIXct". Any conversion that needs to go between the two date-time classes requires a time zone: conversion from "POSIXlt" to "POSIXct" will validate times in the selected time zone.'
 lt.ints$hour = lt.ints$hour - 4 # Shifting 4 hours to the left makes the graph look perfect.
 lt.ints
 backints = as.POSIXct(lt.ints)
@@ -136,13 +137,6 @@ ggplot(newdata, aes(x = times, y = tallies)) +
   ylab("Cases") + xlab("")
 ######################################################################################
 ######################################################################################
-
-
-
-
-
-
-
 
 
 
@@ -205,6 +199,22 @@ k%*%l
 #                    limits = c(as.POSIXct("2003-03-18 21:00:00"), as.POSIXct("2003-03-24 21:00:00"))) +
 #   theme(axis.text.x = element_text(size = 7, angle = 45, vjust = .9, hjust = .9))
 ##########################################################################################
+
+
+### P(surviving 3 years) = P(to year 1)*P(1 to 2)*P(2 to 3)
+
+p1 = 152/180
+p2 = 87/(152-37)
+p3 = 48/(87-31)
+p3years = p1*p2*p3; p3years
+
+CIe = (52/2872)
+CIu = (6/5055)
+RR = CIe/CIu; RR
+
+
+
+
 
 
 
