@@ -1,0 +1,87 @@
+---
+title: "BRFSS_barplots"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(tidyr) # wide to long and vice versa
+library(dplyr) # for the %>% and filter and select ...
+library(scales) # for the percent function in scale_y_continuous and geom_text
+
+```
+
+
+# BRFSS barplots
+
+#### Figure 1a: Health outcome by state
+#### Figure 1b: Health outcome by state the right way: 'State by health outcome' (instead of proportions of health outcome instances divided up by risk factor (state), it's proportion of those exposed to the risk factor that has the health outcome, compared to unexposed)
+
+#### Figure 2: Health outcome by risk factor (this time done the right way the first time! In other words, for any outcome X and risk factor Y, X 'by' Y means the proportion of Ye with outcome X compared to the proportion of Yu with outcome X)
+
+#### Figure 3: Health outcome by risk factor, stratified by income
+
+
+
+###### Figure 1a: Health outcome by state
+```{r}
+RIOK = readRDS("/Users/jamescutler/Desktop/SAS/RI_OK_data.rds")
+ggplot(na.omit(RIOK), aes(x=state, group = diabetes)) +
+  geom_bar(aes(y=..prop.., fill = factor(..x..)), stat = "count") + 
+  geom_text(aes(label = scales::percent(..prop..),y=..prop..),
+            stat = "count", size = 2, vjust = -.5) +
+  facet_grid(~diabetes) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_discrete(breaks = c(1,2), labels = levels(RIOK$state)) +
+  labs(title = "Health outcome by state",x="State",y="Percent", fill = "State")
+```
+
+
+###### Figure 1b: Health outcome by state the right way
+```{r}
+ggplot(na.omit(RIOK), aes(x=diabetes, group = state)) +
+  geom_bar(aes(y=..prop.., fill = factor(..x..)), stat = "count") +
+  geom_text(aes(label = percent(..prop..),y=..prop..),
+            stat = "count", size = 2, vjust = -.5) +
+  facet_grid(~state) +
+  scale_y_continuous(labels = percent) +
+  scale_fill_discrete(breaks = c(1,2), labels = levels(RIOK$diabetes)) +
+  labs(title = "Health outcome by state - the right way",
+       x="Diabetes status",y="Percent", fill = "Diabetes status")
+```
+
+
+###### Figure 2: Health outcome by risk factor
+```{r}
+ggplot(na.omit(RIOK[,c("diabetes","exercise")]), 
+       aes(x=diabetes, group = exercise)) +
+  geom_bar(aes(y=..prop.., fill = factor(..x..)), stat = "count") +
+  geom_text(aes(label = percent(..prop..),y=..prop..), 
+            stat = "count", size = 2, vjust = -.5) +
+  facet_grid(~exercise) +
+  scale_y_continuous(labels = percent) +
+  scale_fill_discrete(breaks = c(1,2), labels = levels(RIOK$diabetes)) + 
+  labs(y="percent", fill = "diabetes status")
+```
+
+
+##### Figure 3: Health outcome by risk factor, stratified by income
+```{r}
+ggplot(na.omit(RIOK[,c("diabetes","exercise","income")]), 
+       aes(x=diabetes, group = income)) +
+  geom_bar(mapping = aes(y=..prop.., fill = income), 
+           stat = "count", position = "dodge") +
+  geom_text(aes(label = percent(..prop..),y=..prop..), 
+            stat = "count", position = position_dodge(width = .9), 
+            size = 2, vjust = -.5) +
+  facet_grid(~exercise) +
+  scale_y_continuous(labels = percent) +
+  scale_color_manual(breaks = c(1,2,3), labels = levels(RIOK$income)) + 
+  labs(title = "Health outcome by risk factor, stratified by income",
+       x="Diabetes status",y="Percent", fill = "Income")
+```
+
+
+
+
+

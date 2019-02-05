@@ -44,6 +44,100 @@ flashcards.many = function(yourlist){
   print("Peace out.")
 }
 
+mypaste = function(yourvector){
+  return(paste(yourvector,collapse = ""))
+}
+M = data.frame(c1 = sample(1:9,5),
+               c2 = sample(1:9,5))
+M$both = apply(M,1,mypaste)
+39 %in% M$both
+38 %in% M$both
+
+length(deck.of.decks) # gives number of decks
+deck.of.decks[1] # gives the entire deck
+deck.of.decks[[1]] # gives the exact same thing, minus the [[1]] business before each card
+deck.of.decks[[3]][2] # gives every side of just the second card in the third deck
+deck.of.decks[[3]][[2]] # gives every side of just the second card in the third deck, minus the front side
+deck.of.decks[[3]][[2]][1] # gives the SECOND side (the one right after the front) of the second card
+deck.of.decks[[3]][[2]][2] # gives the THIRD side of the second card
+names(deck.of.decks[[3]][2]) # HOLY FREAK I FIGURED IT OUT: gives the FIRST side of the second card of the third deck
+length(deck.of.decks[[3]]) # gives number of cards in climate lecture deck
+
+as.matrix(names(deck.of.decks))
+names(deck.of.decks[15]) # name of deck - tells me I'm looking at rand.lists_V
+names(deck.of.decks[[15]]) # names of all the cards (front sides) in that deck
+names(deck.of.decks[[15]][10]) # Gives me what I'm looking for (MUST BE SINGLE BRACKETS AROUND THE SECOND ONE)
+length(deck.of.decks[[15]][[10]]) # Gives me what I'm looking for: itup1 and itup2
+deck.of.decks[[15]][[10]][3] # 1:length in last index gives me what I'm looking for
+x = 2
+y = 3
+paste0(x,y)
+
+ituple.cum = as.data.frame(matrix(NA, nrow = 1, ncol = 3))
+decks.many2 = function(yourlist){
+  continue = readline(prompt = "Hit any button to continue, enter to quit: ")
+  itup1 = 1
+  itup2 = 1
+  ituple = c(itup1,itup2,NA)
+  ituple.cum = as.data.frame(matrix(ituple, nrow = 1, ncol = 3))
+  ituple.cum$V3 = apply(ituple.cum,1,mypaste)
+  while (continue != ""){
+    itup1 = sample(1:length(yourlist),1)
+    itup2 = sample(1:length(yourlist[[itup1]]),1)
+    attempt = paste0(itup1,itup2)
+    if (attempt %in% ituple.cum$V3){
+      continue = ""
+    } else{
+      print(names(yourlist[[itup1]][itup2]))
+      for (j in 1:length(yourlist[[itup1]][[itup2]])){
+        showme = readline(prompt = "Hit 'a' to show next slide: ")
+        if (showme == "a"){
+          print(yourlist[[itup1]][[itup2]][j])
+        } else{print("puck you")}
+      }
+      ituple = as.data.frame(matrix(c(itup1,itup2,NA), nrow = 1, ncol = 3))
+      ituple.cum = rbind(ituple.cum, ituple)
+      ituple.cum$V3 = apply(ituple.cum,1,mypaste)
+      continue = readline(prompt = "Hit any button to continue, enter to quit: ")
+    }
+  }
+  print("peace out.")
+}
+
+decks.many1 = function(yourlist){
+  continue = readline(prompt = "Hit any button to continue, enter to quit: ")
+  itup1 = 1
+  itup2 = 1
+  ituple = c(itup1,itup2,NA)
+  ituple.cum = as.data.frame(matrix(ituple,nrow = 1, ncol = 3))
+  ituple.cum$V3 = apply(ituple.cum,1,mypaste)
+  while (continue != ""){
+    mycheck = function(){
+      itup1 = sample(1:length(yourlist),1)
+      itup2 = sample(1:length(yourlist[[itup1]]),1)
+      attempt = paste0(itup1,itup2)
+      if (attempt %in% ituple.cum$V3){
+        mycheck() # match.call()
+      } else{
+        print(names(yourlist[[itup1]][itup2]))
+        for (j in 1:length(yourlist[[itup1]][[itup2]])){
+          showme = readline(prompt = "Hit 'a' to show next slide: ")
+          if (showme == "a"){
+            print(yourlist[[itup1]][[itup2]][j])
+          } else{print("puck you")}
+        }
+        ituple = as.data.frame(matrix(c(itup1,itup2,NA), nrow = 1, ncol = 3))
+        ituple.cum = rbind(ituple.cum, ituple)
+        ituple.cum$V3 = apply(ituple.cum,1,mypaste)
+        continue = readline(prompt = "Hit any button to continue, enter to quit: ")
+      }
+    }
+    
+  }
+  print("Peace out.")
+}
+
+
 ### flashcards for 3 sided-cards:
 flashcards3 = function(yourlist){
   continue = readline(prompt = "Hit 'y' to continue, enter to quit: ")
@@ -790,26 +884,27 @@ Epi.association_causation = list(one = "filler",
 ###########################################################################################
 
 ## list of lists: a deck with all the decks in it:
-deck.of.decks = list(ancient.names.3,
-                     BofM.translation.facts.variable,
-                     bythenumbers.3,
-                     climate.two.per.lecture,
+deck.of.decks = list(one = list(uno = "filler"),
+                     #ancient.names.3,
+                     BM.trnsltn.facts_V = BofM.translation.facts.variable,
+                     BTN_3 = bythenumbers.3,
+                     climate = climate.two.per.lecture,
                      #definitions.variable,
-                     geography.lists.variable,
-                     medical.terminology.3,
+                     geo_V = geography.lists.variable,
+                     med.terms_3 = medical.terminology.3,
                      #name.ten.variable,
-                     pathogens.variable,
-                     people.important.variable,
-                     PharaohList.3,
-                     physics.and.technology.variable,
-                     political.facts.variable,
-                     psalms.in.BofM.4,
-                     quotes.variable,
-                     random.facts.4,
-                     random.lists.variable,
-                     science.corroboration.variable,
-                     scriptures.variable,
-                     TreeLifeList.3)
+                     pathogns_V = pathogens.variable,
+                     people_V = people.important.variable,
+                     pharaohs = PharaohList.3,
+                     physics.tech_V = physics.and.technology.variable,
+                     polit.facts_V = political.facts.variable,
+                     psalms.BM_4 = psalms.in.BofM.4,
+                     quotes_V = quotes.variable,
+                     rand.facts_4 = random.facts.4,
+                     rand.lists_V = random.lists.variable,
+                     science.corrob_V = science.corroboration.variable,
+                     script_V = scriptures.variable,
+                     TreePhyl = TreeLifeList.3)
 
 length(deck.of.decks)
 deck.of.decks[1] # gives the entire deck
@@ -1082,54 +1177,54 @@ political.facts.variable = list(one = "filler",
 ## Psalms in the Book of Mormon (49 - 1 = 48):
 # Phrase (front side), Book of Mormon reference, Psalm reference
 psalms.in.BofM.4 = list(zero = "filler",
-                      one = c("tender mercies are over all","1 Nephi 1:20","Psalm 145:9"),
-                      two = c("to take away my life","1 Nephi 7:16","Psalm 31:13"),
-                      three = c("according to the multitude of his tender mercies","1 Nephi 8:8; Ether 6:12","Psalm 51:1 and 69:16"),
-                      four = c("rod of iron","1 Nephi 8:19","Psalm 2:9"),
-                      five = c("my rock and my salvation","1 Nephi 13:36","Psalm 62:2,6"),
-                      six = c("broken heart ... contrite spirit","2 Nephi 2:7; 2 Nephi 4:32; 3 Nephi 9:20; Mormon 2:14; Ether 4:15","Psalm 51:17 and 34:18"),
-                      seven = c("great ... goodness ... trust","2 Nephi 4:17,19","Psalm 31:19"),
-                      eight = c("cry/cried","2 Nephi 4:23,25","Psalm 30:8"),
-                      nine = c("heart ... rejoice","2 Nephi 4:28","Psalm 28:7"),
-                      ten = c("because of mine enemies","2 Nephi 4:27,29","Psalm 27:11"),
-                      eleven = c("my God and the rock of my salvation","2 Nephi 4:30","Psalm 89:26"),
-                      twelve = c("I will praise thee forever","2 Nephi 4:30","Psalm 52:9"),
-                      thirteen = c("to take away my life","2 Nephi 5:2","Psalm 31:13"),
-                      fourteen = c("clean hands and a pure heart","2 Nephi 25:16; Alma 5:19","Psalm 24:4"),
-                      fifteen = c("water my couch/pillow by night with my tears","2 Nephi 33:3","Psalm 6:6"),
-                      sixteen = c("as in the provocation ... in the day of temptation in the wilderness","Jacob 1:7","Psalm 95:8"),
-                      seventeen = c("pains of hell","Jacob 3:11","Psalm 18:4-5 and 116:3"),
-                      eighteen = c("in great mercy ... over all his works","Jacob 4:10","Psalm 145:8-9"),
-                      nineteen = c("the stone which the builders refused is become the head stone of the corner","Jacob 4:17","Psalm 118:22"),
-                      twenty = c("today if ye will hear his voice, harden not your heart","Jacob 6:6; Alma 12:36","Psalm 95:7-8"),
-                      twentyone = c("ye are called ... his sons ... this day he hath begotten you","Mosiah 5:7","Psalm 2:7"),
-                      twentytwo = c("at the right hand (of God)","Mosiah 5:9","Psalm 110:1 - this one is a huge stretch"),
-                      twentythree = c("break ... bands ... death","Mosiah 15:8; Alma 5:7; Alma 22:14","Psalm 107:14, also 18:4-5 and 116:3"),
-                      twentyfour = c("delivered my soul from ... hell","Alma 5:6","Psalm 86:13"),
-                      twentyfive = c("mercy ... long-suffering","Alma 5:6","Psalm 86:15"),
-                      twentysix = c("chains/sorrows of hell","Alma 5:7,9,10","Psalm 18:5"),
-                      twentynine = c("in the paths of righteousness","Alma 7:19","Psalm 23:3"),
-                      thirtyone = c("after the order of Melchizedek/his son","Alma 13:1,2,9","Psalm 110:4"),
-                      thirtytwo = c("wrath ... enter into ... rest","Alma 12:35,37","Psalm 95:8,11"),
-                      thirtythree = c("enter into my rest","Alma 13:6","Psalm 95:11"),
-                      thirtyfour = c("pains of hell","Alma 14:6; Alma 26:13","Psalm 18:4-5 and 116:3"),
-                      thirtysix = c("darkness ... into marvelous light","Alma 26:3","Psalm 118:23,27"),
-                      thirtyseven = c("gather ... give thanks to his holy name ... praise","Alma 26:6,8","Psalm 106:47"),
-                      thirtyeight = c("boast of my God","Alma 26:12,35","Psalm 44:8"),
-                      forty = c("laugh ... to scorn","Alma 26:23","Psalm 22:7"),
-                      fortyone = c("God/the Lord is mindful of","Alma 26:37","Psalm 115:12"),
-                      fortytwo = c("bring forth fruit","Alma 32:37","Psalm 1:3"),
-                      fortythree = c("in the midst of thy congregations","Alma 33:9","Psalm 74:4"),
-                      fortyfour = c("keep ... preserve ... generation","Alma 37:4","Psalm 12:7"),
-                      fortyfive = c("as chaff before the wind","Alma 37:15; Mormon 5:16","Psalm 35:5"),
-                      fortysix = c("marvelous works","Alma 37:41","Psalm 9:1; also 118:23 and 139:14"),
-                      fortyseven = c("because of their transgression ... afflicted","Alma 37:42","Psalm 107:17"),
-                      fortynine = c("pure in hear ... shall see God","3 Nephi 12:8","Psalm 24:4,6"),
-                      fifty = c("depart from me all ye workers of iniquity","3 Nephi 14:23","Psalm 6:8"),
-                      fiftyone = c("the light of thy countenance","3 Nephi 19:25","Psalm 4:6"),
-                      fiftytwo = c("out of the mouth of babes","3 Nephi 26:16","Psalm 8:2"),
-                      fiftysix = c("counted unto him for righteousness","Moroni 7:7","Psalm 106:31"),
-                      fiftyseven = c("none that doeth good, no, not one","Moroni 10:25","Psalm 14:3 (also 53:3--53 and 14 are the same)"))
+                      Ps.in.BoM.one = c("tender mercies are over all","1 Nephi 1:20","Psalm 145:9"),
+                      Ps.in.BoM.two = c("to take away my life","1 Nephi 7:16","Psalm 31:13"),
+                      Ps.in.BoM.three = c("according to the multitude of his tender mercies","1 Nephi 8:8; Ether 6:12","Psalm 51:1 and 69:16"),
+                      Ps.in.BoM.four = c("rod of iron","1 Nephi 8:19","Psalm 2:9"),
+                      Ps.in.BoM.five = c("my rock and my salvation","1 Nephi 13:36","Psalm 62:2,6"),
+                      Ps.in.BoM.six = c("broken heart ... contrite spirit","2 Nephi 2:7; 2 Nephi 4:32; 3 Nephi 9:20; Mormon 2:14; Ether 4:15","Psalm 51:17 and 34:18"),
+                      Ps.in.BoM.seven = c("great ... goodness ... trust","2 Nephi 4:17,19","Psalm 31:19"),
+                      Ps.in.BoM.eight = c("cry/cried","2 Nephi 4:23,25","Psalm 30:8"),
+                      Ps.in.BoM.nine = c("heart ... rejoice","2 Nephi 4:28","Psalm 28:7"),
+                      Ps.in.BoM.ten = c("because of mine enemies","2 Nephi 4:27,29","Psalm 27:11"),
+                      Ps.in.BoM.eleven = c("my God and the rock of my salvation","2 Nephi 4:30","Psalm 89:26"),
+                      Ps.in.BoM.twelve = c("I will praise thee forever","2 Nephi 4:30","Psalm 52:9"),
+                      Ps.in.BoM.thirteen = c("to take away my life","2 Nephi 5:2","Psalm 31:13"),
+                      Ps.in.BoM.fourteen = c("clean hands and a pure heart","2 Nephi 25:16; Alma 5:19","Psalm 24:4"),
+                      Ps.in.BoM.fifteen = c("water my couch/pillow by night with my tears","2 Nephi 33:3","Psalm 6:6"),
+                      Ps.in.BoM.sixteen = c("as in the provocation ... in the day of temptation in the wilderness","Jacob 1:7","Psalm 95:8"),
+                      Ps.in.BoM.seventeen = c("pains of hell","Jacob 3:11","Psalm 18:4-5 and 116:3"),
+                      Ps.in.BoM.eighteen = c("in great mercy ... over all his works","Jacob 4:10","Psalm 145:8-9"),
+                      Ps.in.BoM.nineteen = c("the stone which the builders refused is become the head stone of the corner","Jacob 4:17","Psalm 118:22"),
+                      Ps.in.BoM.twenty = c("today if ye will hear his voice, harden not your heart","Jacob 6:6; Alma 12:36","Psalm 95:7-8"),
+                      Ps.in.BoM.twentyone = c("ye are called ... his sons ... this day he hath begotten you","Mosiah 5:7","Psalm 2:7"),
+                      Ps.in.BoM.twentytwo = c("at the right hand (of God)","Mosiah 5:9","Psalm 110:1 - this one is a huge stretch"),
+                      Ps.in.BoM.twentythree = c("break ... bands ... death","Mosiah 15:8; Alma 5:7; Alma 22:14","Psalm 107:14, also 18:4-5 and 116:3"),
+                      Ps.in.BoM.twentyfour = c("delivered my soul from ... hell","Alma 5:6","Psalm 86:13"),
+                      Ps.in.BoM.twentyfive = c("mercy ... long-suffering","Alma 5:6","Psalm 86:15"),
+                      Ps.in.BoM.twentysix = c("chains/sorrows of hell","Alma 5:7,9,10","Psalm 18:5"),
+                      Ps.in.BoM.twentynine = c("in the paths of righteousness","Alma 7:19","Psalm 23:3"),
+                      Ps.in.BoM.thirtyone = c("after the order of Melchizedek/his son","Alma 13:1,2,9","Psalm 110:4"),
+                      Ps.in.BoM.thirtytwo = c("wrath ... enter into ... rest","Alma 12:35,37","Psalm 95:8,11"),
+                      Ps.in.BoM.thirtythree = c("enter into my rest","Alma 13:6","Psalm 95:11"),
+                      Ps.in.BoM.thirtyfour = c("pains of hell","Alma 14:6; Alma 26:13","Psalm 18:4-5 and 116:3"),
+                      Ps.in.BoM.thirtysix = c("darkness ... into marvelous light","Alma 26:3","Psalm 118:23,27"),
+                      Ps.in.BoM.thirtyseven = c("gather ... give thanks to his holy name ... praise","Alma 26:6,8","Psalm 106:47"),
+                      Ps.in.BoM.thirtyeight = c("boast of my God","Alma 26:12,35","Psalm 44:8"),
+                      Ps.in.BoM.forty = c("laugh ... to scorn","Alma 26:23","Psalm 22:7"),
+                      Ps.in.BoM.fortyone = c("God/the Lord is mindful of","Alma 26:37","Psalm 115:12"),
+                      Ps.in.BoM.fortytwo = c("bring forth fruit","Alma 32:37","Psalm 1:3"),
+                      Ps.in.BoM.fortythree = c("in the midst of thy congregations","Alma 33:9","Psalm 74:4"),
+                      Ps.in.BoM.fortyfour = c("keep ... preserve ... generation","Alma 37:4","Psalm 12:7"),
+                      Ps.in.BoM.fortyfive = c("as chaff before the wind","Alma 37:15; Mormon 5:16","Psalm 35:5"),
+                      Ps.in.BoM.fortysix = c("marvelous works","Alma 37:41","Psalm 9:1; also 118:23 and 139:14"),
+                      Ps.in.BoM.fortyseven = c("because of their transgression ... afflicted","Alma 37:42","Psalm 107:17"),
+                      Ps.in.BoM.fortynine = c("pure in hear ... shall see God","3 Nephi 12:8","Psalm 24:4,6"),
+                      Ps.in.BoM.fifty = c("depart from me all ye workers of iniquity","3 Nephi 14:23","Psalm 6:8"),
+                      Ps.in.BoM.fiftyone = c("the light of thy countenance","3 Nephi 19:25","Psalm 4:6"),
+                      Ps.in.BoM.fiftytwo = c("out of the mouth of babes","3 Nephi 26:16","Psalm 8:2"),
+                      Ps.in.BoM.fiftysix = c("counted unto him for righteousness","Moroni 7:7","Psalm 106:31"),
+                      Ps.in.BoM.fiftyseven = c("none that doeth good, no, not one","Moroni 10:25","Psalm 14:3 (also 53:3--53 and 14 are the same)"))
 
 
 # quotes (author and topic on front, quote on back, citation info behind that (could be on same side); could break quote up into multipe parts if long):

@@ -672,7 +672,7 @@ CI.data = function(df.data,t.CI){
 CI.data(NC$Weight_gain,.95)
 
 
-
+#######################################################################################
 #######################################################################################
 
 ### Chapter 6 quiz
@@ -741,7 +741,7 @@ t = qt(p, df = 13); t
 
 
 #######################################################################################
-
+#######################################################################################
 
 ### Quiz for week 8 (variance and F and chi square):
 
@@ -927,6 +927,7 @@ t.meandiff.pooled.var(xbar1=70.63,xbar2=64.33,n1=57,n2=43,var1=16.27^2,var2=12.9
 
 #######################################################################################
 #######################################################################################
+
 wheel = data.frame(fn = c(rep("fallers",131+52),rep("nonfallers",14+36)),
                    chair = c(rep("yes",131),rep("no",52),
                              rep("yes",14),rep("no",36) ) )
@@ -1086,7 +1087,6 @@ r
 #######################################################################################
 #######################################################################################
 
- 
 # Quiz 8
 
 qf(.05,3,20,lower.tail = FALSE) # correct
@@ -1096,7 +1096,8 @@ smoke = data.frame(A_nonsmoke = c(12,10,11,13,9,9),
                    C_mod = c(9,4,7,9,5,7),
                    D_heavy = c(3,2,1,5,4,6))
 # library(tidyr)
-s.long = gather(smoke, key = "type", value = "HDL", c("A_nonsmoke","B_light","C_mod","D_heavy"))
+s.long = gather(smoke, key = "type", value = "HDL", 
+                c("A_nonsmoke","B_light","C_mod","D_heavy"))
 
 mod1 = aov(HDL ~ factor(type), data = s.long); summary(mod1)
 pf(16.15,3,20, lower.tail = FALSE) # same as the p-value in summary(mod1)
@@ -1148,32 +1149,69 @@ sum(Xdiffs*Ydiffs)/11
 #######################################################################################
 #######################################################################################
 
-# Independence vs Goodness of fit vs Homogeneity
+# Independence vs Homogeneity ... vs Goodness of Fit
 
-## Stattrek examples:
+## Independence and Homogeneity are the two that seem exactly the same to me. You could
+# be told you're looking at a homogeneity problem, with a contingency, and another 
+# person could be looking at exactly the same contingency table and asked a question
+# that is worded slightly differently about it, and you could do one and he could do
+# the other approach, and you'd be doing exactly the same thing, using exactly the same
+# formulas and the exact same chi square test, and both get the same right answer!
 
-## goodness of fit: Acme claims 30% of cards are rookies, 60% are normal veterans, 10% are all stars
+## Here's what socratic.org says: - https://socratic.org/questions/what-is-the-difference-between-a-chi-square-test-of-independence-and-a-chi-squar 
+# chi square test of independence - helps us to find whether 2 or more attributes are associated or not.e.g. whether playing chess helps boost the child's math or not. It is not a measure of the degree of relationship between the attributes. it only tells us whether two principles of classification are significantly related or not, without reference to any assumptions concerning the form of relationship.
+# chi square test of homogeneity - is an extension of chi square test of independence...tests of homogeneity are useful to determine whether 2 or more independent random samples are drawn from the same population or from different populations. instead of one sample- as we use with independence problem, here we have two or more samples.
+# Both the types of tests are concerned with cross classified data. both use the same testing statistics. However they are different from each other.
+# Test for independence is concerned with whether one attribute is independent of the other and involves a single sample from the population.
+# On the other hand, test of homogeneity tests whether different samples come from same population. It involves 2 or more independent samples-one from each of the populations in question.
+
+## OF COURSE, THIS SOCRATIC.ORG EXPLANATION ONLY MAKES ME MORE SUSPICIOUS THAT THEY'RE
+# EXACTLY THE SAME. SAME DATA STRUCTURE, SAME OPERATIONS, SAME ANSWER.
+
+
+
+## Stattrek examples - websites: 
+# https://stattrek.com/chi-square-test/goodness-of-fit.aspx  
+# https://stattrek.com/chi-square-test/homogeneity.aspx
+# https://stattrek.com/chi-square-test/independence.aspx 
+
+## Goodness of Fit: 
+# Acme claims 30% of cards are rookies, 60% are normal veterans, 10% are all stars
 # random sample of 100 cards has 50 rookies, 45 vets, 5 all stars:
-cards = data.frame()
+cards = c(50,45,5)
+chisq.test(cards, p = c(.3,.6,.1))
+# EASY AS THAT.
 
 
+## Test for Independence:
+# A public opinion poll surveyed a simple random sample of 1000 voters. Respondents 
+# were classified by gender (male or female) and by voting preference 
+# (Republican, Democrat, or Independent). Results are shown in the contingency table 
+# below.
+
+voters = data.frame(gender = rep(c("male","female"), c(400,600)),
+                    pref = c(rep(c("Repub","Democ","Indep"),c(200,150,50)),
+                             rep(c("Repub","Democ","Indep"),c(250,300,50)) )
+                    )
+t.vote = table(voters); t.vote
+chisq.test(t.vote) 
+# EASY AS THAT.
 
 
+## Homogeneity:
+# In a study of the television viewing habits of children, a developmental 
+# psychologist selects a random sample of 300 first graders - 100 boys and 200 girls. 
+# Each child is asked which of the following TV programs they like best: 
+# The Lone Ranger, Sesame Street, or The Simpsons. 
+# Results are shown in the contingency table below.
 
-#######################################################################################
-#######################################################################################
-
-(1-.9854)*2
-
-1.833*2
-
-
-
-
-
-
-
-
+tv = data.frame(gender = rep(c("boy","girl"),c(100,200)),
+                shows = c(rep(c("L Ranger","Sesame","Simpsons"),c(50,30,20)),
+                          rep(c("L Ranger","Sesame","Simpsons"),c(50,80,70)) )
+                )
+t.tv = table(tv); t.tv
+chisq.test(t.tv)
+# EASY AS THAT.
 
 
 

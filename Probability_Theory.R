@@ -367,7 +367,7 @@ calls94 = "1111111111111111111111111111111111111111111111111111"; c123 = nchar(c
 calls95 = "11111111111111111"; c124 = nchar(calls95)
 end.shift96 = "1111111111111111111111111111111111111111111111111111111111111"; c125 = nchar(end.shift96)
 day40 = 2
-# sum(c123,c124,c125)/5 # averaged 25.6 dials an hour today - sucked
+
 
 # Friday 14 Dec (WORKED 7 HOURS TODAY)
 calls95 = "1"; c126 = nchar(calls95)
@@ -377,7 +377,7 @@ calls98 = "11111111111"; c129 = nchar(calls98)
 calls99 = "111111111111111"; c130 = nchar(calls99)
 calls100 = "11111"; c131 = nchar(calls100)
 day41 = 6
-sum(c126,c127,c128,c129,c130,c131)/7 # averaged 20 dials an hour! hahahaha
+
 
 # Saturday 15 Dec 
 calls101 = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c132 = nchar(calls101)
@@ -404,6 +404,127 @@ end.shift109 = "1111111111111111111111111111111111111111111111111111111111111111
 day45 = 1
 
 # Friday 21 Dec
+calls109 = "111111"; c142 = nchar(calls109); c142
+calls110 = "111111111"; c143 = nchar(calls110); c143
+calls111 = "1"; c144 = nchar(calls111); c144
+end.shift112 = "11111111111111111111111111111"; c145 = nchar(end.shift112); c145
+day46 = 3
+
+
+## WEEK 13 (short week - New Year's)
+# Wednesday 2 Jan 2019 (STARTED HLP 187 TODAY) (HAD A SHORT DAY - 2.5 HOURS - CUZ OF ICE)
+calls112 = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c146 = nchar(calls112)
+end.shift113 = "1111111111111111111"; c147 = nchar(end.shift113); c147
+day47 = 1
+
+# Friday 4 Jan 2019 (LONG DAY - 7 HOURS - CUZ OF MISSING TWO HOURS ON FRIDAY BEFORE BREAK)
+calls113 = "111111111111111111111111111111"; c148 = nchar(calls113)
+calls114 = "1111111111111111"; c149 = nchar(calls114)
+calls115 = "1111111111111111111111111111111111111"; c150 = nchar(calls115)
+calls116 = "1111111111111111111111111111111111111"; c151 = nchar(calls116)
+calls117 = "11111111111111111111111111111111"; c152 = nchar(calls117)
+end.shift118 = "111111111111111"; c153 = nchar(end.shift118)
+day48 = 5
+
+
+
+## WEEK 14 (NEW SCHEDULE STARTED THIS WEEK)
+# Monday 7 Jan 2019
+calls118 = "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c154 = nchar(calls118); c154
+calls119 = "111111111111111111111111111111111111111"; c155 = nchar(calls119)
+Aend.shift120 = "11111111111111111111111111111111111111111111111111111"; c156 = nchar(Aend.shift120)
+day49 = 2
+
+# Tuesday 8 Jan
+Bend.shift120 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c157 = nchar(Bend.shift120)
+day50 = 0
+### SINCE I HAD TWO END.SHIFT120'S, I NEED TO COMBINE THEM MANUALLY :(
+end.shift120 = paste0(Aend.shift120,Bend.shift120)
+
+# Wednesday 9 Jan
+calls120 = "111111111111111111111111111111111111111111111111111111111111111"; c158 = nchar(calls120)
+calls121 = "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c159 = nchar(calls121)
+end.shift122 = "11111111111"; c160 = nchar(end.shift122); c160
+day51 = 2
+
+# Saturday 12 Jan
+calls122 = "111111111111111111111111111111111111111111111111111111"; c161 = nchar(calls122)
+calls123 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c162 = nchar(calls123)
+end.shift124 = "111111111111111111111111111111111111111111"; c163 = nchar(end.shift124)
+day52 = 2
+
+
+## WEEK 15
+# Monday 14 Jan
+calls124 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c164 = nchar(calls124)
+calls125 = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c165 = nchar(calls125)
+end.shift126 = "1111111111111111"; c166 = nchar(end.shift126)
+day53 = 2
+
+# Tuesday 15 Jan
+calls126 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c167 = nchar(calls126)
+calls127 = "111111111111111111111111111"; c168 = nchar(calls127)
+calls128 = "11"; c169 = nchar(calls128)
+end.shift129 = "1111111111111111"; c170 = nchar(end.shift129); c170
+day54 = 3
+
+# Wednesday 16 Jan (MLK PRESENTATION TODAY - SHORT DAY)
+calls129 = "1111111111111111111111111111111"; c171 = nchar(calls129)
+calls130 = "11"; c172 = nchar(calls130)
+end.shift131 = "1111111111111111111111111111111111111111111111111111111111111111111111111111"; c173 = nchar(end.shift131)
+day55 = 2
+
+# Friday 18 Jan
+# THIS CALLS131 IS WRONG. I FORGOT TO STOP TALLYING AFTER I GOT A SURVEY. I PROBABLY GOT THE SURVEY AFTER LIKE 90 or 100 DIALS
+calls131 = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c174 = nchar(calls131); c174
+end.shift132 = "1111111111111111111111111111111111111111111111111111"; c175 = nchar(end.shift132)
+day56 = 1
+
+
+## WEEK 16
+# Tuesday 22 Jan (STARTED HLP 188 TODAY) (REALLY SHORT WEEK CUZ OF MLK, AND TRIP!)
+calls132 = "1111111111111111111111111111111"; c176 = nchar(calls132)
+calls133 = "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c177 = nchar(calls133)
+end.shift134 = "11111111111"; c178 = nchar(end.shift134)
+day57 = 2
+
+# Wednesday 23 Jan
+calls134 = "111111111111111111111111111111111111"; c179 = nchar(calls134)
+end.shift135 = "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c180 = nchar(end.shift135); c180
+day58 = 1
+
+
+## WEEK 17 
+# Monday 28 Jan
+calls135 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111"; c181 = nchar(calls135)
+calls136 = "111111"; c182 = nchar(calls136)
+calls137 = "111111111"; c183 = nchar(calls137)
+calls138 = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c184 = nchar(calls138)
+day59 = 4
+
+# Tuesday 29 Jan
+calls139 = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c185 = nchar(calls139)
+end.shift140 = "1111111111111111111111111111111111111111111111111111111111111"; c186 = nchar(end.shift140)
+day60 = 1
+
+# Wednesday 30 Jan 
+calls140 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c187 = nchar(calls140)
+end.shift141 = "1111111111111111111111111111111111111111111111111111111111111"; c188 = nchar(end.shift141)
+day61 = 1
+
+# Friday 1 Feb
+calls141 = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c189 = nchar(calls141)
+calls142 = "11111111111111111111111111111111111111111111111111111111"; c190 = nchar(calls142)
+end.shift143 = "11111111111111111111111111111111111111111111111111111111111111111111"; c191 = nchar(end.shift143)
+day62 = 2
+
+
+## WEEK 18
+# Monday 4 Feb
+calls143 = "11111111111111111111111111111111111111"; c192 = nchar(calls143)
+calls144 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c193 = nchar(calls144)
+calls145 = "1111111111111111111111111"; c193 = nchar(calls145)
+day63 = 3
 
 
 week1 = sum(day1,day2,day3)
@@ -418,17 +539,24 @@ week9 = sum(day31,day32,day33,day34)
 week10= sum(day35,day36,day37) # Short week - finals
 week11= sum(day38,day39,day40,day41,day42) # Long week (cuz added the Friday missed in the previous week)
 week12= sum(day43,day44,day45,day46)
+week13= sum(day47,day48) # short week for New Year's
+week14= sum(day49,day50,day51,day52)
+week15= sum(day53,day54,day55,day56)
+week16= sum(day57,day58) # super short week for MLK and Stephen's homecoming
+week17= sum(day59,day60,day61,day62)
 # Week 1:  182
-# Week 2:  day4/calls13 - Monday 8 Oct -     started 183
+# Week 2:  day4/calls13 - Monday 8 Oct -      started 183
 # Week 5:  day18/calls47 - Wednesday 31 Oct - started 184
 # Week 7:  day27/calls66 - Saturday 17 Nov -  started 185
 # Week 11: day38/calls91 - Monday 10 Dec -    started 186
+# Week 13: day47/calls112 - Wednesday    -    started 187
+# Week 16: day57/calls132 - Tuesday 22 Jan -  started 188
 
 #################################################################################################
 ############################ ******* DATA VIZ NUMERO UNO ******* ################################
 ############################ DIALS AND MEAN COMPLETES BY WEEKDAY ################################
 
-# library(ggplot2)
+library(ggplot2)
 library(forcats)
 
 #### I WANT A DATAFRAME WITH 5 COLUMNS, SO I CAN PRINT A GGPLOT WITH TWO Y AXES:
@@ -442,8 +570,8 @@ library(forcats)
 ## 5) A MEANS COLUMN FOR MEAN COMPLETES BY WEEKDAY
 
 ### STEP 1: CONVERT SEQUENCE OF c1:n STRINGS INTO A VECTOR OF VARIABLE NAMES FOR COLUMN 3:
-n = 139 # <---------------------------  ######## *****DECISION***** ######## (the number of c-n calls)
-mystring = paste(paste0("c",1:n), collapse = ","); mystring
+n1 = 179 # <---------------------------  ######## *****DECISION***** ######## (the number of c-n calls)
+mystring = paste(paste0("c",1:n1), collapse = ","); mystring
 stringvec = unlist(strsplit(mystring,split = ",")); stringvec
 varvec = vector()
 for (i in 1:length(stringvec)){
@@ -451,12 +579,12 @@ for (i in 1:length(stringvec)){
 }
 
 ### STEP 2: ASSIGN THE day-k VARIABLES TO THEIR WEEKDAYS AND AVERAGE THEIR COMPLETES FOR COLUMN 5:
-Monmean = mean(c(day1,day4,day8,day12,day16,day20,day24,day28,day31,day35,day38,day43)) # <----- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
-Tuemean = mean(c(day2,day5,day9,day13,day17,day21,day25,day29,day32,day36,day39,day44)) # <----- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
-Wedmean = mean(c(day3,day6,day10,day14,day18,day22,day26,day30,day33,day37,day40)) # <---- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Monmean = mean(c(day1,day4,day8,day12,day16,day20,day24,day28,day31,day35,day38,day43,day49,day53)) # <----- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Tuemean = mean(c(day2,day5,day9,day13,day17,day21,day25,day29,day32,day36,day39,day44,day50,day54,day57)) # <----- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Wedmean = mean(c(day3,day6,day10,day14,day18,day22,day26,day30,day33,day37,day40,day45,day47,day51,day55,day58)) # <---- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
 # Thurmean = "just day15"
-Frimean = mean(c(day7,day23,day41)) # <--------------------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
-Satmean = mean(c(day11,day19,day27,day34,day42)) # <--------------------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Frimean = mean(c(day7,day23,day41,day46,day48,day56)) # <--------------------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Satmean = mean(c(day11,day19,day27,day34,day42,day52)) # <--------------------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
 m.cmplts.byweekday = c(rep(Monmean,day1+2),rep(Tuemean,day2+1),rep(Wedmean,day3+1),
                        rep(Monmean,day4+1),rep(Tuemean,day5),rep(Wedmean,day6+1),rep(Frimean,day7+1),
                        rep(Monmean,day8+1),rep(Tuemean,day9+1),rep(Wedmean,day10+1),rep(Satmean,day11+1),
@@ -468,10 +596,14 @@ m.cmplts.byweekday = c(rep(Monmean,day1+2),rep(Tuemean,day2+1),rep(Wedmean,day3+
                        rep(Monmean,day31+1),rep(Tuemean,day32),  rep(Wedmean,day33+1),rep(Satmean,day34+1),
                        rep(Monmean,day35+1),rep(Tuemean,day36),  rep(Wedmean,day37),
                        rep(Monmean,day38+1),rep(Tuemean,day39),  rep(Wedmean,day40+1),rep(Frimean,day41),rep(Satmean,day42+1),
-                       rep(Monmean,day43),  rep(Tuemean,day44))# <--- NEEDS UPDATING! FREAK!
+                       rep(Monmean,day43),  rep(Tuemean,day44),  rep(Wedmean,day45+1),rep(Frimean,day46+1),
+                                                                 rep(Wedmean,day47+1),rep(Frimean,day48),
+                       rep(Monmean,day49+1),rep(Tuemean,day50+1),rep(Wedmean,day51+1),rep(Satmean,day52+1),
+                       rep(Monmean,day53+1),rep(Tuemean,day54+1),rep(Wedmean,day55+1),rep(Frimean,day56+1),
+                                            rep(Tuemean,day57+1),rep(Wedmean,day58+1))# <--- NEEDS UPDATING! FREAK!
 
 ### STEP 3: THE WEEK COLUMN:
-week = rep(c(1,2,3,4,5,6,7,8,9,10,11,12), # <---------------------- NEEDS MORE #s ADDED TO IT WEEK BY WEEK
+week = rep(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16), # <---------------------- NEEDS MORE #s ADDED TO IT WEEK BY WEEK
            c(sum(day1+2,day2+1,day3+1),
              sum(day4+1,day5,day6+1,day7+1),
              sum(day8+1,day9+1,day10+1,day11+1),
@@ -483,7 +615,11 @@ week = rep(c(1,2,3,4,5,6,7,8,9,10,11,12), # <---------------------- NEEDS MORE #
              sum(day31+1,day32,day33+1,day34+1),
              sum(day35+1,day36,day37),
              sum(day38+1,day39,day40+1,day41,day42+1),
-             sum(day43,day44)) ) # <------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+             sum(day43,day44,day45+1,day46+1),
+             sum(day47+1,day48), # New Year's week
+             sum(day49+1,day50+1,day51+1,day52+1),
+             sum(day53+1,day54+1,day55+1,day56+1),
+             sum(day57+1,day58+1)) ) # <------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
 
 ### STEP 4: THE DAY COLUMN:
 day = c(rep("Mon",day1+2), rep("Tues",day2+1), rep("Wed",day3+1),
@@ -497,7 +633,11 @@ day = c(rep("Mon",day1+2), rep("Tues",day2+1), rep("Wed",day3+1),
         rep("Mon",day31+1),rep("Tues",day32),  rep("Wed",day33+1),rep("Sat",day34+1),
         rep("Mon",day35+1),rep("Tues",day36),  rep("Wed",day37),
         rep("Mon",day38+1),rep("Tues",day39),  rep("Wed",day40+1),rep("Fri",day41),rep("Sat",day42+1),
-        rep("Mon",day43),  rep("Tues",day44)) # <-------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+        rep("Mon",day43),  rep("Tues",day44),  rep("Wed",day45+1),rep("Fri",day46+1),
+                                               rep("Wed",day47+1),rep("Fri",day48),
+        rep("Mon",day49+1),rep("Tues",day50+1),rep("Wed",day51+1),rep("Sat",day52+1),
+        rep("Mon",day53+1),rep("Tues",day54+1),rep("Wed",day55+1),rep("Fri",day56+1),
+        rep("Tues",day57+1),rep("Wed",day58+1)) # <-------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
 
 ### ALL THREE VARIABLES--M.CMPLTS, WEEK, AND DAY--NEED TO HAVE THE SAME LENGTH DUH:
 length(m.cmplts.byweekday) 
@@ -534,7 +674,7 @@ survey = fct_relevel(day, ordered.days) %>% # THIS PART IS SOME FUNKY NEW CODING
 ggplot(survey, aes(x = day)) +
   geom_boxplot(aes(y = dials, colour = "dials")) +
   geom_point(aes(y = weekday.means*30, colour = "mean completes")) +
-  scale_y_continuous(breaks = seq(0,175,25), 
+  scale_y_continuous(breaks = seq(0,300,25), 
                      sec.axis = sec_axis(~./30, breaks = seq(0,4,1), name = "mean completes")) + 
   geom_hline(yintercept = c(60,90), linetype = "dashed", colour = "red") +
   scale_color_manual(values = c("blue","red")) +
@@ -552,7 +692,7 @@ s.weeks = data.frame(week = 1:length(unique(survey$week)),
 
 wks = 1:length(unique(survey$week)); wks
 # paste(shQuote(wks), collapse = ",") # SOOOO CLOSE TO BEING WHAT I NEED.
-dput(as.character(wks)) # BINGO!!! DANG THIS FUNCTION ROCKS.
+# dput(as.character(wks)) # BINGO!!! DANG THIS FUNCTION ROCKS.
 
 ggplot(s.weeks, aes(week,w.totals)) +
   geom_bar(stat = "identity", fill = "orange") +
@@ -578,7 +718,8 @@ ggplot(s.weeks, aes(week,w.totals)) +
 ##################################################################
 ################## HOW TO AUTOMATE THE PROCESS ###################
 myindex = c(6,9,13,16,21,24,26,28,32,33,38,39,43,44,47,48,51,54,60,63,66,67,
-            71,72,78,81,82,84,92,96,102) # <-----  ######## *****DECISION***** ######## 
+            71,72,78,81,82,84,92,96,102,109,112,113,120,122,124,126,129,131,
+            132,134,135) # <-----  ######## *****DECISION***** ######## 
 newcalls = vector()
 for (i in 1:length(myindex)){
   newcalls[i] = paste0(eval(parse(text = paste0("end.shift",as.character(myindex[i])) )), 
@@ -596,20 +737,31 @@ eval(parse(text = eq))                                     # STEP 5: convert fro
 # nchar(calls21)                                           # I CAN'T BELIEVE IT WORKED!!
 ######################
 
-n = 107 # <---------------------------------------  ######## *****DECISION***** ######## (the number of completes duh)
+n2 = 134 # <---------------------------------------  ######## *****DECISION***** ######## (the number of completes duh)
 callstotal = vector()
-for (i in 1:n){
+for (i in 1:n2){
   callstotal[i] = nchar(eval(parse(text = paste0("calls",i) )) ) # COOL! IT WORKS!
 }
 callstotal
-events = rep("",n); events
-events[c(13,47,66,91)] = c("HLP 183","HLP 184","HLP 185","HLP 186"); events
+events = rep("",n2); events
+events[c(13,47,66,91,112,132)] = c("HLP 183","HLP 184","HLP 185","HLP 186","HLP 187","HLP 188"); events
 df = data.frame(X = 1:length(callstotal),
                 Y = callstotal,
                 stuff = events)
 dfsort = data.frame(X = 1:length(callstotal),
                     Y = sort(callstotal))
 
+# HLP182 = 12; HLP182
+# HLP183 = 46-12; HLP183
+# HLP184 = 65-46; HLP184
+# HLP185 = 90-65; HLP185
+# HLP186 = 109-90; HLP186
+
+by10.20or50 = function(x,byWhat) {
+  multiplier = x%/%byWhat
+  top = multiplier*byWhat+byWhat
+  return(top)
+} 
 
 ggplot(df, aes(X,Y)) +
   geom_bar(stat = "identity", fill = "red") +
@@ -617,14 +769,14 @@ ggplot(df, aes(X,Y)) +
             size = 5, angle = 45, hjust = -.1, vjust = -.2) + 
   ggtitle("HLP # of dials") + xlab("(in chronological order)") +
   ylab("# of dials to get a complete") +
-  scale_y_continuous(breaks = seq(0,320,20)) +
+  scale_y_continuous(breaks = seq(0,350,50)) +
   coord_cartesian(ylim = c(0,320)) +
-  scale_x_continuous(breaks = seq(0,100,10))
+  scale_x_continuous(breaks = seq(0,by10.20or50(length(callstotal),10),10))
 ggplot(dfsort, aes(X,Y)) +
   geom_bar(stat = "identity", fill = "red") +
   ggtitle("HLP # of dials") + xlab("(in ascending order)") +
   ylab("# of dials to get a complete") +
-  scale_y_continuous(breaks = seq(0,300,10))
+  scale_y_continuous(breaks = seq(0,350,50))
 
 hist(callstotal, breaks = 30)
 ## FIVE (actually 6) NUMBER SUMMARY COLUMN FORMAT WITH MAX ON TOP:
@@ -1291,6 +1443,82 @@ k1 = max(M[1,]); k1
 m1 = ncol(M); m1
 Nhat1 = ((k1+1)/k1)*m1 - 1; Nhat1
 N1b = m1 + m1/k1 - 1; N1b
+
+
+#############################################################################
+
+
+dbinom(7,22,.5)
+dnbinom(7,22,.5)
+pbinom(7,22,.5, lower.tail = TRUE)
+pnbinom(7,22,.5, lower.tail = TRUE)
+
+
+
+
+
+
+
+
+
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+
+#############################################################################
+################################# MATH STATS ################################ 
+#############################################################################
+
+sum(1:7)/7
+mean(1:7)
+gamma(.5)/sqrt(pi)
+
+pnorm(-3)
+z = seq(-3,3,1); z
+w = vector()
+for (i in 1:length(z)){
+  w[i] = pnorm(z[i])
+}
+w[5] - w[3]
+w[6] - w[2]
+w[7] - w[1]
+
+a = runif(5,0,100); a
+b = runif(10,0,100); b
+c = runif(50,0,100); c
+
+median(a)
+median(b)
+median(c)
+sample(a,1)
+sample(b,1)
+sample(c,1)
+
+
+### FROM TOPIC 2 NOTES, PART ABOUT THE VARIANCE OF THE MEDIAN:
+## Compare the means and medians of 1000 random samples of size n = 3 from 
+# the uniform(0,1):
+mymedians = vector()
+mymeans = vector()
+for (i in 1:1000){
+  x.vec = runif(3,0,1)
+  mymedians[i] = median(x.vec)
+  mymeans[i] = mean(x.vec)
+}
+par(mfrow = c(2,1))
+hist(mymedians)
+hist(mymeans)
+
+var(mymedians) # compare to 1/20
+var(mymeans)
+mean(mymedians)
+mean(mymeans)
+
+
+
+
+
 
 
 

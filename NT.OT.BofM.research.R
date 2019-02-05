@@ -9,11 +9,11 @@
 # wfp (word frequency plotting)
 # wc (word count plotting)
 # whclrs (word hits in the colors)
-
+g.OT("Levite")
 ## Then gridextra (function names: g.NT, g.OT, g.BofM, and g.all.three)
 
 ## Then printouts of the surrounding context of the hits (function name: get.passages)
-
+get.passages.2("Levite",theOT,todos = FALSE)
 ## Then simple word/phrase search functions, with a list of phrases/words that
 # are unique to the Book of Mormon (not found in the Bible; no info on D&C or PofGP)
 ## And finally, multiple simultaneous word/phrase color plots (whclrs.9)

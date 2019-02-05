@@ -219,7 +219,9 @@ library(reshape2)
 melt.boston = melt(bstn)
 head(melt.boston)
 library(ggplot2)
-ggplot(data = melt.boston, aes(x = value)) + stat_density() + facet_wrap(~variable, scales = "free")
+ggplot(data = melt.boston, aes(x = value)) + 
+  stat_density() + 
+  facet_wrap(~variable, scales = "free")
 boxplot(bstn)
 
 

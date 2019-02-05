@@ -1,4 +1,249 @@
-### Great_Course_R
+### Great Course on R
+
+## Libraries:
+library(car)
+library(dplyr)
+library(ggplot2)
+
+
+## Lectures:
+# 1. How to summarize data with statistics
+# 2. Exploratory data visualization in R
+# 3. Sampling and probability
+# 4. Discrete distributions
+# 5. Continuous and normal distributions
+# 6. Covariance and correlation
+# 7. Validating statistical assumptions
+# 8. Sample size and sampling distributions
+# 9. Point estimates and standard error
+# 10. Interval estimates and confidence intervals
+# 11. Hypothesis testing: 1 sample
+# 12. Hypothesis testing: 2 samples, paired test
+# 13. Linear regression models and assumptions
+# 14. Regression predictions, confidence intervals
+# 15. Multiple linear regression
+# 16. ANOVA: comparing 3 means
+# 17. ANCOVA and multiple ANOVA
+# 18. Statistical design of experiments
+# 19. Regression trees and classification trees
+# 20. Polynomial and logistic regression
+# 21. Spatial statistics
+# 22. Time series analysis
+# 23. Prior information and Bayesian inference
+# 24. Statistics your way with custom functions
+
+
+
+
+
+
+
+### Lecture 2: Exploratory data visualization in R
+
+data("faithful") # you don't have to assign this to a variable
+plot(faithful, pch = 20)
+
+hist(faithful$waiting)
+hist(faithful$eruptions)
+##################################### MAGIC HERE M2.1:
+hist(faithful$waiting, plot = FALSE)$breaks # WOW!
+hist(faithful$waiting, plot = FALSE)$counts # WOW!
+hist(faithful$eruptions, plot = FALSE)$breaks # WOW!
+hist(faithful$eruptions, plot = FALSE)$counts # WOW!
+#####################################################
+
+hist(faithful$waiting, breaks = seq(40,100,1))
+hist(faithful$eruptions, breaks = seq(1.5,5.5,.1))
+
+#################################################################### CONCEPT HERE C2.1:
+## qqplot means quantiles of our data plotted against quantiles of a given distribution
+# (The default is usually the normal distribution.)
+# If all of our points in our qqplot fall on a straight line, this tells us that the 
+# quantiles of our sample are consistent with the proposed theoretical distribution.
+#######################################################################################
+x = rnorm(300)
+qqnorm(x, pch=16, cex = .5, col = "red")
+qqline(x)
+
+qqnorm(faithful$waiting, pch=16, cex = .5, col = "red")
+qqline(faithful$waiting)
+
+
+
+
+
+
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+
+###                                     ###                                     ###
+
+###                                     ###                                     ###
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+
+
+### Lecture 3: Sampling and probability
+
+################################################################# CONCEPT HERE C3.1:
+## It's helpful to think about data collection in the context of the general context
+# of investigation. There are 4 steps:
+# Step 1: State the question we're interested in
+# Step 2: Collect data that helps answer the question - beware bias
+# Step 3: Analyze the data
+# Step 4: Draw a conclusion
+####################################################################################
+
+mypoisson = function(x,L) ((L^x)*exp(-L))/(factorial(x))
+
+perfectconstant = 5e2
+Llist = c(.2,.8,2,4)
+C = .75
+where = 2
+
+par(mfrow=c(2,2), mar=c(3,4,2,.5))
+
+for (i in Llist){
+  L = i
+  x = seq(0,round(sqrt(L)*log(L*perfectconstant))+5,1)
+  plot(mypoisson(x,L), xlim = c(0,sqrt(L)*log(L*perfectconstant)+5), type = "h")
+  mtext(paste(lambda,"=",L),where,line = 2,cex = C)
+}
+par(mfrow=c(1,1))
+
+
+
+
+
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+
+###                                     ###                                     ###
+
+###                                     ###                                     ###
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+
+
+### Lecture 4: Discrete distributions
+
+# Experiments with discrete distributions
+vals = rnbinom(n = 100, size = 50, prob = .5); vals
+hist(vals)
+
+dnbinom(x = 30, size = 10, prob = .5)
+pnbinom(q = 20, size = 10, prob = .5, lower.tail = FALSE)
+
+rgeom(n=100, prob = .5)
+
+pgeom(q = 10, prob = 1/36) # I THINK THIS ONE IS ACTUALLY WORKING!!
+dgeom(x = 10, prob = 1/36) # WHAT THE HECK IS THE DENSITY??
+rgeom(n = 10, prob = 1/36) # THIS SEEMS LIKE IT COULD BE WORKING
+
+pnbinom(q = 10, size = 1, prob = 1/2)
+
+
+
+
+
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+
+###                                     ###                                     ###
+
+###                                     ###                                     ###
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+
+
+### Lecture 5: Continuous distributions
+
+# basic stuff with the normal distribution
+
+# biological data might more likely be lognormal than normal
+
+
+
+
+
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+
+###                                     ###                                     ###
+
+###                                     ###                                     ###
+
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+
+
+### Lecture 6: Covariance and correlation
+
+# Simple correlation stuff:
+x = c(2,3,5,6,8,9,10,13)
+y = c(58,75,71,77,80,88,83,95)
+mean(y)
+plot(x,y, pch = 20)
+mod1 = lm(y ~ x); mod1
+abline(mod1, col = "red")
+abline(h = mean(y), lty = 3, col = "grey")
+abline(v = mean(x), lty = 3, col = "grey")
+
+################################################################ CONCEPT HERE C6.1:
+### COVARIANCE and correlation coefficient:
+
+## The covariance of x and y is how x and y co-vary. It is equal to the sum of the
+# products of the x and y differences divided by n-1: 
+# sum((Xi - Xbar)*(Yi - Ybar)) / (n-1)
+## cov(x,y) = E((Xi - Xbar)*(Yi - Ybar))
+
+## The problem with covariance is that it can't tell us how strong the relationship
+# is between x and y. We've got to take it one step further. If we take the 
+# covariance and divide it by the product of the two standard deviations, magic 
+# begins to happen haha. What we've just done is convert it to a dimensionless 
+# measure--meaning, it has no units to it. This is the correlation coefficient!
+
+## Thus, cor(x,y) = cov(x,y) / (Sx*Sy)
+###################################################################################
+cov(x,y) # easy way
+cor(x,y) # easy way
+# Long way:
+xdiffs = vector()
+for (i in 1:length(x)){
+  xdiffs[i] = x[i] - mean(x)
+}
+xdiffs
+ydiffs = vector()
+for (i in 1:length(y)){
+  ydiffs[i] = y[i] - mean(y)
+}
+ydiffs
+sum(xdiffs*ydiffs)/(length(x)-1) # bingo == COVARIANCE OF X AND Y
+
+################################################## MAGIC HERE M6.1:
+# You can just do a cor() on a dataset:
+cor(faithful) # WOW! I LOVE IT!
+plot(faithful$eruptions,faithful$waiting)
+modfaithful = lm(waiting ~ eruptions, data = faithful); modfaithful
+abline(modfaithful, col = "red")
+################################################################### 
+data("Harman23.cor")
+har = as.data.frame(Harman23.cor$cov) # This is NOT a dataset. It's a correlation matrix!
+
+# install.packages("car")
+# library(car)
+data("Salaries")
+summary(Salaries)
+plot(Salaries$yrs.since.phd, Salaries$yrs.service)
+ggplot(Salaries, aes(yrs.since.phd,salary, col=factor(sex))) +
+  geom_point() +
+  geom_smooth(method = loess)
+  
+
+######################################################################################
+######################################################################################
+######################################################################################
+######################################################################################
+######################### ORIGINAL SCRIPT FOR Great_Course_R ######################### 
 
 library(ggplot2)
 temp = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/EPICA_temp.csv")
@@ -120,11 +365,12 @@ integrate(std.nrm, lower = -1.96, upper = 1.96)
 qnorm(.05, lower.tail = FALSE)
 qnorm(.025)
 qnorm(.005, lower.tail = FALSE)
-
+milk9 = 129-rexp(1000,.9); hist(milk9, main = "milk with beta=.9")
+milk8 = 129-rexp(1000,.8); hist(milk8, main = "milk with beta=.8")
+milk6 = 129-rexp(1000,.6); hist(milk6, main = "milk with beta=.6")
 
 set.seed(343)
 milk = 129-rexp(10000,.95) # NEVER SEEN THIS BEFORE. VERY INTERESTING. GOOD WAY TO GET AN UPPER LIMIT WITH RANDOM DEVIATIONS DOWNWARD FROM IT.
-class(milk)
 # plot(milk)
 hist(milk, main = "Histogram of population of milk jugs", col = "red")
 # THIS IS WORTH REMEMBERING: hist(milk, main = "Histogram of population of milk jugs", col = "red", breaks = 100, xlim = c(100,130), ylim = c(0,60000), xaxp = c(30,130,20))
@@ -178,6 +424,26 @@ SE = my.sd/sqrt(n)
 alpha = .1
 zcrit = qnorm(1-alpha/2)
 matplot(rbind(hndrd.s[1:20] - zcrit*SE, hndrd.s[1:20] + zcrit*SE), rbind(1:m,1:m), 
+        type = "l", lty = 1, lwd = 2, col = "darkgray", xlab = "Ounces", ylab = "CI's",
+        main = "20 different 90% CI's")
+abline(v = mean(milk), col = "red", lwd = 3)
+
+matplot(rbind(hndrd.s[21:40] - zcrit*SE, hndrd.s[21:40] + zcrit*SE), rbind(1:m,1:m), 
+        type = "l", lty = 1, lwd = 2, col = "darkgray", xlab = "Ounces", ylab = "CI's",
+        main = "20 different 90% CI's")
+abline(v = mean(milk), col = "red", lwd = 3)
+
+matplot(rbind(hndrd.s[41:60] - zcrit*SE, hndrd.s[41:60] + zcrit*SE), rbind(1:m,1:m), 
+        type = "l", lty = 1, lwd = 2, col = "darkgray", xlab = "Ounces", ylab = "CI's",
+        main = "20 different 90% CI's")
+abline(v = mean(milk), col = "red", lwd = 3)
+
+matplot(rbind(hndrd.s[61:80] - zcrit*SE, hndrd.s[61:80] + zcrit*SE), rbind(1:m,1:m), 
+        type = "l", lty = 1, lwd = 2, col = "darkgray", xlab = "Ounces", ylab = "CI's",
+        main = "20 different 90% CI's")
+abline(v = mean(milk), col = "red", lwd = 3)
+
+matplot(rbind(hndrd.s[81:100] - zcrit*SE, hndrd.s[81:100] + zcrit*SE), rbind(1:m,1:m), 
         type = "l", lty = 1, lwd = 2, col = "darkgray", xlab = "Ounces", ylab = "CI's",
         main = "20 different 90% CI's")
 abline(v = mean(milk), col = "red", lwd = 3)

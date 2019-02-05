@@ -596,16 +596,68 @@ plot(t, ylim = c(.7,20))
 
 
 ### Tax brackets 2018
+library(dplyr) # between includes lower bound and upper - it's totally inclusive
 
 # 12% ... 19,051 to 77,400 ... 58349
-
 # 22% ... 77,401 to 165,000 ... 87599
-
 # 24% ... 165,001 to 315,000 ... 149999
-
 # 32% ... 315,001 to 400,000 ... 84999
 
-library(dplyr)
+
+
+
+## Married jointly:
+# 10% ... 0 to 19,400
+# 12% ... 19,401 to 78,950    + 1,940
+# 22% ... 78,951 to 168,400   + 9,086
+# 24% ... 168,401 to 321,450  + 28,675
+# 32% ... 321,451 to 408,200  + 65,497
+# 35% ... 408,201 to 612,350  + 93,257
+# 37% ... 612,351 or more     + 164,709
+
+
+taxesMarriedJ2019 = function(income) {
+  if (between(income,0,19400)){
+    tax = income*.10
+    takehome = income-tax
+  } else if (between(income,19401,78950)){
+    tax = (income-19401)*.12 + 1940
+    takehome = income-tax
+  } else if (between(income,78951,168400)){
+    tax = (income-78951)*.22 + 9086
+    takehome = income-tax
+  } else if (between(income,168401,321450)){
+    tax = (income-168401)*.24 + 28675
+    takehome = income-tax
+  } else if (between(income,321451,408200)){
+    tax = (income-321451)*.32 + 65497
+    takehome = income-tax
+  } else if (between(income,408201,612350)){
+    tax = (income-408201)*.35 + 93257
+    takehome = income-tax
+  } else if (between(income,612351,10000000)){
+    tax = (income-612351)*.37 + 164709
+    takehome = income-tax
+  } else if (income > 10000000){
+    tax = "puck you"
+    takehome = "rich muthapucker"
+  }
+  tax = prettyNum(tax, big.mark = ",", scientific = FALSE)
+  takehome = prettyNum(takehome, big.mark = ",", scientific = FALSE)
+  return(cat(sprintf("Your taxes are $%s \nAnd your net income is $%s",tax,takehome)))
+}
+
+taxesMarriedJ2019(82000) # $9,750 in taxes, net income of $72,000
+taxesMarriedJ2019(100000) 
+taxesMarriedJ2019(150000)
+taxesMarriedJ2019(200000)
+taxesMarriedJ2019(300000)
+taxesMarriedJ2019(400000)
+taxesMarriedJ2019(500000)
+taxesMarriedJ2019(600000)
+taxesMarriedJ2019(800000)
+taxesMarriedJ2019(2000000)
+
 taxes = function(income){
   if (between(income,315001,400001)){
     remainder = income-315001
@@ -635,6 +687,14 @@ taxes = function(income){
   return(cat(sprintf("Your taxes are $%s \nAnd your takehome is $%s",tax,takehome)))
 }
 
+## After ten years of being on food stamps, we might end up having received $72,000.
+# Looks like I'll lose that to taxes in less than 10 years after graduating.
+taxes(130000)
+72000/18000
+taxes(100000)
+72000/12000
+taxes(50000)
+taxes(100000)
 
 
 

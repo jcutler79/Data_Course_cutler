@@ -1,0 +1,34 @@
+---
+title: "ch01pr27"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+library(ggplot2)
+
+musc = read.csv("/Users/jamescutler/Desktop/Biostats_II/CH01PR27.csv", header = FALSE)
+musc = musc[2:3]
+plot(musc$V3,musc$V2)
+mod27 = lm(V2 ~ V3, data = musc); mod27
+abline(mod27, col = "red")
+
+ggplot(musc, aes(V3,V2)) +
+  geom_point(col = "red") +
+  geom_smooth(method = lm, se=TRUE)
+
+summary(mod27)
+
+library(sjPlot)
+tab_model(mod27, file = "ch1prob27.html")
+
+```
+htmltools::includeHTML("ch1prob27.html")
+
+
+
+
+
+
+

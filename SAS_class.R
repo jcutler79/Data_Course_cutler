@@ -13,8 +13,9 @@ sum(20*Phw,25*Pmid,25*Pproj,30*.90) # 92 on the final would be a sure A, but eve
 # Important Libraries:
 library(sas7bdat)
 library(tables)
-library(dplyr) # for the pipe
+library(dplyr) # for the pipe (%>%)
 library(tidyr) # for the gather and spread
+library(data.table) # SQL in R!
 
 ### text data
 getwd()
@@ -454,42 +455,48 @@ mine = data.frame(state = f$X_STATE,
                   diabetes = f$DIABETE3,
                   exercise = f$X_PAINDX1)
 
-mine[which(mine$state == 40),1] = "OK"
-mine[which(mine$state == "44"),1] = "RI"
+mine[which(mine$state == 40),1] = 1 # "OK"
+mine[which(mine$state == "44"),1] = 2 # "RI"
+mine$state = factor(mine$state,
+                    levels = c(1,2),
+                    labels = c("OK","RI"))
 
-mine[which(mine$sex == 1),2] = "Male"
-mine[which(mine$sex == "2"),2] = "Female"
+# mine[which(mine$sex == 1),2] = "Male"
+# mine[which(mine$sex == 2),2] = "Female"
+mine$sex = factor(mine$sex,
+                  levels = c(1,2),
+                  labels = c("Male","Female"))
 
 mine[which(mine$income %in% c(1,2,3,4)),3] = 1 # "1" # "<$25k"
 mine[which(mine$income %in% c(5,6)),3] = 2 # "2" # "$25-$50k"
 mine[which(mine$income %in% c(7,8)),3] = 3 # "3" # "≥$50k"
-mine[which(mine$income %in% c(77)),3] = 4 # "4" # "DK"
-mine[which(mine$income %in% c(99)),3] = 5 # "5" # "refused"
+mine[which(mine$income %in% c(77)),3] = NA # "4" # "DK"
+mine[which(mine$income %in% c(99)),3] = NA # "5" # "refused"
 # length(which(mine$income %in% c("DK","refused")))/nrow(mine) # 19.9%
 # HAS SOME NaNs IN ADDITION TO THE ABOVE
 mine$income = factor(mine$income,
-                     levels = c(1,2,3,4,5),
-                     labels = c("<$25k","$25-$50k","≥$50k","DK","refused"))
+                     levels = c(1,2,3),
+                     labels = c("<$25k","$25-$50k","≥$50k"))
 
 mine[which(mine$race == 1),4] = 1 # "1" # "White/NH"
 mine[which(mine$race == 2),4] = 2 # "2" # "Black/NH"
 mine[which(mine$race == 5),4] = 3 # "3" # "Hispanic"
 mine[which(mine$race %in% c(3,4)),4] = 4 # "4" # "Other/NH"
-mine[which(mine$race == 9),4] = 5 # "DK/refused"
+mine[which(mine$race == 9),4] = NA # "DK/refused"
 # length(which(mine$race == "DK/refused"))/nrow(mine)
 mine$race = factor(mine$race,
-                   levels = c(1,2,3,4,5),
-                   labels = c("white","black","hispanic","other","DK/refused"))
+                   levels = c(1,2,3,4),
+                   labels = c("white","black","hispanic","other"))
 
 mine[which(mine$age.grp %in% c(1,2)),5] = 1 # "1" # "18-29"
 mine[which(mine$age.grp %in% c(3,4,5,6)),5] = 2 # "2" # "30-49"
 mine[which(mine$age.grp %in% c(7,8,9,10)),5] = 3 # "3" # "50-69"
 mine[which(mine$age.grp %in% c(11,12,13)),5] = 4 # "4" # "70 & older"
-mine[which(mine$age.grp == 14),5] = 5 # "DK/refused"
+mine[which(mine$age.grp == 14),5] = NA # "DK/refused"
 # length(which(mine$age.grp == "DK/refused"))/nrow(mine)
 mine$age.grp = factor(mine$age.grp,
-                      levels = c(1,2,3,4,5),
-                      labels = c("18-29","30-49","50-69","70 & older","DK/refused"))
+                      levels = c(1,2,3,4),
+                      labels = c("18-29","30-49","50-69","70 & older"))
 
 mine$BMI = mine$BMI/100
 # length(which(is.na(mine$BMI))) # 1016 are NA, same as the number of NaN in the BMI.grp!
@@ -505,36 +512,43 @@ mine$BMI.grp = factor(mine$BMI.grp,
 
 mine[which(mine$binge == 1),8] = 1 # "No"
 mine[which(mine$binge == 2),8] = 2 # "Yes"
-mine[which(mine$binge == 9),8] = 3 # "DK/refused"
+mine[which(mine$binge == 9),8] = NA # "DK/refused"
 # length(which(mine$binge == "DK/refused"))/nrow(mine) # 7%
 mine$binge = factor(mine$binge,
-                    levels = c(1,2,3),
-                    labels = c("No","Yes","DK/refused"))
+                    levels = c(1,2),
+                    labels = c("No","Yes"))
 
 mine[which(mine$diabetes %in% c(1,2)),9] = 1 # "1" # "diabetic"
 mine[which(mine$diabetes %in% c(3,4)),9] = 2 # "2" # "non-diabetic"
-mine[which(mine$diabetes == 9),9] = 3 # "3" # "refused"
-mine[which(mine$diabetes == 7),9] = 4 # "4" # "DK"
+mine[which(mine$diabetes == 9),9] = NA # "3" # "refused"
+mine[which(mine$diabetes == 7),9] = NA # "4" # "DK"
 # length(which(mine$diabetes %in% c("DK","refused")))/nrow(mine)
 mine$diabetes = factor(mine$diabetes,
-                       levels = c(1,2,3,4),
-                       labels = c("diabetic","non-diab.","refused","DK"))
+                       levels = c(1,2),
+                       labels = c("diabetic","non-diab."))
 
 mine[which(mine$exercise == 1),10] = 1 # "Met recomm."
 mine[which(mine$exercise == 2),10] = 2 # "Did not"
-mine[which(mine$exercise == 9),10] = 3 # "DK/refused"
+mine[which(mine$exercise == 9),10] = NA # "DK/refused"
 # length(which(mine$exercise == "DK/refused"))/nrow(mine) # 12.2%
 mine$exercise = factor(mine$exercise,
-                       levels = c(1,2,3),
-                       labels = c("met recomm.","didn't","DK/refused"))
-
-
-
+                       levels = c(1,2),
+                       labels = c("met recomm.","didn't"))
 
 
 # permanent Rhode Island / Oklahoma dataset (for fast loading in the future):
 saveRDS(mine, file = "/Users/jamescutler/Desktop/SAS/RI_OK_data.rds")
-ri.ok = readRDS("/Users/jamescutler/Desktop/SAS/RI_OK_data.rds")
+RIOK = readRDS("/Users/jamescutler/Desktop/SAS/RI_OK_data.rds")
+
+
+allstuff = expand.grid(first=colnames(ri.ok)[c(1,2,3,4,5,7,8,9,10)],
+                       second=colnames(ri.ok)[c(1,2,3,4,5,7,8,9,10)])
+alltwos = allstuff[-seq(1,81,10),]
+mysamp = sample(1:72,10,replace = FALSE)
+twossamp = alltwos[mysamp,]
+
+twossamp[4,]
+summary(ri.ok)
 
 ggplot(mine, aes(BMI.grp, fill = diabetes)) +
   geom_bar(stat = "count") +

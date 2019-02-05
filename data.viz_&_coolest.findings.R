@@ -20,11 +20,25 @@ hist(reps, breaks = 100) # INSANELY SIMPLE! BUT SOOOOO FREAKING FASCINATING!
 #####################################################################################
 #####################################################################################
 
+
+
+
 # libraries:
+
+## INSTEAD OF INSTALLING FORCATS, GGPLOT2, TIDYR, DPLYR, STRINGR, ETC. SEPARATELY,
+# JUST INSTALL "tidyverse":
+# install.packages("tidyverse")
+library(tidyverse)
+
+## To get ggplot2 version 3.0.0
+# install.packages("ggplot2")
+
 library(ggplot2)
-library(ggpubr) # before and after plots with lines connecting
 library(tidyr) # wide to long and vice versa
-library(scales)
+library(dplyr) # for the %>% and filter and select ...
+library(scales) # for the percent function in geom_text and scale_y_continuous
+library(ggpubr) # before and after plots with lines connecting
+
 
 
 #### Different kinds of data visualizations:
@@ -93,17 +107,126 @@ ggplot(shayak, aes(factor(difficulty),count, fill = factor(part))) +
 
 
 
-### Percentages or count labels above bars in barplot
-library(scales)
-ri.ok = readRDS("/Users/jamescutler/Desktop/SAS/RI_OK_data.rds")
+### Percentages or count labels above bars in barplot 
+## (ALSO, HOW TO GET THE LEGEND FACTORS TO DISPLAY THE FACTOR LABELS RATHER THAN THE NUMBERS THEY CORRESPOND TO)
+# YOU NEED THE SCALES LIBRARY JUST TO GET THE PERCENT OBJECT for LABEL(S)
+RIOK = readRDS("/Users/jamescutler/Desktop/SAS/RI_OK_data.rds")
 as.matrix(colnames(ri.ok))
-ggplot(ri.ok, aes(income, fill = income)) +
-  geom_bar(stat = "count") + 
-  geom_text() + 
-  ggtitle("Counts of people in each income category") + 
-  labs(y = "percent", x = "income") +
-  guides(fill = FALSE)
+ggplot(na.omit(RIOK[,c("diabetes","exercise")]), aes(x=diabetes, group = exercise)) +
+  geom_bar(aes(y=..prop.., fill = factor(..x..)), stat = "count") +
+  geom_text(aes(label = scales::percent(..prop..),y=..prop..), 
+            stat = "count", size = 2, vjust = -.5) +
+  facet_grid(~exercise) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_discrete(breaks = c(1,2), labels = levels(RIOK$diabetes)) + 
+  # I FINALLY DID IT! IT TOOK TRYING SCALE_COLOR_MANUAL AND SOMETHING ELSE FIRST JUST TO FINALLY RALIZE THAT ITS SCALE_FILL_DISCRETE THAT DOES IT!!!!!!!!!!!
+  labs(y="percent", fill = "diabetes status") +
+  theme(axis.text.x = element_text(angle = 45))
+# source for learning the successful way to change legend factor labels: https://ggplot2.tidyverse.org/reference/guide_legend.html
+
+### BRFSS barplots in R:
+## Figure 1: Health outcome by state
+# THIS IS STUPID. IT HOLLABAUGH WANTED WHAT PERCENTAGE OF DIABETICS IN THIS 
+# DATASET THAT CAME FROM OK AND WHAT PERCENTAGE CAME FROM RI. WHAT IF THERE ARE
+# WAY MORE OK RESPONDENDTS IN THIS DATASET TO BEGIN WITH!?!?!? DUH!!!
+ggplot(na.omit(RIOK), aes(x=state, group = diabetes)) +
+  geom_bar(aes(y=..prop.., fill = factor(..x..)), stat = "count") + 
+  # LEARNED THAT YOU **DO** NEED TO PUT FACTOR() AROUND ..X.. IN ORDER TO GET IT TO WORK, IN SPITE OF THE FACT THAT IT'S ALREADY A FACTOR
+  geom_text(aes(label = percent(..prop..),y=..prop..),
+            stat = "count", size = 2, vjust = -.5) +
+  facet_grid(~diabetes) +
+  scale_y_continuous(labels = percent) +
+  scale_fill_discrete(breaks = c(1,2), labels = levels(RIOK$state)) +
+  labs(title = "Health outcome by state",x="State",y="Percent", fill = "State")
+# WHAT YOU SHOULD ACTUALLY BE LOOKING FOR--THE PERCENTAGE OF OK RESPONDENTS WHO
+# WERE DIABETIC, COMPARED TO THE PERCENTAGE OF RI RESPONDENTS WHO WERE DIABETIC:
+ggplot(na.omit(RIOK), aes(x=diabetes, group = state)) +
+  geom_bar(aes(y=..prop.., fill = factor(..x..)), stat = "count") +
+  geom_text(aes(label = percent(..prop..),y=..prop..),
+            stat = "count", size = 2, vjust = -.5) +
+  facet_grid(~state) +
+  scale_y_continuous(labels = percent) +
+  scale_fill_discrete(breaks = c(1,2), labels = levels(RIOK$diabetes)) +
+  labs(title = "Health outcome by state - the real way",x="Diabetes status",y="Percent", fill = "Diabetes status")
+## THE TAKE HOME WITH THIS AND WITH THE SMOKING/LUNG CANCER QUESTION FROM BIOSTATS
+# IS THAT IN BOTH CASES YOU DON'T WANT PROPORTION OF HEALTH OUTCOME BY RISK FACTOR;
+# YOU WANT PROPORTION OF RISK FACTOR BY HEALTH OUTCOME!
+
+## Figure 2: Health outcome by risk factor
+# (It's the same as the one above at the beginning of the percentage topic)
+ggplot(na.omit(RIOK[,c("diabetes","exercise")]), aes(x=diabetes, group = exercise)) +
+  geom_bar(aes(y=..prop.., fill = factor(..x..)), stat = "count") +
+  geom_text(aes(label = scales::percent(..prop..),y=..prop..), 
+            stat = "count", size = 2, vjust = -.5) +
+  facet_grid(~exercise) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_discrete(breaks = c(1,2), labels = levels(RIOK$diabetes)) + 
+  # I FINALLY DID IT! IT TOOK TRYING SCALE_COLOR_MANUAL AND SOMETHING ELSE FIRST JUST TO FINALLY RALIZE THAT ITS SCALE_FILL_DISCRETE THAT DOES IT!!!!!!!!!!!
+  labs(y="percent", fill = "diabetes status") +
+  theme(axis.text.x = element_text(angle = 45))
+
+### Figure 3: Health outcome by risk factor, stratified by income
+## Attempt #1 (looks weird):
+# ggplot(na.omit(RIOK[,c("diabetes","exercise","income")]), 
+#        aes(x=diabetes, group = exercise)) +
+#   geom_bar(aes(y=..prop.., fill = factor(..x..)), stat = "count") +
+#   geom_text(aes(label = scales::percent(..prop..),y=..prop..), 
+#             stat = "count", size = 2, vjust = -.5) +
+#   facet_grid(~income) +
+#   scale_y_continuous(labels = scales::percent) +
+#   scale_fill_discrete(breaks = c(1,2), labels = levels(RIOK$diabetes)) + 
+#   
+#   labs(y="percent", fill = "diabetes") +
+#   theme(axis.text.x = element_text(angle = 45))
+## Attempt #2 (getting closer!):
+# ggplot(na.omit(RIOK[,c("diabetes","exercise","income")]), 
+#        aes(x=diabetes, group = income)) +
+#   geom_bar(aes(y=..prop.., fill = factor(..x..)), 
+#            stat = "count", position = "dodge") +
+#   geom_text(aes(label = percent(..prop..),y=..prop..), 
+#             stat = "count", position = position_dodge(width = .9), # TOOK A WHILE TO FIGURE OUT THAT YOU NEED TO TYPE IT SPECIFICALLY AS POSITION = POSITION_DODGE()
+#             size = 2, vjust = -.5) +
+#   facet_grid(~exercise) +
+#   scale_y_continuous(labels = percent) +
+#   scale_fill_discrete(breaks = c(1,2,3), labels = levels(RIOK$income)) + 
+#   
+#   labs(title = "health outcome by risk factor, stratified by income",
+#        y="percent", fill = "income") +
+#   theme(axis.text.x = element_text(angle = 45))
+## Attempt #3 (good enough, though it still includes the non-diabetic!):
+ggplot(na.omit(RIOK[,c("diabetes","exercise","income")]), 
+       aes(x=diabetes, group = income)) +
+  geom_bar(mapping = aes(y=..prop.., fill = income), 
+           stat = "count", position = "dodge") +
+  geom_text(aes(label = percent(..prop..),y=..prop..), 
+            stat = "count", position = position_dodge(width = .9), # TOOK A WHILE TO FIGURE OUT THAT YOU NEED TO TYPE IT SPECIFICALLY AS POSITION = POSITION_DODGE()
+            size = 2, vjust = -.5) +
+  facet_grid(~exercise) +
+  scale_y_continuous(labels = percent) +
+  scale_color_manual(breaks = c(1,2,3), labels = levels(RIOK$income)) + 
+  # WTF!!!!!!??????? NOW IT'S BACK TO SCALE_COLOR_MANUAL!!!!!!!
+  labs(title = "Health outcome by risk factor, stratified by income",
+       x="Diabetes status",y="Percent", fill = "Income") +
+  theme(axis.text.x = element_text(angle = 45))
+
+##################################################################################
+## ALL OF THIS WAS BECAUSE DPLYR'S FILTER HAD THE STUPIDEST ERROR
+# (WHICH WASN'T SOLVED THIS WAY--IT WAS SOLVED BY INSTALLING DPLYR 0.7.7 VERSION):
+# install.packages("rlang")
+# install.packages("remotes")
+# remotes::install_github("tidyverse/dplyr#3894")
+RIOK %>% select(diabetes,race,sex,income) %>% 
+  filter(diabetes == "diabetic" & income == "<$25k") %>% nrow()
+RIOK %>% select(diabetes,race,sex,income) %>% 
+  filter(diabetes == "diabetic" & income == "$25-$50k") %>% nrow()
+RIOK %>% select(diabetes,race,sex,income) %>% 
+  filter(diabetes == "diabetic" & income == "≥$50k") %>% nrow()
+##################################################################################
+
+
   
+
+
 
 
 
