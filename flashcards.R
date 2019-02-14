@@ -824,6 +824,7 @@ Epi.ppt.on.Measuring.Association.Between.D.and.E = list(one = "filler",
                                                         PPR_plus.comparison.to.RR.VERY.IMPORTANT.INFO = c("Used in cross-sectional studies, it's the ratio of the disease prevalence proportion in exposed to the disease prevalence proportion in the unexposed.","IT IS MATHEMATICALLY IDENTICAL TO THE RR, BUT THE INTERPRETATION IS VERY DIFFERENT!"),
                                                         beyond.estimating.association_RR.IRR.OR.PPR_if.we.want.to.estimate.potential.for.prevention.then.we.measure = c("AR, AR%, PAR, PAR%")
                                                         )
+# So, case-control studies - they can't be used to estimate prevalence, right??
 Epi.ppt.on.data.sources.and.rules.of.data.display = list(one = "filler",
                                                          objectives.of.data.sources.and.rules.of.data.display = c("1) identify sources of health data, 2) discuss strengths and limitations of secondary data for epi studies, 3) describe guidelines for tables and charts/graphs, 4) contrast weak and effective data presentation, and 5) use appropriate graphical methods to display data."),
                                                          primary.and.secondary.data_defs = c("Primary: data collected by the researcher","Secondary: existing data collected during other studies or at other institutions, or for state or national surveillance purposes."),

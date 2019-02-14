@@ -53,57 +53,41 @@ barplot(allmonths, col = "green", names.arg = meses, las = 2)
 
 
 ## Eating out:
-suns = seq(as.Date("2018-08-12"),as.Date("2018-12-30"), by = 7)
-which(suns == "2018-12-02") # which week number
-Week = c(1,4,6,6,7,7,8,9,10,11,11,14,17) 
-# 1-SB, 4-JJ, 6-JJ, 6-SB, 7-D, 7-B, 8-FG, 9-D, 10-C, 11-JJ, 11-GG
-mydates = suns[Week]; mydates # Just for me to see what they are before entering them in the data frame below
-budget = data.frame(item = c("SnB",
-                             "Jimmy Johns",
-                             "Jimmy Johns",
-                             "SnB",
-                             "Dominos",
-                             "Basil",
-                             "Five Guys",
-                             "Dominos",
-                             "Chipotle",
-                             "Jimmy Johns",
-                             "Go Go Sushi",
-                             "Go Go Sushi",
-                             "Dominos for SAS final"),
-                    cost = c(15, # SnB
-                             14, # Jimmy Johns
-                             14, # Jimmy Johns
-                             15, # SnB
-                             9,  # Dominos
-                             9,  # Basil
-                             20, # Five Guys
-                             9,  # Dominos
-                             11, # Chipotle
-                             9,  # Jimmy Johns
-                             14, # Go Go Sushi
-                             14, # Go Go Sushi
-                             8),# Dominos for SAS final
-                    week = Week,
-                    week.dates = suns[Week])
-# class(budget$week.dates) # ALREADY A DATE SOMEHOW
 library(scales)
 library(ggplot2)
-ggplot(budget, aes(week.dates,cost)) +
+
+item = c("SnB","Jimmy Johns","Jimmy Johns","SnB","Dominos","Basil",
+         "Five Guys","Dominos","Chipotle","Jimmy Johns","Go Go Sushi",
+         "Go Go Sushi","Dominos for SAS final","SMASH PASS","Five Guys",
+         "Chipotle")
+cost = c(15,14,14,15,9,9,20,9,11,9,14,14,8,50,22,10)
+newdates = as.Date(c("2018-08-13","2018-09-07","2018-09-18","2018-09-21",
+                     "2018-09-25","2018-09-26","2018-09-29","2018-10-08",
+                     "2018-10-14","2018-10-23","2018-10-24","2018-11-15",
+                     "2018-12-06","2018-12-17","2019-02-7","2019-02-09"),
+                   format = "%Y-%m-%d")
+length(item)
+length(cost)
+length(newdates)
+budget = data.frame(item = item,
+                    cost = cost,
+                    dates = newdates)
+
+ggplot(budget, aes(newdates,cost)) +
   geom_point(col = "blue", alpha = .6) +
-  geom_text(data = budget, mapping = aes(week.dates,cost, label = item),
-            size = 2, angle = 45, vjust = -.3, hjust = -.1) +
+  geom_text(data = budget, mapping = aes(newdates,cost, label = item),
+            size = 4, angle = 45, vjust = -.3, hjust = -.1) +
   scale_x_date(breaks = date_breaks("1 weeks"),
                labels = date_format("%b-%d"),
-               limits = as.Date(c("2018-07-01","2018-12-30"), format = "%Y-%m-%d")) +
-  coord_cartesian(ylim = c(0,40)) +
-  scale_y_continuous(breaks = seq(0,40,5)) +
+               limits = as.Date(c("2018-08-12","2019-03-03"),format = "%Y-%m-%d")) + # Sunday we got her to a future Sunday
+  coord_cartesian(ylim = c(0,60)) +
+  scale_y_continuous(breaks = seq(0,60,10)) +
   theme(axis.text.x = element_text(size = 7, angle = 45, vjust = .9, hjust = .9)) +
-  ggtitle("Money spent on eating out solo") +
-  xlab("Time") + ylab("Cost")
+  ggtitle("Money spent eating out solo") +
+  xlab("Time") + ylab("Cost in USD")
 
-sum(budget$cost)/4 # As of December 12, it was exactly 4 months, at $40.25 a month!
-
+sum(budget[1:13,2])/4 # As of December 12, it was exactly 4 months, at $40.25 a month!
+sum(budget$cost)/6    # As of February 12, I only spend ~$40 a month eating out!
 ########################################################################################
 ########################################################################################
 ## WEEK 1 
@@ -389,7 +373,6 @@ day42 = 1
 calls102 = "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c134 = nchar(calls102)
 calls103 = "111111111111111111111111111111111111111111111111111111111111111111111111"; c135 = nchar(calls103)
 calls104 = "111111111111111111111"; c136 = nchar(calls104)
-sum(c134,c135,c136)/5
 day43 = 3
 
 # Tuesday 18 Dec
@@ -523,9 +506,42 @@ day62 = 2
 # Monday 4 Feb
 calls143 = "11111111111111111111111111111111111111"; c192 = nchar(calls143)
 calls144 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c193 = nchar(calls144)
-calls145 = "1111111111111111111111111"; c193 = nchar(calls145)
+calls145 = "1111111111111111111111111"; c194 = nchar(calls145)
 day63 = 3
 
+# Tuesday 5 Feb
+calls146 = "1111111111111111111111111111111111111111111111111111111111111111111111111111"; c195 = nchar(calls146)
+calls147 = "1111"; c196 = nchar(calls147)
+calls148 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c197 = nchar(calls148)
+day64 = 3
+
+# Wednesday 6 Feb
+calls149 = "1111111111111111111111111111111111111111"; c198 = nchar(calls149)
+end.shift150 = "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c199 = nchar(end.shift150); c199
+day65 = 1
+
+# Saturday 9 Feb
+calls150 = "111111111111"; c200 = nchar(calls150)
+calls151 = "11111111111111111111"; c201 = nchar(calls151)
+calls152 = "111111111111111111111111111111111111111111111111111111"; c202 = nchar(calls152)
+end.shift153 = "11111111111111111111111111111"; c203 = nchar(end.shift153); c203
+day66 = 3
+
+
+## WEEK 19 
+# Monday 11 Feb (STARTED HLP 188 TODAY)
+calls153 = "11111111111111111111"; c204 = nchar(calls153)
+calls154 = "111111111111111111111111111"; c205 = nchar(calls154)
+calls155 = "1111111111111111111111111111111111111111111111111"; c206 = nchar(calls155)
+calls156 = "11111111111111111111111111111111111111111111111111111111111111111"; c207 = nchar(calls156); c207
+day67 = 4
+
+# Tuesday 12 Feb
+end.shift157 = "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c208 = nchar(end.shift157)
+
+# Wednesday 13 Feb
+calls158 = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"; c209 = nchar(calls158); c209
+c209/5
 
 week1 = sum(day1,day2,day3)
 week2 = sum(day4,day5,day6,day7)
@@ -544,6 +560,8 @@ week14= sum(day49,day50,day51,day52)
 week15= sum(day53,day54,day55,day56)
 week16= sum(day57,day58) # super short week for MLK and Stephen's homecoming
 week17= sum(day59,day60,day61,day62)
+week18= sum(day63,day64,day65,day66)
+week19= sum(day67,day68,day69,day70)
 # Week 1:  182
 # Week 2:  day4/calls13 - Monday 8 Oct -      started 183
 # Week 5:  day18/calls47 - Wednesday 31 Oct - started 184
@@ -570,7 +588,7 @@ library(forcats)
 ## 5) A MEANS COLUMN FOR MEAN COMPLETES BY WEEKDAY
 
 ### STEP 1: CONVERT SEQUENCE OF c1:n STRINGS INTO A VECTOR OF VARIABLE NAMES FOR COLUMN 3:
-n1 = 179 # <---------------------------  ######## *****DECISION***** ######## (the number of c-n calls)
+n1 = 201 # <---------------------------  ######## *****DECISION***** ######## (the number of c-n calls)
 mystring = paste(paste0("c",1:n1), collapse = ","); mystring
 stringvec = unlist(strsplit(mystring,split = ",")); stringvec
 varvec = vector()
@@ -579,12 +597,12 @@ for (i in 1:length(stringvec)){
 }
 
 ### STEP 2: ASSIGN THE day-k VARIABLES TO THEIR WEEKDAYS AND AVERAGE THEIR COMPLETES FOR COLUMN 5:
-Monmean = mean(c(day1,day4,day8,day12,day16,day20,day24,day28,day31,day35,day38,day43,day49,day53)) # <----- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
-Tuemean = mean(c(day2,day5,day9,day13,day17,day21,day25,day29,day32,day36,day39,day44,day50,day54,day57)) # <----- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
-Wedmean = mean(c(day3,day6,day10,day14,day18,day22,day26,day30,day33,day37,day40,day45,day47,day51,day55,day58)) # <---- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Monmean = mean(c(day1,day4,day8,day12,day16,day20,day24,day28,day31,day35,day38,day43,day49,day53,day59,day63)) # <----- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Tuemean = mean(c(day2,day5,day9,day13,day17,day21,day25,day29,day32,day36,day39,day44,day50,day54,day57,day60,day64)) # <----- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Wedmean = mean(c(day3,day6,day10,day14,day18,day22,day26,day30,day33,day37,day40,day45,day47,day51,day55,day58,day61,day65)) # <---- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
 # Thurmean = "just day15"
-Frimean = mean(c(day7,day23,day41,day46,day48,day56)) # <--------------------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
-Satmean = mean(c(day11,day19,day27,day34,day42,day52)) # <--------------------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Frimean = mean(c(day7,day23,day41,day46,day48,day56,day62)) # <--------------------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+Satmean = mean(c(day11,day19,day27,day34,day42,day52,day66)) # <--------------------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
 m.cmplts.byweekday = c(rep(Monmean,day1+2),rep(Tuemean,day2+1),rep(Wedmean,day3+1),
                        rep(Monmean,day4+1),rep(Tuemean,day5),rep(Wedmean,day6+1),rep(Frimean,day7+1),
                        rep(Monmean,day8+1),rep(Tuemean,day9+1),rep(Wedmean,day10+1),rep(Satmean,day11+1),
@@ -597,13 +615,15 @@ m.cmplts.byweekday = c(rep(Monmean,day1+2),rep(Tuemean,day2+1),rep(Wedmean,day3+
                        rep(Monmean,day35+1),rep(Tuemean,day36),  rep(Wedmean,day37),
                        rep(Monmean,day38+1),rep(Tuemean,day39),  rep(Wedmean,day40+1),rep(Frimean,day41),rep(Satmean,day42+1),
                        rep(Monmean,day43),  rep(Tuemean,day44),  rep(Wedmean,day45+1),rep(Frimean,day46+1),
-                                                                 rep(Wedmean,day47+1),rep(Frimean,day48),
+                                                                 rep(Wedmean,day47+1),rep(Frimean,day48+1),
                        rep(Monmean,day49+1),rep(Tuemean,day50+1),rep(Wedmean,day51+1),rep(Satmean,day52+1),
                        rep(Monmean,day53+1),rep(Tuemean,day54+1),rep(Wedmean,day55+1),rep(Frimean,day56+1),
-                                            rep(Tuemean,day57+1),rep(Wedmean,day58+1))# <--- NEEDS UPDATING! FREAK!
+                                            rep(Tuemean,day57+1),rep(Wedmean,day58+1),
+                       rep(Monmean,day59),  rep(Tuemean,day60+1),rep(Wedmean,day61+1),rep(Frimean,day62+1),
+                       rep(Monmean,day63),  rep(Tuemean,day64),  rep(Wedmean,day65+1),rep(Satmean,day66))# <--- NEEDS UPDATING! FREAK!
 
 ### STEP 3: THE WEEK COLUMN:
-week = rep(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16), # <---------------------- NEEDS MORE #s ADDED TO IT WEEK BY WEEK
+week = rep(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18), # <---------------------- NEEDS MORE #s ADDED TO IT WEEK BY WEEK
            c(sum(day1+2,day2+1,day3+1),
              sum(day4+1,day5,day6+1,day7+1),
              sum(day8+1,day9+1,day10+1,day11+1),
@@ -616,10 +636,12 @@ week = rep(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16), # <---------------------- 
              sum(day35+1,day36,day37),
              sum(day38+1,day39,day40+1,day41,day42+1),
              sum(day43,day44,day45+1,day46+1),
-             sum(day47+1,day48), # New Year's week
+             sum(day47+1,day48+1), # New Year's week
              sum(day49+1,day50+1,day51+1,day52+1),
              sum(day53+1,day54+1,day55+1,day56+1),
-             sum(day57+1,day58+1)) ) # <------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+             sum(day57+1,day58+1),
+             sum(day59,day60+1,day61+1,day62+1),
+             sum(day63,day64,day65+1,day66)) ) # <------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
 
 ### STEP 4: THE DAY COLUMN:
 day = c(rep("Mon",day1+2), rep("Tues",day2+1), rep("Wed",day3+1),
@@ -634,10 +656,12 @@ day = c(rep("Mon",day1+2), rep("Tues",day2+1), rep("Wed",day3+1),
         rep("Mon",day35+1),rep("Tues",day36),  rep("Wed",day37),
         rep("Mon",day38+1),rep("Tues",day39),  rep("Wed",day40+1),rep("Fri",day41),rep("Sat",day42+1),
         rep("Mon",day43),  rep("Tues",day44),  rep("Wed",day45+1),rep("Fri",day46+1),
-                                               rep("Wed",day47+1),rep("Fri",day48),
+                                               rep("Wed",day47+1),rep("Fri",day48+1),
         rep("Mon",day49+1),rep("Tues",day50+1),rep("Wed",day51+1),rep("Sat",day52+1),
         rep("Mon",day53+1),rep("Tues",day54+1),rep("Wed",day55+1),rep("Fri",day56+1),
-        rep("Tues",day57+1),rep("Wed",day58+1)) # <-------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
+                           rep("Tues",day57+1),rep("Wed",day58+1),
+        rep("Mon",day59),  rep("Tues",day60+1),rep("Wed",day61+1),rep("Fri",day62+1),
+        rep("Mon",day63),  rep("Tues",day64),  rep("Wed",day65+1),rep("Sat",day66)) # <-------- NEEDS MORE DAYS ADDED TO IT WEEK BY WEEK
 
 ### ALL THREE VARIABLES--M.CMPLTS, WEEK, AND DAY--NEED TO HAVE THE SAME LENGTH DUH:
 length(m.cmplts.byweekday) 
@@ -1517,7 +1541,9 @@ mean(mymeans)
 
 
 
+##########
 
+# See R file for Topic 3 Bernoulli variance (saved in math_stats folder)
 
 
 

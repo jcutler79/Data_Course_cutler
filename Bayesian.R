@@ -361,6 +361,7 @@ points(0:6,PP1, pch = 8, col = "chartreuse4")
 
 #### CH 23: BAYESIAN INFERENCE FOR A NORMAL MEAN
 ### Practice on dataset "survey":
+# library(MASS)
 data("survey")
 plot(survey$Height)
 hist(survey$Height)
@@ -395,7 +396,7 @@ parameters = c("mu")
 
 heightsmodel <- function(){
   # prior:
-  mu ~ dunif(-1e10, 1e10)
+  mu ~ dunif(-1e4, 1e4) # Tried at 1e9, 1e6 -- too slow. Could this be why?
   # likelihood:
   for (i in 1:n){
     y[i] ~ dnorm(mu,tau)
@@ -418,10 +419,12 @@ heights.sim = bugs(data, inits, parameters.to.save = parameters, model.file = mo
 
 
 
+################
+
+# Week 5 - 
 
 
-
-
+data = list("y","n")
 
 
 

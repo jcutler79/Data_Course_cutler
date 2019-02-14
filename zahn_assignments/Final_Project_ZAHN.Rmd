@@ -5,6 +5,7 @@ output: html_document
 
 
 ```{r}
+# FIRST INSTALL THESE:
 library(ape)
 library(phangorn)
 ```
@@ -15,8 +16,10 @@ library(phangorn)
 
 ## First, I read in the taxanomic info and DNA sequences:
 ```{r}
-mamm.taxa = read.table("/Users/jamescutler/Desktop/APER2_Online_Material/mammal_mtGenome.fasta", 
-                          skip = 4, nrows = 233, sep = "_", comment.char = "(", as.is = TRUE) # HOW TO MAKE SENSE OF ALL THIS GIBBERISH??
+mamm.taxa = read.table("/Users/jamescutler/Desktop/Data_Course_cutler/APER2_Online_Material/mammal_mtGenome.fasta", 
+                       skip = 4, nrows = 233, sep = "_", 
+                       comment.char = "(", as.is = TRUE) 
+# HOW TO MAKE SENSE OF ALL THIS GIBBERISH??
 mamm.taxa[1:5,]
 mamm.taxa$V3 = NULL
 mamm.taxa$V1 = gsub("#", "", mamm.taxa$V1)
@@ -154,7 +157,7 @@ dev.off()
 ## Phacochoerus africanus - common warthog
 ## Macroscelides proboscideus - round-eared elephant shrew
 ## Loxodonta africana - African elephant
-## Dugong dugon
+## Dugong dugong
 ## Hippopotamus amphibius
 ## Manis tetradactyla - long-tailed pangolin
 ## Pteropus scapulatus - little red flying fox
@@ -165,21 +168,64 @@ dev.off()
 
 ## Here's how I chose to subset the data and just look at those ~50 animals:
 ```{r}
-y = c(6,17,9,10,15,8,27,174,142,1,4,193,192,187,180,117,110,115,120,118,97,119,109,175,140,
-      166,128,124,172,28,12,31,16,90,89,29,32,26,11,36,7,13,14,176,72,68,42,121,60,233,232,228,205)
+y = c(6,17,9,10,15,8,27,174,142,1,4,193,192,187,180,117,110,115,120,118,97,119,109,175,140,166,128,124,172,28,12,31,16,90,89,29,32,26,11,36,7,13,14,176,72,68,42,121,60,233,232,228,205)
 mamm.taxa$code[y]
 cox1 = mito.DNA[grep("COX1", names(mito.DNA))]
 cox1 = cox1[y] 
 common.names = data.frame(scientific = mamm.taxa$species[y], 
-                          common = c("La Plata dolphin","white-beaked dolphin","Omura's whale","pygmy right whale",
-                                     "Bryde's whale","narwhal","pygmy sperm whale","grey seal","spotted seal",
-                                     "European rabbit","European hare","guinea pig","house mouse","brown rat",
-                                     "lesser Egyptian jerboa","ring-tailed lemur","Horsfield's tarsier","northern plains gray langur",
-                                     "rhesus macaque","Bornean orangutan","gorilla","bonobo","us","brown bear","gray wolf","wolverine",
-                                     "raccoon","leopard","domestic cat","cow","water buffalo","dromedary","alpaca","donkey","horse",
-                                     "tufted deer","Tibetan antelope","Yezo Sika deer","sheep","Barbary sheep","goat","wild boar",
-                                     "common warthog","round-eared elephant shrew","African elephant","dugong","hippo","long-tailed pangolin",
-                                     "little red flying fox","western long-beaked echidna","platypus","koala","banded-hare wallaby"))
+                          common = c("La Plata dolphin",
+                                     "white-beaked dolphin",
+                                     "Omura's whale",
+                                     "pygmy right whale",
+                                     "Bryde's whale",
+                                     "narwhal",
+                                     "pygmy sperm whale",
+                                     "grey seal",
+                                     "spotted seal",
+                                     "European rabbit",
+                                     "European hare",
+                                     "guinea pig",
+                                     "house mouse",
+                                     "brown rat",
+                                     "lesser Egyptian jerboa",
+                                     "ring-tailed lemur",
+                                     "Horsfield's tarsier",
+                                     "northern plains gray langur",
+                                     "rhesus macaque",
+                                     "Bornean orangutan",
+                                     "gorilla",
+                                     "bonobo",
+                                     "us",
+                                     "brown bear",
+                                     "gray wolf",
+                                     "wolverine",
+                                     "raccoon",
+                                     "leopard",
+                                     "domestic cat",
+                                     "cow",
+                                     "water buffalo",
+                                     "dromedary",
+                                     "alpaca",
+                                     "donkey",
+                                     "horse",
+                                     "tufted deer",
+                                     "Tibetan antelope",
+                                     "Yezo Sika deer",
+                                     "sheep",
+                                     "Barbary sheep",
+                                     "goat",
+                                     "wild boar",
+                                     "common warthog",
+                                     "round-eared elephant shrew",
+                                     "African elephant",
+                                     "dugong",
+                                     "hippo",
+                                     "long-tailed pangolin",
+                                     "little red flying fox",
+                                     "western long-beaked echidna",
+                                     "platypus",
+                                     "koala",
+                                     "banded-hare wallaby"))
 names(cox1) = common.names$common
 ```
 

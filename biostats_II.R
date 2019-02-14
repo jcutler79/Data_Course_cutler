@@ -3,8 +3,12 @@
 ## Website for ALSM datasets:
 # http://users.stat.ufl.edu/~rrandles/sta4210/Rclassnotes/data/textdatasets/Chapter%20%201%20Data%20Sets.html
 
+## Website for R datasets:
+# https://vincentarelbundock.github.io/Rdatasets/datasets.html 
+
 # libraries:
 library(ggplot2)
+library(sas7bdat)
 
 
 ## Assumption for t test for correlation:
@@ -291,6 +295,11 @@ colnames(CDI) = c("County","State","S_Area","Pop","Per18_34","Per65up","Physicia
                   "Hosp_beds","Crimes","PerHSgrads","PerBach","PerPoor","PerUnemp",
                   "PerCapInc","PersonalInc","GeoReg")
 
+# The three linear models:
+mod1.43_pop = lm(Physicians ~ Pop, data = CDI); summary(mod1.43_pop)
+mod1.43_beds = lm(Physicians ~ Hosp_beds, data = CDI); summary(mod1.43_beds)
+mod1.43_inc = lm(Physicians ~ PersonalInc, data = CDI); summary(mod1.43_inc)
+
 # 1. (non-)linearity of the regression function:
 ## Residual plots:
 plot(mod1.43_pop$residuals)
@@ -357,6 +366,7 @@ plot(CDI$PersonalInc,CDI$Physicians, pch = 16, cex = .2, col = "red",
      xlab = "Personal Income", ylab = "Number of Physicians")
 abline(mod1.43_inc, col = "green")
 
+
 # 6. I tried creating MR models to see what the regression coefficients were like
 ## for the proposed omitted variable (percent of population 65 and up):
 MR65_pop = lm(Physicians ~ Pop+Per65up, data = CDI); summary(MR65_pop)
@@ -373,4 +383,225 @@ cov(CDI$Per65up,CDI$Hosp_beds)
 plot(CDI$Per65up,CDI$Hosp_beds) # plot just for fun
 cov(CDI$Per65up,CDI$PersonalInc)
 plot(CDI$Per65up,CDI$PersonalInc) # plot just for fun
+
+# Plotting the residuals of each of the three models against 65 and up:
+plot(CDI$Per65up,resid(mod1.43_pop))
+abline(h = 0, col = "grey", lty = 2)
+plot(CDI$Per65up,resid(mod1.43_beds))
+abline(h = 0, col = "grey", lty = 2)
+plot(CDI$Per65up,resid(mod1.43_inc))
+abline(h = 0, col = "grey", lty = 2)
+
+
+
+
+
+##############################################################################
+##############################################################################
+
+# Multiple Regression
+
+## Grocery retailer CH06PR09:
+G = read.csv("/Users/jamescutler/Desktop/Biostats_II/CH06PR09.csv",
+             header = FALSE)
+head(G,5)
+colnames(G) = c("labor_hrs","cases","ICTLH_per","holiday")
+plot(G$labor_hrs)
+barplot(G$labor_hrs, 
+        names.arg = as.character(G$holiday), cex.names = .8)
+
+MRmod = lm(labor_hrs ~ cases+ICTLH_per+holiday, data = G); summary(MRmod)
+
+casemod = lm(labor_hrs ~ cases, data = G)
+plot(G$cases,G$labor_hrs,
+     xlab = "cases",ylab = "labor hrs")
+abline(casemod, col = "red")
+cor(G$cases,G$labor_hrs)
+
+indcostmod = lm(labor_hrs ~ ICTLH_per, data = G)
+plot(G$ICTLH_per,G$labor_hrs,
+     xlab = "indirect costs of the total labor hrs as a percentage",
+     ylab = "labor hrs")
+abline(indcostmod, col = "red")
+cor(G$ICTLH_per,G$labor_hrs)
+
+ggplot(G, aes(1:52,labor_hrs, col = holiday)) +
+  geom_point(aes(shape = as.factor(holiday))) +
+  coord_cartesian(ylim = c(0,5100))
+
+ggplot(G, aes(1:52,cases, col = holiday)) +
+  geom_point(aes(shape = as.factor(holiday)))
+
+ggplot(G, aes(1:52,ICTLH_per, col = as.factor(holiday))) +  
+  geom_point(aes(shape = as.factor(holiday)))
+
+
+## RMR data in class:
+RMR = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/RMR.sas7bdat",
+                    debug = TRUE)
+head(RMR,5)
+ggplot(RMR, aes(1:nrow(RMR),rmr, col = as.factor(athlete))) +
+  geom_point(aes(shape = as.factor(athlete))) 
+
+ggplot(RMR, aes(weight,rmr, col = as.factor(athlete))) +
+  geom_point(aes(shape = as.factor(athlete))) 
+
+ggplot(RMR, aes(age,rmr, col = as.factor(athlete))) +
+  geom_point(aes(shape = as.factor(athlete))) 
+
+ggplot(RMR, aes(height,rmr, col = as.factor(athlete))) +
+  geom_point(aes(shape = as.factor(athlete))) +
+  theme_bw()
+
+RMR$athlete = as.factor(RMR$athlete)
+basicmod = lm(rmr ~ weight+athlete+age+height, data = RMR); summary(basicmod)
+confint(basicmod, level = .95)
+
+
+
+#################
+
+
+
+##########
+
+### HW 4 - transformations; and pain relief
+library(sas7bdat)
+# Transformations on Appendix C.2 data (counties & physicians)
+
+C = read.csv("/Users/jamescutler/Desktop/Biostats_II/APPENC02.csv",
+             header = FALSE)
+C = C[,3:ncol(C)]
+colnames(C) = c("County","State","S_Area","Pop","Per18_34","Per65up","Physicians",
+                  "Hosp_beds","Crimes","PerHSgrads","PerBach","PerPoor","PerUnemp",
+                  "PerCapInc","PersonalInc","GeoReg")
+
+# Untransformed linear model (for compare and contrast below):
+modbeds = lm(Physicians ~ Hosp_beds, data = C)
+
+# Log10 model:
+modlog10 = lm(log10(Physicians) ~ log10(Hosp_beds), data = C); summary(modlog10)
+# Log10 plot:
+plot(log10(C$Hosp_beds),log10(C$Physicians))
+abline(modlog10, col = "red")
+# Log10 residuals vs order plot (not applicable to this dataset because we DON'T know the order in which the observations were taken):
+plot(resid(modlog10))
+abline(h=0, col = "red", lty = 2)
+# Log10 residuals against the fitted values, contrasted with the untransformed plot:
+par(mfrow=c(1,2))
+par(mar=c(2,1,4,1))
+plot(fitted(modlog10),resid(modlog10), main = "Transformed")
+abline(h = 0, col = "red", lty = 2)
+plot(fitted(modbeds),resid(modbeds), main = "Untransformed")
+abline(h = 0, col = "red", lty = 2)
+par(mfrow=c(1,1))
+# Log10 qqplot of residuals:
+qqnorm(resid(modlog10))
+qqline(resid(modlog10), col = "red")
+## The residual plot looks better than it did before transformation. Variance in the error terms is still not very constant, but it looks better than the untransformed plot.
+## The qqplot shows that now our errors appear to satisfy the normality assumption.
+## This is the best regression model of the three, as will be apparent below (sqrt and inverse don't look as good diagnostically).
+## The coefficient for this model shows that for every log10(# of hospital beds) equal to 1, there are log10(# of physicians) equal to 1.0258; this comes out to about 10.6 physicians for every 10 beds.
+## There appear to be 1 or 2 outliers, but the most extreme residual value is 1.3665, and I'm just not sure if that's considered very extreme or not.
+
+# sqrt model:
+modsqrt = lm(sqrt(Physicians) ~ sqrt(Hosp_beds), data = C); summary(modsqrt)
+# sqrt plot:
+plot(sqrt(C$Hosp_beds),sqrt(C$Physicians))
+abline(modsqrt, col = "red")
+# sqrt model residual plot:
+plot(resid(modsqrt))
+abline(h=0, col = "red", lty = 2)
+# sqrt residuals against the fitted values:
+plot(fitted(modsqrt),resid(modsqrt))
+abline(h = 0, col = "red", lty = 2)
+# sqrt qqplot of residuals:
+qqnorm(resid(modsqrt))
+qqline(resid(modsqrt), col = "red")
+## The constant variance assumption is not as well-satisfied here as with the log10 transformation.
+## The normality assumption is not as well met here either.
+
+# Inverse (1/Y and 1/X) model:
+invPhys = 1/C$Physicians
+invBeds = 1/C$Hosp_beds
+modinv = lm(invPhys ~ invBeds); summary(modinv)
+# Inverse (1/Y and 1/X) plot:
+plot(1/C$Hosp_beds,1/C$Physicians)
+abline(modinv, col = "red")
+# Inverse (1/Y and 1/X) residuals:
+plot(resid(modinv))
+abline(h=0, col = "red", lty = 2)
+# Inverse residuals against the fitted values:
+plot(fitted(modinv),resid(modinv))
+abline(h = 0, col = "red", lty = 2)
+# Inverse (1/Y and 1/X) qqplot of residuals:
+qqnorm(resid(modinv))
+qqline(resid(modinv), col = "red")
+## Here the model seems a poor fit, and constant variance assumption is not met, and neither is the normality assumption.
+
+
+# Pain relief:
+PR = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/PainRelief.sas7bdat",
+                   debug = TRUE)
+class(PR$DOSE)
+head(PR,10)
+PR$DOSE = as.factor(PR$DOSE) # Will need this for the boxplots; will be switched back to numeric afterwards
+PR$MALE = as.factor(PR$MALE)
+PR$DOSE3 = as.factor(PR$DOSE3)
+PR$DOSE6 = as.factor(PR$DOSE6)
+PR$DOSE9 = as.factor(PR$DOSE9)
+PR$DOSELEV = as.factor(PR$DOSELEV)
+summary(PR)
+
+# 1.
+# What percentage are male? Answer: 50%
+
+# What is the average time to relief for each dose level? How variable are the observed relief times?
+plot(PR$RELIEF ~ PR$DOSE, 
+     xlab = "Dose", ylab = "Time to relief")
+means = tapply(PR$RELIEF, PR$DOSE, mean)
+points(means,col = "red", pch = 18)
+## This is the average time to relief for each dose level:
+means
+## The relief times appear to vary significantly at first, then begin to level off a bit at higher doses, while still decreasing.
+
+## Restore DOSE to a numeric class to enable proper analysis below:
+PR$DOSE = as.numeric(PR$DOSE)
+
+# Boxplots of time to relief by gender:
+plot(PR$RELIEF ~ PR$MALE,
+     xlab = "Gender (0 = F; 1 = M)", ylab = "Time to relief")
+m_gender = tapply(PR$RELIEF, PR$MALE, mean)
+points(m_gender, col = "red", pch = 18)
+## The relationship I see suggests that the male time to relief may be slightly longer.
+
+# 2.
+# Multiple regression model with gender and dose as predictors of relief time:
+mod1 = lm(RELIEF ~ MALE+DOSE, data = PR); summary(mod1)
+## The coefficients tell me that relief time is inversely correlated with dose, but slightly positively correlated with male gender.
+## The association between relief time and dose is significant, and technically not significant at alpha = .05 for gender.
+
+# 3. 
+# MR model for doses 3,6,9 and gender:
+mod2 = lm(RELIEF ~ MALE+DOSE3+DOSE6+DOSE9, data = PR); summary(mod2)
+## The association between relief time and dose is significant at all three levels tested here, but barely not for gender.
+
+# 4.
+# MR model for DOSELEV and gender:
+mod3 = lm(RELIEF ~ MALE+DOSELEV, data = PR); summary(mod3)
+## Same results as above in mod2.
+
+# 5.
+## Comparing the models above, 3 and 4 don't look different. We appear to be making the unique assumption in 2, compared to 3 and 4, not in 3, compared to 2 and 4. In 2, we're treating DOSE as a continuous predictor variable, whereas in 3 and 4 we are treating the dose levels as factors.
+
+# 6.
+## The coefficients for MALE in each of the models 2, 3, and 4 are all the same: 5.667.
+
+# 7.
+## As far as further analysis is concerned, I would think we could do an ANOVA. This would show whether there is at least one dose that is significantly different than the others. For specific comparisons, we can do Bonferroni or Tukey comparisons.
+
+
+
+
+
 

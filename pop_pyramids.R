@@ -658,6 +658,30 @@ taxesMarriedJ2019(600000)
 taxesMarriedJ2019(800000)
 taxesMarriedJ2019(2000000)
 
+init = 30000
+returns = vector()
+for (i in 1:20){
+  returns[i] = init*1.04
+  init = returns[i] + 30000
+}
+as.matrix(returns)
+plot(returns)
+df = data.frame(savings = returns, 
+                X = 1:length(returns))
+X = 0
+Y = vector()
+for (i in 1:20){
+  X = X + 30000
+  Y[i] = X 
+}
+Y
+df2 = data.frame(x=1:20,y=Y)
+ggplot(df, aes(X,savings)) +
+  geom_point(col = "red") + 
+  geom_point(data = df2, mapping = aes(x,y),col = "black") +
+  scale_y_continuous(breaks = seq(0,1e6,100000)) + 
+  xlab("Years")
+
 taxes = function(income){
   if (between(income,315001,400001)){
     remainder = income-315001

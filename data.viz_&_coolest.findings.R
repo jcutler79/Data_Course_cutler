@@ -3,6 +3,7 @@
 
 ### Table of Contents:
 ## 19 Nov 2018 - Visualize the distribution of max values from a 100,000 normal distributions
+## 07 Feb 2019 - confint() - not that exciting, but it ...
 
 
 
@@ -14,13 +15,20 @@ hist(reps, breaks = 100) # INSANELY SIMPLE! BUT SOOOOO FREAKING FASCINATING!
 
 
 
+### confint() 
+## It's the function that gives you confidence intervals for coefficients of the 
+## predictor variables in linear models. Not super exciting, but I realized I needed
+## a function like this when I saw that SAS automatically provides this output in
+## summaries of a linear model.
+
 
 
 #####################################################################################
 #####################################################################################
 #####################################################################################
 
-
+## R datasets website:
+# https://vincentarelbundock.github.io/Rdatasets/datasets.html
 
 
 # libraries:
@@ -226,8 +234,17 @@ RIOK %>% select(diabetes,race,sex,income) %>%
 
   
 
+data("Titanic")
+summary(Titanic)
+as.data.frame.table(Titanic)
+# THIS IS NOT THE DATASET I'M LOOKING FOR. I DON'T EVEN KNOW IF IT HAS 2200 OBSERVATIONS
 
-
+# THIS LOOKS LIKE A BETTER ONE:
+ti = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/Titanic.csv")
+head(ti,5)
+ggplot(ti, aes(passengerClass,age, fill = survived)) +
+  geom_split_violin() +
+  facet_grid(~sex)
 
 
 
