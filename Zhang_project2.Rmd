@@ -1,0 +1,133 @@
+---
+title: "Biostats Project 2 - ANOVA"
+author: "James Cutler"
+header-includes:
+  - \usepackage{setspace}\doublespacing
+output: pdf_document
+fontsize: 12pt
+---
+
+```{r echo=FALSE}
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(car)) # for Anova, which is for kable input
+# suppressPackageStartupMessages(library(stargazer))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(lsmeans))
+```
+
+**Introduction**
+
+Poisons of various kinds have been known to mankind for thousands of years. Animal studies are a necessary evil in the ongoing search of better treatments. One way of measuring the efficacy of a given treatment is survival time after a lab animal has been administered poison as well as the treatment. In this experiment, three different poisons are administered, along with four different treatments. Each treatment-poison combination is tested on four different animals, for a total of 4x4x3 = 48 observations of survival time in units of 10 hours. 
+Source: G.E.P. Box and D.R. Cox, *Journal of the Royal Statistical Society*, 1964.
+**Objective:** This experiment has been conducted in order to address the question of whether there is a more/most effective treatment for one or more of the poisons, including detecting any poison-treatment interactions.
+
+
+**Methods**
+
+Descriptive analysis (interaction plot) and a two-way complete ANOVA model was fit to investigate interactions, as well as the association between the two factors and survival time of the animals. ANOVA diagnostics and remedial measures (transformation of the response variable) were performed in order to both check and remediate model assumptions. Hypothesis testing was conducted with a .05 level of significance. A main effects model was used after no interaction was found.
+
+
+```{r echo=FALSE}
+headers = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/survival_data_Dean_Voss.csv",
+                   skip = 0, header = FALSE, nrows = 1, as.is = TRUE)
+
+pois = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/survival_data_Dean_Voss.csv",
+                header = FALSE)
+pois = pois[-1,-c(1,5)]
+colnames(pois) = headers
+```
+
+
+**Results**
+
+The interaction plot, showing visually potential interactions, is shown in Figure 1. There appears to be an interaction between poison and treatment when comparing treatment 3 and 4, for example, and possible between treatments 2 and 4 as well, not to mention other comparisons. The ANOVA table of the two-way complete model is shown in Table 1. The interaction is not significant, so a main effects model is included in Table 2.
+
+
+
+The residual plot and qq-plot are shown in Figures 2 and 3, respectively. The residual and qq-plots suggest a transformation might be needed, since the variance of the residuals does not appear constant, and the response variable doesn't appear very normally distributed. After using a reciprocal transformation (1/y), the residual and qq-plots look much better, as seen in Figures 4 and 5, respectively.
+
+
+
+In conclusion, the interaction between poison type and treatment type does not appear to be significant. Treatment type did by itself have a significant effect on survival time, as did poison. No preplanned or comprehensive pairwise comparisons were made, but confidence intervals for the least squared means of each treatment, and each poison, are included below (Tables 3 and 4, and Figures 6 and 7). Treatment 2 appears to have performed the best, and poison 3 appears to have been the deadliest.
+
+
+```{r echo=FALSE, out.width="70%"}
+# INTERACTION PLOT
+ggplot(pois, aes(x=POISON,y=TIME,col=TRTMT)) +
+  geom_jitter(width = .1) +
+  stat_summary(fun.y = "mean", geom = "line", aes(group = factor(TRTMT))) +
+  labs(title = "Figure 1: Survival times by treatment and poison",
+       x="Poison",y="Survival time in units of 10 hours")
+```
+
+
+```{r echo=FALSE, results='asis'}
+# TWO-WAY COMPLETE ANOVA
+modfull = aov(TIME ~ factor(POISON)*factor(TRTMT), data=pois)
+fullanov = Anova(modfull, type=2)
+kable(fullanov, caption = "ANOVA two-way complete model")
+```
+
+
+```{r echo=FALSE, out.height="30%", fig.width=11}
+# RESIDUALS AND QQ OF FULL MODEL
+par(mfrow=c(1,2))
+plot(fitted(modfull),resid(modfull), 
+     main = "Figure 2: Residuals by the \nfitted values",
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lty = 2)
+
+qqnorm(pois$TIME, main = "Figure 3: QQ-plot of the \nresponse variable")
+qqline(pois$TIME, col = "red")
+par(mfrow=c(1,1))
+```
+
+
+```{r echo=FALSE, out.height="30%", fig.width=11}
+# TRANSFORMATION OF RESPONSE VARIABLE
+modtr = aov(1/TIME ~ factor(POISON)+factor(TRTMT), data = pois)
+tranov = Anova(modtr, type=2)
+
+par(mfrow=c(1,2))
+plot(fitted(modtr),resid(modtr), main = "Figure 4: Residuals of \ntransformed data",
+     xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, col = "red", lty = 2)
+
+qqnorm(1/pois$TIME, main = "Figure 5: QQ-plot of the \ntransformed data")
+qqline(1/pois$TIME, col = "red")
+par(mfrow=c(1,1))
+```
+
+
+```{r echo=FALSE, results='asis'}
+kable(tranov, caption = "ANOVA main affects model with transformed data")
+```
+
+
+```{r echo=FALSE, results='asis'}
+# LS MEANS TABLES AND GRAPHS
+modAB = aov(TIME ~ factor(POISON)+factor(TRTMT), data = pois)
+ls.trt = lsmeans(modAB, specs = ~TRTMT)
+kable(summary(ls.trt), caption = "Mean survival time by treatment")
+```
+
+
+```{r echo=FALSE, results='asis'}
+ls.pois = lsmeans(modAB, specs = ~POISON)
+kable(summary(ls.pois), caption = "Mean survival time by poison")
+```
+
+
+```{r echo=FALSE, out.width="50%"}
+par(mfrow=c(1,2))
+plot(ls.trt, main = "Figure 6: Survival time means by treatment",
+     xlab = "Mean survival time in units of 10 hours",
+     ylab = "Treatment factor")
+
+plot(ls.pois, main = "Figure 7: Survival time means by poison",
+     xlab = "Mean survival time in units of 10 hours",
+     ylab = "Poison factor")
+par(mfrow=c(1,1))
+```
+

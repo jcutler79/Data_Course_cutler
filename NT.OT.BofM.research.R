@@ -9,14 +9,19 @@
 # wfp (word frequency plotting)
 # wc (word count plotting)
 # whclrs (word hits in the colors)
-g.OT("Levite")
-## Then gridextra (function names: g.NT, g.OT, g.BofM, and g.all.three)
+# Then gridextra (functions: g.NT, g.OT, g.BofM, and g.all.three)
+# word.proximity (type in two words, a radius, and a book, spits out the passages)
+##### I NEED TO GET WORD.PROXIMITY TO SPIT OUT GRAPHS TOO
 
 ## Then printouts of the surrounding context of the hits (function name: get.passages)
-get.passages.2("Levite",theOT,todos = FALSE)
+# e.g. - get.passages.2("Levite",theOT,todos = FALSE)
 ## Then simple word/phrase search functions, with a list of phrases/words that
 # are unique to the Book of Mormon (not found in the Bible; no info on D&C or PofGP)
-## And finally, multiple simultaneous word/phrase color plots (whclrs.9)
+## And finally, simultaneous multiple word/phrase color plots (whclrs.9)
+
+BofM.whclrs("come unto Christ")
+g.all.three("come unto Christ")
+g.all.three("follow Christ")
 
 ########################################
 
@@ -498,6 +503,8 @@ get.passages.2 = function(aword,abook,todos = TRUE){
     }
   }
 }
+# NOW MAKE A FUNCTION THAT WILL ITERATIVELY FILL A LIST SO I CAN LOOK AT 
+## WHICHEVER PASSAGE(S) IN THE LIST I WANT
 
 
 ########################################################################################################
@@ -546,7 +553,8 @@ all.three.search = function(aword){
   OT.search(aword)
   BofM.search(aword)
 }
-
+# all.three.search("come unto Christ")
+# get.passages.2("come unto Christ",bkofm)
 
 ## Complex (multiple simultaneous) word search colors plot:
 # For the NT:
@@ -706,10 +714,61 @@ BofM.whclrs.9 = function(myword1,myword2,myword3 = "no input",myword4 = "no inpu
 # BofM.whclrs.9("God of Israel","Holy One of Israel","the Lord God","Savior","Redeemer","Only Begotten","Son of God","Christ")
 
 
+
+#####################################################################################
+#####################################################################################
+##### WORD PROXIMITY!!! #####
+
+word.proximity = function(word1,word2,proximity,book){
+  gregop1 = gregexpr(word1,book)
+  gregop2 = gregexpr(word2,book)
+  word1.word2 = data.frame(matrix(NA, nrow = length(gregop1[[1]]), ncol = length(gregop2[[1]])))
+  for (i in 1:length(gregop1[[1]])){
+    for (j in 1:length(gregop2[[1]])){
+      word1.word2[i,j] = ifelse(abs(gregop1[[1]][i] - gregop2[[1]][j]) < proximity, 1, 0)
+    }
+  }
+  thesums = vector()
+  for (i in 1:length(gregop1[[1]])){
+    thesums[i] = sum(word1.word2[i,])
+  }
+  theones = which(thesums == 1)
+  for (i in 1:length(theones)){
+    print(str_sub(book,gregop1[[1]][theones[i]]-200,gregop1[[1]][theones[i]]+200))
+  }
+}
+word.proximity("hunger","thirst",40,theOT)
+word.proximity("faith","works",60,theNT)
+word.proximity("thirst","thee",20,theOT)
+word.proximity("pertain","righteousness",20,bkofm)
+get.passages.2("things of righteousness",bkofm)
+word.proximity("pure","heart",20,theOT)
+OT.whclrs("peace")
+OT.whclrs("peacemaker")
+NT.whclrs("adopt")
+get.passages.2("adopt",theNT)
+
+BofM.whclrs("month")
+get.passages.2("month",bkofm)
+
+
+
 ########################################################################################################
 
 
-# Searches:
+# Searches (most recent at the top):
+
+# 17 Feb 2019:
+get.passages.2("gift of the Holy Ghost",bkofm,todos = TRUE)
+get.passages.2("gift of the Holy Ghost",theNT,todos = TRUE)
+BofM.whclrs.9("gift of the Holy Ghost","Holy Ghost")
+NT.whclrs.9("gift of the Holy Ghost","Holy Ghost")
+
+g.all.three("Holy Ghost")
+g.all.three("contrite")
+get.passages.2("contrite",bkofm,todos = TRUE)
+word.proximity("contrite","broken",20,bkofm)
+
 
 
 g.all.three("repent ")
@@ -856,44 +915,6 @@ get.passages.2("hunger and thirst",theNT)
 get.passages.2("hunger and thirst",bkofm)
 
 
-#####################################################################################
-#####################################################################################
-                          ##### WORD PROXIMITY!!! #####
-
-word.proximity = function(word1,word2,proximity,book){
-  gregop1 = gregexpr(word1,book)
-  gregop2 = gregexpr(word2,book)
-  word1.word2 = data.frame(matrix(NA, nrow = length(gregop1[[1]]), ncol = length(gregop2[[1]])))
-  for (i in 1:length(gregop1[[1]])){
-    for (j in 1:length(gregop2[[1]])){
-      word1.word2[i,j] = ifelse(abs(gregop1[[1]][i] - gregop2[[1]][j]) < proximity, 1, 0)
-    }
-  }
-  thesums = vector()
-  for (i in 1:length(gregop1[[1]])){
-    thesums[i] = sum(word1.word2[i,])
-  }
-  theones = which(thesums == 1)
-  for (i in 1:length(theones)){
-    print(str_sub(book,gregop1[[1]][theones[i]]-200,gregop1[[1]][theones[i]]+200))
-  }
-}
-word.proximity("hunger","thirst",40,theOT)
-word.proximity("faith","works",60,theNT)
-word.proximity("thirst","thee",20,theOT)
-word.proximity("pertain","righteousness",20,bkofm)
-get.passages.2("things of righteousness",bkofm)
-word.proximity("pure","heart",20,theOT)
-OT.whclrs("peace")
-OT.whclrs("peacemaker")
-NT.whclrs("adopt")
-get.passages.2("adopt",theNT)
-
-BofM.whclrs("month")
-get.passages.2("month",bkofm)
-
-
-
 
 #################################################################
 ################ ANALYSIS OF SEASONALITY OF WARS ################ 
@@ -985,5 +1006,11 @@ length(which(terms[,2] %in% c("J","P") & terms[,3] %in% c("J","P")))
 length(which(terms[,2] %in% c("J","E") & terms[,3] %in% c("J","E")))
 
 length(which(terms[,2] %in% c("E","P") & terms[,3] %in% c("E","P")))
+
+
+
+
+
+# NEW RESEARCH METHODS ON THINGS IN THE OT, NT, AND BOFM WILL GO IN NEW NOTEPAD: SCRIPT.RESEARCH
 
 

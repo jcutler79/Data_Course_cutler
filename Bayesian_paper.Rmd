@@ -1,0 +1,181 @@
+---
+title: "Bayesian_paper"
+output: html_document
+---
+
+```{r echo=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(car))
+suppressPackageStartupMessages(library(emmeans))
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(table1)) # see R code note in Notes for link
+suppressPackageStartupMessages(library(xtable))
+suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(sjPlot))
+# suppressPackageStartupMessages(library(stargazer))
+# suppressPackageStartupMessages(library(papeR))
+```
+
+
+```{r echo=FALSE}
+fap = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/polyposis.csv")
+
+# Polishing up the data frame and adding some columns better suited for OpenBUGS:
+# head(fap,4)
+length(which(fap$treatment == "placebo"))
+length(which(fap$treatment == "active"))
+
+fap$bayestx = rep(NA,nrow(fap))
+fap[which(fap$treatment == "active"),7] = 1
+fap[which(fap$treatment != "active"),7] = 0 # WHY DID THIS WORK THOUGH? BECAUSE I'M CREATING A NEW COLUMN, NOT CHANGING THE ORIGINAL ONE
+
+fap$bayesex = rep(NA,nrow(fap))
+fap[which(fap$sex == "male"),8] = 1
+fap[which(fap$sex == "female"),8] = 0
+fap$per.change = round((fap$number3m-fap$baseline)/fap$baseline,4)
+fap = fap[,-1]
+```
+
+
+The population that gave rise to this dataset were people with Familial Adenomatous Polyposis (FAP), a rare genetic disorder in which people have a large number of polyps in their intestines, which can lead to cancer. The study that originally collected and analyzed this data was done in the 1990s (published 1993), in the US. Sulindac is known to have a palliative effect of reducing the number of polyps in FAP patients.
+
+The study design that gave rise to the data was a double-blind, placebo-controlled clinical trial of 22 patients.
+
+The variables of interest included in this study were age, sex, treatment/placebo with the NSAID Sulindac (exposure), and percent change in the number of polyps (outcome). Age was recorded in years. Sex was listed as male or female. If the patient received the real treatment, it was listed as “active”, and if given a look-alike dummy, “placebo”. The outcome of interest is percent change in the number of polyps between the initial examination before intervention, and a point in time 3 months after intervention. The exposure of particular interested to be assessed for association with the outcome is that of treatment with Sulindac or with a placebo.
+
+
+Demographic characteristics:
+
+```{r echo=FALSE}
+table1(~ sex + age | treatment, data = fap) # BEAUTIFUL.
+```
+
+With two plots:
+
+```{r echo=FALSE}
+## Distribution of age by sex:
+# plot(fap$age ~ fap$sex)
+ggplot(fap, aes(x=sex,y=age)) +
+  geom_boxplot() +
+  geom_jitter(shape = 16, position = position_jitter(.2)) +
+  labs(title = "Distribution of age by sex",
+       x="", y="Age in years")
+
+## Distribution of age by treatment:
+# plot(fap$age ~ factor(fap$treatment))
+ggplot(fap, aes(x=factor(treatment),y=age)) +
+  geom_boxplot() +
+  geom_jitter(shape = 16, position = position_jitter(.2)) +
+  labs(title = "Distribution of age by treatment",
+       x="", y="Age in years")
+```
+
+
+
+
+
+Descriptive statistics of the outcome of interest (percentage change in the number of polyps between before and after):
+
+```{r echo=FALSE}
+## Outcome by treatment group:
+plot(fap$per.change ~ factor(fap$treatment),
+     main = "Percent change in number of polyps\n by treatment group",
+     xlab = "", ylab = "Percentage change in number of polyps")
+abline(h = 0, col = "gray", lty = 2)
+tx.means = tapply(fap$per.change, fap$treatment, mean)
+points(tx.means, pch = 18, col = "red")
+
+## Outcome by age:
+plot(fap$age,fap$per.change,
+     main = "Percent change in number of polyps\n by age",
+     xlab = "Age in years", ylab = "Percentage change")
+abline(h = 0, col = "gray", lty = 2)
+mod.age = lm(per.change ~ age, data = fap)
+cor(fap$age,fap$per.change)
+abline(mod.age, col = "red")
+
+tab_model(mod.age)
+
+## Outcome by sex:
+plot(fap$per.change ~ factor(fap$sex),
+     main = "Percent change in number of polyps\n by sex",
+     xlab = "", ylab = "Percentage change")
+abline(h = 0, col = "gray", lty = 2)
+sx.means = tapply(fap$per.change, fap$sex, mean)
+points(sx.means, pch = 18, col = "red")
+```
+
+
+
+
+Frequentist statistical analysis on the categorical variables, sex and treatment:
+
+```{r echo=FALSE}
+main.effects = aov(per.change ~ sex+treatment, data = fap)
+ME.table = xtable(main.effects)
+kable(ME.table, format = "pandoc", caption = "Main effects ANOVA table on sex and treatment")
+```
+
+
+And on all variables (including age, a continuous variable):
+
+```{r echo=FALSE}
+ME.all = aov(per.change ~ sex+treatment+age, data = fap)
+ME.all.table = xtable(ME.all)
+kable(ME.all.table, format = "pandoc", caption = "Main effects ANOVA table on all predictor variables")
+```
+
+
+On just treatment:
+
+```{r echo=FALSE}
+tx.mod = aov(per.change ~ treatment, data = fap)
+tx.mod.table = xtable(tx.mod)
+kable(tx.mod.table, format = "pandoc", caption = "ANOVA table on treatment")
+```
+
+
+Frequentist analysis identifies a significant treatment effect, as well as a sex effect, on the outcome of interest--percentage change in the number of polyps from before and after intervention.
+
+
+
+
+Now for some preparation for the Bayesian analysis. First, analysis of age on the outcome of interest.
+
+Prior information on a slope coefficient for the influence of age on percent change in number of polybps, in a linear regression analysis comes from this study, as well as a study by Cruz-Correa et al. (Gastroenterology, 2002).
+
+Cruz-Correa et al. slope coefficient:
+
+```{r echo=FALSE}
+correa = data.frame(age = c(32,42,52,25,36,21,22,24,35,33,46,45),
+                    before = c(19,47,10,7,80,16,80,29,16,17,19,7),
+                    month12 = c(4,0,0,0,25,14,28,0,0,7,2,2))
+correa$per.change = (correa$month12 - correa$before)/correa$before
+
+plot(correa$age, correa$per.change)
+mod.correa = lm(per.change ~ age, data = correa)
+abline(mod.correa, col = "red")
+tab_model(mod.correa)
+```
+
+
+Judging by the fact that the age slope coefficient from Giardiello et al. is 0.012, and the coefficient from Cruz-Correa et al. is -0.011, I am going with a normal prior with mu = 0 and sigma = .01.
+
+
+Bayesian analysis in OpenBUGS shows a slope coefficient for age of .01235 (BCI: .0119,.01278). I'm a little surprised by this, since it suggests that my informative prior, involving a study of only somewhat smaller sample size and almost exactly opposite slope, didn't really affect my results.
+
+
+
+
+Next, Bayesian analysis of female vs male gender on the outcome. 
+
+
+
+
+
+Finally, Bayesian analysis of active vs placebo treatment on the outcome.
+
+
+

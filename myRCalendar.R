@@ -20,7 +20,7 @@ mycal = readxl::read_xlsx("/Users/jamescutler/Desktop/Data_Course_cutler/Calenda
                           col_types = c("date","text"))
 
 # Dates were imported as POSIXct objects, but ggcal wants date objects:
-mycal = mutate(mycal, Day = as.Date(Day)) # badabing 
+mycal = mutate(mycal, Day = as.Date(Day)) 
 
 # Find the last date in the file:
 lastDay = max(mycal$Day)

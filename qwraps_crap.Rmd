@@ -1,0 +1,47 @@
+---
+title: "qwraps_crap"
+output: html_document
+---
+
+```{r, results='asis'}
+set.seed(42)
+library(magrittr)
+library(qwraps2)
+
+# define the markup language we are working in.
+# options(qwraps2_markup = "latex") is also supported.
+options(qwraps2_markup = "markdown")
+
+data(mtcars)
+
+mtcars2 <-
+  dplyr::mutate(mtcars,
+                cyl_factor = factor(cyl,
+                                    levels = c(6, 4, 8),
+                                    labels = paste(c(6, 4, 8), "cylinders")),
+                cyl_character = paste(cyl, "cylinders"))
+
+our_summary1 <-
+  list("Miles Per Gallon" =
+         list("min" = ~ min(.data$mpg),
+              "max" = ~ max(.data$mpg),
+              "mean (sd)" = ~ qwraps2::mean_sd(.data$mpg)),
+       "Displacement" =
+         list("min" = ~ min(.data$disp),
+              "median" = ~ median(.data$disp),
+              "max" = ~ max(.data$disp),
+              "mean (sd)" = ~ qwraps2::mean_sd(.data$disp)),
+       "Weight (1000 lbs)" =
+         list("min" = ~ min(.data$wt),
+              "max" = ~ max(.data$wt),
+              "mean (sd)" = ~ qwraps2::mean_sd(.data$wt)),
+       "Forward Gears" =
+         list("Three" = ~ qwraps2::n_perc0(.data$gear == 3),
+              "Four"  = ~ qwraps2::n_perc0(.data$gear == 4),
+              "Five"  = ~ qwraps2::n_perc0(.data$gear == 5))
+  )
+
+whole <- summary_table(mtcars2, our_summary1)
+whole
+
+```

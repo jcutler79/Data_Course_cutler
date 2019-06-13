@@ -28,7 +28,7 @@ identical(sub13.20Wo,fNephi1)
 v12 = "12 And it came to pass that as he read, he was filled with the Spirit of the Lord."
 ftry = gsub("(?=S)[[:space:]]","",v12, perl = TRUE); ftry
 abc = "abcdefghijklmnopqrstuvwxyz"
-b3 = gsub("(?<=bc)[[:alpha:]]","",abc, perl = TRUE); b3
+b3 = gsub("(?<=bc)[[:alpha:]]","'",abc, perl = TRUE); b3
 B = gsub("b","",abc); B
 identical(b,B)
 bor = "bor"
@@ -42,7 +42,7 @@ wtf = gsub("(?=k)[[:alpha:]]{2}","@",abc, perl = TRUE); wtf # includes the 'k' i
 wtf2 = gsub("(?<=k)[[:alpha:]]{2}","@",abc, perl = TRUE); wtf2 # starts replacing right after the 'k'
 
 # https://stackoverflow.com/questions/12297859/find-and-replace-characters-before
-yay = gsub(".*k","",abc); yay
+yay = gsub(".*k[[:alpha:]]","",abc); yay
 YAYYY = gsub("(?<=k).*","",abc, perl = TRUE); YAYYY
 please = regmatches(abc,gregexpr("(?<=k).*",abc, perl = TRUE)); please
 yay
@@ -58,8 +58,12 @@ substr(old,2,4)
 
 
 
+################################################################################
 
 
+meses = c("Jun 17", "Jul 17","Aug 17","Sep 17","Oct 17","Nov 17","Dec 17","Jan 18",
+          "Feb 18","Mar 18","Apr 18","May 18","Jun 18","Jul 18","Aug 18","Sep 18",
+          "Oct 18","Nov 18","Dec 18")
 
 
 ################################################################################

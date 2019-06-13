@@ -618,9 +618,13 @@ library(tidyr) # Needed for the gather() function
 library(MASS)
 ####### BIGGEST LESSON OF ALL: HOW TO TURN SEPERATE COLUMNS INTO ONE COLUMN "KEY" WITH 
 # VALUES IN THE COLUMN BESIDE THEM MATCHED TO THEIR "KEY":
-df_long = gather(df, key = "Time", value = "Abs", c("Hr_24","Hr_48","Hr_144"))
+df_long = gather(df, 
+                 key = "Time", 
+                 value = "Abs", 
+                 c("Hr_24","Hr_48","Hr_144"))
 # Then convert the characters to numerics with mapvalues (from the plyr library):
-df_long$Time = as.numeric(plyr::mapvalues(df_long$Time, from =c("Hr_24","Hr_48","Hr_144"), 
+df_long$Time = as.numeric(plyr::mapvalues(df_long$Time, 
+                                          from =c("Hr_24","Hr_48","Hr_144"), 
                                           to = c(24,48,144)))
 # THAT WAS GATHER, THIS IS SPREAD:
 x = rnorm(10)
@@ -628,8 +632,13 @@ y = rnorm(10)
 z = rnorm(10)
 obs = 1:10
 df = data.frame(obs = obs, x = x, y = y, z = z)
-df.long = gather(df, key = "stock", value = "PriceChange", c("x","y","z")) # But x y and z don't have to be in quotes!!!!!
-spread(df.long, stock, PriceChange) # undoes gather (they're opposites)
+df.long = gather(df, 
+                 key = "stock", 
+                 value = "PriceChange", 
+                 c("x","y","z")) # But x y and z don't have to be in quotes!!!!!
+spread(df.long, 
+       stock, 
+       PriceChange) # undoes gather (they're opposites)
 # How to plot shiz by substrate in that data set with 32 substrates:
 # YAY THIS FOR LOOP FREAKING WORKS!!! ALL BECAUSE I ACTUALLY TOLD IT TO FREAKING PRINT!: 
 for (i in levels(df_long$Substrate)){
@@ -784,6 +793,10 @@ bad = which(dat$Headwidth == 1)
 dat$Headwidth[bad] = NA
 # NOW, REMOVE ALL THE ROWS OF "dat" THAT HAVE AN "NA" VALUE
 dat2 = na.omit(dat)
+
+
+## %ni%
+'%ni%' = Negate('%in%')
 
 
 ## Non-standard normal distributions (inspired by Steven Pinker's slide: "The normal distribution

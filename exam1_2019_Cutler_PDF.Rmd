@@ -1,0 +1,339 @@
+---
+title: "exam1_2019_Cutler_PDF"
+output: pdf_document
+---
+
+
+```{r echo=FALSE}
+suppressPackageStartupMessages(library(sas7bdat))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(segmented))
+suppressPackageStartupMessages(library(stargazer))
+suppressPackageStartupMessages(library(car))
+suppressPackageStartupMessages(library(MASS))
+
+```
+
+```{r echo=FALSE}
+ch = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/cheese.sas7bdat",
+                   debug = TRUE)
+
+colnames(ch) = c("case","taste","Lacid","Aacid","Hsulf")
+```
+
+
+## 1. Why is violation of normality in the outcome variable not a problem:
+### The normality assumption for linear regression applies to the errors, not to the outcome variable by itself, which in this case is the taste score.
+
+
+
+## 2. Simple Linear Regression and LOESS:
+```{r echo=FALSE, results='asis'}
+Lmod = lm(taste ~ Lacid, data = ch)
+plot(ch$Lacid,ch$taste, xlab = "lactic acid", ylab = "taste")
+abline(Lmod, col = "red")
+Amod = lm(taste ~ Aacid, data = ch)
+plot(ch$Aacid,ch$taste, xlab = "acetic acid", ylab = "taste")
+abline(Amod, col = "blue")
+Hmod = lm(taste ~ Hsulf, data = ch)
+plot(ch$Hsulf,ch$taste, xlab = "H sulfide", ylab = "taste")
+abline(Hmod, col = "green")
+
+stargazer(Lmod, title = "SLR model for lactic acid ('Lacid')", header = FALSE)
+stargazer(Amod, title = "SLR model for acetic acid ('Aacid')", header = FALSE)
+stargazer(Hmod, title = "SLR model for hydrogen sulfide ('Hsulf')", header = FALSE)
+confint(Lmod)
+confint(Amod)
+confint(Hmod)
+
+plot(Lmod$residuals)
+plot(Amod$residuals)
+plot(Hmod$residuals)
+
+ggplot(ch, aes(Lacid,taste)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot(ch, aes(Aacid,taste)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot(ch, aes(Hsulf,taste)) +
+  geom_point() +
+  geom_smooth()
+
+```
+
+
+
+## 3. Equations of models:
+
+### Association between taset and acetic acid:
+#### Y ~ 9.54 taste score points + .05 taste score points per mg/L of acetic acid + error
+
+### Taste and lactic acid:
+#### Y ~ -29.86 taste score points + 37.72 taste score points  per mg/L of lactic acid  + error
+
+### Taste and H sulfide:
+#### Y ~ 20.26 taste score points + .0016 taste score points per mg/L of hydrogen sulfide + error
+
+
+
+## 4. Sentences quantifying the associations:
+
+### Taste and acetic acid:
+#### Taste score increases .05 points (give or take some error) with each added mg/L of acetic acid, from a baseline of 9.54 points at 0 mg/L of acetic acid.
+
+### Taste and lactic acid:
+#### Taste score increases 37.72 points (give or take some error) with each added mg/L of lactic acid, from a baseline of -29.86 points at 0 mg/L of lactic acid.
+
+### Taste and H sulfide:
+#### Taste score increases .0016 points with each added mg/L of hydrogen sulfide, from a basline of 20.26 points at 0 mg/L of hydrogen sulfide.
+
+
+
+### 5. Because unless we use CIs, our point estimate of the population parameter in question will always be guaranteed to be wrong (not equal to the true parameter), at least when dealing with continuous data. This is because the probability of a random variable taking on a specific value is essentially zero, due to the laws of probability. A CI will at least give us a good chance of including the true parameter within the sweep of the CI.
+
+
+
+### 6. 'Sample statistic' refers to a function of a sample (e.g. X-bar is defined as the sum of the Xi's divided by the sample size), and is meant to approximate a true population parameter. 'Parameter estimate' refers to a predicted change in the value of the dependent variable in response to a 1-unit change in a predictor variable. Because methods for predicting (choice of model) the response variable differ, the parameter estimates calculated from those models can differ. Sample statistics can relate to parameter estimates in that sample statistics do ideally approximate population parameters, but this is based on a different usage of the term 'parameter estimate'. 
+
+
+
+### 7. A least squares estimate is an estimate that minimizes the amount of squared error, or distance between Y-hat (predicted Y values of the response variable) and the observed Y (dependent/response variable) values.
+
+
+
+## 8. Comparing linear and quadratic models for lactic acid:
+```{r echo=FALSE, results='asis'}
+Lacid2 = (ch$Lacid)^2
+Lacid = ch$Lacid
+taste = ch$taste
+
+Lquad = lm(taste ~ Lacid + Lacid2)
+stargazer(Lquad, title = "Quadratic model for lactic acid", header = FALSE)
+
+plot(Lacid,taste)
+Lacidvals = seq(.85,2.05,.01)
+predL = predict(Lquad, list(Lacid=Lacidvals,Lacid2=Lacidvals^2))
+lines(Lacidvals,predL, col = "purple", lwd = 3)
+
+plot(Lquad$residuals)
+```
+
+### MSE and R^2 for lactic acid linear model:
+```{r echo=FALSE}
+mse.L = mean(Lmod$residuals^2)
+``` 
+#### MSE: `r mse.L`
+#### R^2: .4959
+
+### MSE and R^2 for lactic acid quadratic model:
+```{r echo=FALSE}
+mse.Lq = mean(Lquad$residuals^2)
+```
+#### MSE: `r mse.Lq`
+#### R^2: .5194
+### The quadratic model looks better than the linear, based on the higher R^2 value and the lower MSE. That means it is more explanatory, and it has smaller error. 
+
+
+
+## 9. Why must the quadratic model also include an unsquared term?
+### In the hierarchical approach, if one includes a 2nd power term in their model, then a first power term must also be included. If the model includes 3rd power term, then all powers below that are also included, and so on with higher powered terms. The lower power terms must be included, because they provide more basic information about the shape of the response function, meaning the shape of the regression curve fitted to the data. The higher power terms (in the quadratic case, the squared term) only provide refinements to the shape of the response function.
+
+
+
+## 10. Comparing linear and quadratic models for acetic acid:
+```{r echo=FALSE, results='asis'}
+Aacid2 = (ch$Aacid)^2
+Aacid = ch$Aacid
+
+Aquad = lm(taste ~ Aacid + Aacid2)
+stargazer(Aquad, title = "Quadratic model for acetic acid", header = FALSE)
+
+plot(Aacid,taste)
+Aacidvals = seq(min(Aacid),max(Aacid),1)
+predA = predict(Aquad, list(Aacid=Aacidvals,Aacid2=Aacidvals^2))
+lines(Aacidvals,predA, col = "purple", lwd = 3)
+
+plot(Aquad$residuals)
+```
+
+### MSE and R^2 for acetic acid linear model:
+```{r echo=FALSE}
+mse.A = mean(Amod$residuals^2)
+```
+#### MSE: `r mse.A`
+#### R^2: .2634
+
+### MSE and R^2 for acetic acid quadratic model:
+```{r echo=FALSE}
+mse.Aq = mean(Aquad$residuals^2)
+```
+#### MSE: `r mse.Aq`
+#### R^2: .2923
+### The MSE is lower and R^2 higher for the quadratic model. On this basis I prefer the quadratic. Samse reasoning as with lactic acid.
+
+
+
+## 11. Define the type III SS for the acetic acid quadratic model:
+```{r echo=FALSE}
+Anova(Aquad, type = "III")
+```
+### The type III sum of squares for the acetic acid quadratic model is 609.2 for the unsquared predictor, and 221.3 for the squared predictor. 5,423 for the residuals.
+
+
+
+## 12. Run a segmented regression model on hydrogen sulfide with a knot at concentration of 2500 mg/L (the U1.Hsulf estimate is the difference between it and the estimate for the previous segment; the segment segment's slope is .00083):
+```{r echo=FALSE, results='asis'}
+Hsegmod = segmented(Hmod, seg.Z = ~Hsulf, psi = 2500,
+                    control = seg.control(display = FALSE))
+
+stargazer(Hsegmod, title = "Segmented model for hydrogen sulfide",
+         header = FALSE)
+
+qplot(Hsulf, taste, group = Hsulf > 2500, geom = c('point','smooth'),
+      method = "lm", se = F, data = ch) +
+  geom_vline(xintercept = 2500, linetype = 3, col = "gray") +
+  ggtitle("Segmented regression for hydrogen sulfide")
+
+slope(Hsegmod)
+pt(2.134,df = 26, lower.tail = FALSE)*2
+pt(2.0605, df = 26, lower.tail = FALSE)*2
+```
+
+
+
+## 13. Hydrogen sulfide segmented regression model's coefficients and hypothesis tests:
+#### first segment: coeff=.09239, and p=.0424
+#### second segment: coeff=.00083, and p=.0495
+#### H sulfide's assocition with taste under 2500 mg/L is that taste points go up .0924 with every mg/L increase of H sulfide. It is a significant association (p=.0424).
+#### The slope of the line above 2500 mg/L is .00083 points per mg/L increase in H suflide.
+#### The association at lower values is not equal to the association at higher values, based on the significant p-values for each segment, reported above. Though oddly, the p-value for the test for existence of a break point is not significant:
+```{r echo=FALSE}
+pscore.test(Hmod)
+```
+
+#### A p-value tells you the probability of a result under assumptions that the null hypothesis is true. Alpha is an arbitrary bar set for determining statistical significance. If the p-value clears that bar, then the result is deemed significant.
+
+
+
+## 14. MSE and R^2 for the hydrogen sulfide segmented regression model:
+```{r echo=FALSE}
+mse.Hseg = mean(Hsegmod$residuals^2)
+```
+### MSE: 102.54
+### R^2: .5985
+
+
+
+## 15. Simple linear regression of log-transformed hydrogen sulfide:
+```{r echo=FALSE, results='asis'}
+logHS = log(ch$Hsulf)
+Hlogmod = lm(taste ~ logHS)
+stargazer(Hlogmod, title = "SLR model for log-transformed hydrogen sulfide", header = FALSE)
+```
+
+### Plot of the log-transformed data:
+```{r echo=FALSE}
+plot(log(ch$Hsulf),ch$taste)
+abline(Hlogmod, col = "darkgreen")
+```
+
+
+
+## 16. Comparing the hydrogen sulfide log-transformed SLR model to the segmented model (including definitions of the MSE and R^2 statistics):
+```{r echo=FALSE}
+mse.Hlog = mean(Hlogmod$residuals^2)
+```
+### Linear log-transformed model MSE and R^2: 109.53 and .5712
+### Segmented model MSE and R^2: 102.54 and .5985
+### Based on the foregoing MSE and R^2 values, the segmented model appears slightly preferrable.
+### MSE is defined as the mean squared error, in other words, the average amount by which the observations deviate from the model, squared.
+### R^2 is the coefficient of determination, which tells the percentage of the change in the Y variable that our model can account for. An R^2 of .5985, for example, means that our model accounts for 59.85% of the variation in the dependent variable.
+
+
+
+## 17. Residual plots for the hydrogen sulfide log-transformed SLR model and segmented model (which is preferrable?):
+```{r echo=FALSE}
+plot(Hsegmod$residuals, main = "Segmented residuals",
+     ylab = "residuals"); abline(h = 0, col = "red", lty = 2)
+plot(Hlogmod$residuals, main = "Log-transformed residuals",
+     ylab = "residuals"); abline(h = 0, col= "red", lty = 2)
+```
+
+### The residual plot for the segmented model looks a little more balanced to me, whereas the log-transformed SLR residuals are more top-heavy. I would say that based on these residual plots that the segmented model is preferrable.
+
+
+
+## 18. What kind of residuals did I use to perform the regression diagnostics, and why?
+### I used residuals that were not standardized (semi-studentized) or studentized, and they look exactly the same as the semi-studentized and studentized residuals. I would say that I should use studentized residuals in order to address the issue of outliers, since it does look like there are maybe some outliers, at least in the segmented model, but studentizing didn't change anything, as you can see below:
+### Segmented residuals (studentized, then semi-studentized, then un-studentized):
+```{r echo=FALSE}
+plot(studres(Hsegmod), main = "Studentized residuals",
+     ylab = "residuals"); abline(h = 0, col = "red", lty = 2)
+plot(rstandard(Hsegmod), main = "Semi-studentized",
+     ylab = "residuals"); abline(h = 0, col= "red", lty = 2)
+plot(Hsegmod$residuals, main = "Segmented residuals",
+     ylab = "residuals"); abline(h = 0, col = "red", lty = 2)
+
+```
+
+### I would plot all three versions of residuals for the log-transformed as well, but they all look identical to one another as well, and that pattern of similarity is illustrated above for the segmented model.
+
+
+
+## 19. What are the consequences for a statistical model whose underlying assumptions are violated? Why do we care?
+### When the underlying assumptions of a statistical model are violated, the results from that model are no longer valid. We should care because from invalid results we will draw an invalid conclusion about our data and the potential relationships we're investigating.
+
+
+
+## 20. What is the meaning of the intercept in a regression model?
+### The intercept represents the value of the dependent variable when the independent variable is zero. Usually it is not of scientific interest.
+
+
+
+## 21. We do not always interpret the intercept when we report results from a regression model. Under what circumstances would we be able to interpret the intercept?
+### We would be able to interpret the intercept when there are predictor variable values that are close to, or span, zero. When it would not make sense for the predictor variable to have a value of zero, then I would think it would be inappropriate to interpret the intercept. For example, if BMI was our predictor variable for some continuous dependent variable, it would not make sense to report what the dependent variable's value would be predicted to be when BMI is zero, because BMI can never be zero.
+
+
+
+## 22. Which multivariable regression model best fits the observations on taste? How did I arrive at my final model?
+```{r echo=FALSE, results='asis'}
+MRfull = lm(taste ~ Lacid*Aacid*logHS)
+stargazer(MRfull, title = "Full MLR model", header = FALSE)
+```
+
+### The full model above shows no significant interactions. This indicates that the reduced or main effects model is worth examining:
+```{r echo=FALSE, results='asis'}
+MRred = lm(taste ~ Lacid+Aacid+logHS)
+stargazer(MRred, title = "Reduced (main effects) MLR model", header = FALSE)
+confint(MRred)
+```
+
+### The reduced model is my choice for the final model, given that no significant interactions exist.
+
+
+
+## 23. Describe the association of taste with the chemicals using the coefficients and CIs from the final model. Recall in your description that the model's coefficients represent adjusted estimates.
+### Taste score increases 19 points (95% CI: 1.8 to 26.6) with every added mg/L concentration of lactic acid (p=.007). Taste score MAY increase .004 points with every added mg/L concentration of acetic acid, but the association is not significant (p=.781). Taste score increases 3.8 points (95% CI: 1.3 to 6.3) with every log-transformed added mg/L concentration of hydrogen sulfide (p=.0004). The estimated increases in taste score associated with increases in concentration of chemical are adjusted estimates.
+
+
+
+## 24. Comparison between the coefficient and CI for the log-transformed hydrogen sulfide SLR model and the coefficient and CI for the log-transformed hydrogen sulfide in the MLR model:
+### SLR:
+```{r echo=FALSE}
+Hlogmod$coefficients
+confint(Hlogmod)
+```
+
+### As can be seen, the coefficients from the SLR model for log-transformed hydrogen sulfide and those of the same log-transformed chemical in the MLR model are different. Adjustment affects parameter estimates in MLR models.
+
+
+
+#### I have adhered to the University’s standards on academic integrity, have neither given nor received assistance during this examination, and have used no materials that the instructor did not specifically permit. - James Cutler
+
+
+
+
+

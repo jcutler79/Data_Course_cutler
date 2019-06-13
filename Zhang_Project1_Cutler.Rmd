@@ -1,0 +1,121 @@
+---
+title: "Zhang_Project1_Cutler"
+output: pdf_document
+---
+#### James Cutler
+#### Project 1 
+
+```{r echo=FALSE}
+# install.packages("qwraps2")
+suppressPackageStartupMessages(library(sas7bdat))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(stargazer))
+suppressPackageStartupMessages(library(qwraps2))
+```
+
+```{r echo=FALSE}
+smoke = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/SmokingAndFEV.sas7bdat",
+                      debug = TRUE)
+
+smoke$sex = factor(smoke$sex,
+                   levels = c(0,1),
+                   labels = c("female","male"))
+smoke$smoke = factor(smoke$smoke,
+                     levels = c(0,1),
+                     labels = c("nonsmoker","smoker"))
+```
+
+# Problem Description
+#### It is known that smoking impairs lung function in adults. There is a statistically significant association between FEV and smoking in adults, with adult smokers having a lower mean FEV. It would be of interest to know whether this association exists in children, since there is less data on children in regards to this question.
+
+# Objective
+#### We want to find if there is an association between FEV and smoking status, in order to see if there is evidence that smoking impairs lung function in children, just like in adults.
+
+# Available Data
+#### We have data on the FEV, sex, height, age, and smoking status of 654 children, aged 3 to 19, including 65 smokers. There are 318 girls in the sample and 336 boys. 
+
+# Analysis Methods
+#### We will run multiple linear regression on FEV and the following: smoking status, age, height, and sex, to see what associations are statistically significant. 
+#### We will run diagnostics with residual plots and QQ plots and report the results here without showing the figures. 
+
+# Results (with interpretation)
+
+## Descriptive statistics:
+```{r echo=FALSE, results='asis'}
+options(qwraps2_markup = "markdown")
+my_sum =
+  list("Age" =
+         list("min" = ~ min(.data$age),
+              "max" = ~ max(.data$age),
+              "mean (SD)" = ~ mean_sd(.data$age)),
+       "FEV" = 
+         list("min" = ~ min(.data$fev),
+              "max" = ~ max(.data$fev),
+              "mean (SD)" = ~ mean_sd(.data$fev)),
+       "Height" = 
+         list("min" = ~ min(.data$height),
+              "max" = ~ max(.data$height),
+              "mean (SD)" = ~ mean_sd(.data$height)),
+       "Sex" = 
+         list("female" = ~ n_perc(.data$sex == "female"),
+              "male" = ~ n_perc(.data$sex == "male")),
+       "Smoke" = 
+         list("smokers" = ~ n_perc(.data$smoke == "smoker"),
+              "non-smokers" = ~ n_perc(.data$smoke == "nonsmoker"))
+       )
+sumtable = summary_table(smoke, my_sum)
+sumtable
+```
+
+### There are more female smokers than male (39 to 26). There are more male nonsmokers than female (310 to 279).
+
+## Descriptive plots:
+```{r echo=FALSE}
+par(mfrow=c(2,2))
+par(mar=c(2,2.1,1.5,1))
+plot(smoke$fev ~ smoke$smoke, main = "FEV by smoking status", xlab = "", ylab = "")
+smkMeans = tapply(smoke$fev, smoke$sex, mean)
+points(smkMeans, col = "red", pch = 18)
+plot(smoke$fev ~ smoke$sex, main = "FEV by sex", xlab = "", ylab = "")
+sxMeans = tapply(smoke$fev, smoke$sex, mean)
+points(sxMeans, col = "red", pch = 18)
+plot(smoke$age,smoke$fev, main = "FEV by age", xlab = "", ylab = "")
+plot(smoke$height,smoke$fev, main = "FEV by height", xlab = "", ylab = "")
+par(mar=c(5.1,4.1,4.1,2.1))
+par(mfrow=c(1,1))
+```
+
+### There appears to be an association between smoking status and FEV, based on the corresponding boxplot, above. There is also an apparent association between age/height and FEV, however. Sex and FEV might have a slight association as well.
+
+# Hypothesis tests:
+## Multiple regression:
+### Full model:
+```{r echo=FALSE, results='asis'}
+MRmod = lm(fev ~ sex+height+age+smoke+sex*smoke+height*smoke+age*smoke, data = smoke)
+stargazer(MRmod, title = "Full model with all interactions", 
+          header = FALSE, report = ('vc*p'))
+```
+
+### The full model (with all two way interactions that involve smoking status) does not reveal any significant interactions. We can now remove the least significant interaction from the above model--the interaction between smoking and sex. The new model looks like this:
+```{r echo=FALSE, results='asis'}
+MRmod2 = lm(fev ~ sex+height+age+smoke+height*smoke+age*smoke, data = smoke)
+stargazer(MRmod2, title = "Full model with sex and smoking interaction removed", 
+          header = FALSE, report = ('vc*p'))
+```
+
+### We can see, from this new model, that the interaction between height and smoking status is significant (p=.00098). We can also see that every predictor variable by itself has a significant association with FEV.
+
+### The residual plots (not printed here) for this second model (with sex*smoking removed) show more or less constant variance of the residuals, while the residuals vs the fitted plot shows a slightly not-so-random pattern, with somewhat of a megaphone pointing upwards (so V-shaped). This could indicate a potential violation of our assumptions, or my concern might be overblown.
+```{r include=FALSE}
+# Residual plots:
+plot(resid(MRmod2))
+plot(resid(MRmod2),fitted(MRmod2))
+```
+
+# Conclusions
+#### FEV appears to be negatively affected by smoking in the final model choice, decreasing by 2.5 liters per second across smoking status, from non-smoking to smoking. FEV increases .15 liters per second with male gender, .099 liters per second with each inch increase in height, and .075 liters per second with each year increase in age. FEV also appears to increase .045 liters per second for each inch in height across smoking status (from non-smoker to smoker). This could make sense given the negative correlation with smoking by itself, and the higher positive correlation with height by itself. 
+
+# Limitations
+#### One limitation is that we don't know how long the smokers had the habit of smoking, and how much they smoked (one pack a day, two?).
+

@@ -1,0 +1,82 @@
+---
+title: "prob_7"
+output: pdf_document
+---
+
+```{r echo=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(sas7bdat))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(kableExtra)) # Does work for PDF
+suppressPackageStartupMessages(library(lsmeans))
+```
+
+1. blah blah blah
+
+```{r echo=FALSE}
+headers = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/survival_data_Dean_Voss.csv",
+                   skip = 0, header = FALSE, nrows = 1, as.is = TRUE)
+
+pois = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/survival_data_Dean_Voss.csv",
+                header = FALSE)
+pois = pois[-1,-c(1,5)]
+colnames(pois) = headers
+```
+
+```{r echo=FALSE, results='asis'}
+# LS MEANS TABLES AND GRAPHS
+modAB = aov(TIME ~ factor(POISON)+factor(TRTMT), data = pois)
+ls.trt = lsmeans(modAB, specs = ~TRTMT)
+kable(summary(ls.trt), caption = "Mean survival time by treatment")
+```
+
+
+```{r echo=FALSE, results='asis'}
+ls.pois = lsmeans(modAB, specs = ~POISON)
+kable(summary(ls.pois), caption = "Mean survival time by poison")
+```
+
+
+
+7. Estimates for the mean concentration at each time point for both groups are in Tables 4 and 5.
+
+```{r echo=FALSE}
+hor = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/concentration4.sas7bdat",
+                    debug = TRUE)
+
+hor1 = hor[which(hor$group == 1),]
+hor2 = hor[which(hor$group == 2),]
+mod1.time = aov(conc ~ factor(time), data = hor1)
+mod2.time = aov(conc ~ factor(time), data = hor2)
+ls.1 = lsmeans(mod1.time, specs = ~ time)
+ls.2 = lsmeans(mod2.time, specs = ~ time)
+```
+
+
+```{r echo=FALSE, results='asis'}
+# LS MEANS TABLES AND GRAPHS
+modAB = aov(TIME ~ factor(POISON)+factor(TRTMT), data = pois)
+ls.trt = lsmeans(modAB, specs = ~TRTMT)
+kable(summary(ls.trt), caption = "Table 3: Mean survival time by treatment")
+```
+
+
+```{r echo=FALSE, results='asis'}
+ls.pois = lsmeans(modAB, specs = ~POISON)
+kable(summary(ls.pois), caption = "Table 4: Mean survival time by poison")
+```
+
+
+
+
+```{r echo=FALSE, results='asis'}
+kable(summary(ls.1), caption = "this sucks")
+```
+
+```{r echo=FALSE, results='asis'}
+kable(summary(ls.2), caption = "this sucks too")
+```
+
+
+
+
+

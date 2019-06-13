@@ -1,8 +1,10 @@
 ### Unemployment rate in US by year since 1947
 
+library(ggplot2)
+library(scales)
+
 # DO THIS (1) :
 ################################################################################################################
-library(ggplot2)
 unempl = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/unemployment.csv")
 unempl = unempl[12:82,1:2]
 
@@ -195,5 +197,122 @@ par(new = TRUE)
 plot(US5$fract.households, US5$Y1970, xlab = "", ylab = "")
 p5 = coef(nl1970)
 curve(p5["a"]*x^p5["b"], lwd = 2, col = "blue", lty = 5, add = TRUE)
+
+
+
+
+
+
+
+
+
+################################################################################
+################################################################################
+
+# Monthly unemployment from 1990 to 2019
+
+# STEPS I HAD TO GO THROUGH TO FINALLY GET MY GRAPH WITH THE YEARS ON THE X AXIS:
+## 1. Define the headers using skip, nrows, and as.is (plus header=F).
+## 2. Read in data and skip to the right (non-sensical) row!
+## 3. Define colnames and rownames, then trim the df down
+## 4. Convert the df to matrix, transpose it, and convert that to a vector (so I can create a long df out of this wide one I was given)
+## 5. [Plot the vector in base R plot to make sure I got it right]
+## 6. Create a new df with percent unemployment as one column, months and years as other columns
+## 7. Use function from stackoverflow to convert month abbreviations to month numbers, and add a new column to the df with the month numbers
+## 8. Add a dates column to the df that pastes the year, month numbers, and an arbitrary day number, in order to create a full date that can be converted to an as.Date
+## 9. After converting the pasted-together %Y-%m-%d with as.Date, ...
+## 10. ... plug it into ggplot2
+
+# unem = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/Unempl_1990_2019.csv")
+# unem = unem[11:nrow(unem),]
+# unem[1,]
+# colnames(unem) = as.character(unem[1,]) # NOPE. THIS DID NOT WORK AT ALL. AND I DON'T KNOW WHY.
+
+## 1. Header:
+headers = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/Unempl_1990_2019.csv",
+                   skip = 11, header = FALSE, nrows = 1, as.is = TRUE) 
+# THE SKIP = 11 MAKES NO SENSE. IF YOU WERE TO DO SKIP = 1, IT WOULD SKIP THE 
+## FIRST ROW!!! SO WHY DOES SKIP = 1 MEAN SKIP ROW 1, AND SKIP = 11 MEANS SKIP 
+## ROWS 1-10 INSTEAD OF UP TO AND INCLUDING THE 11TH ROW????
+
+## 2. Read in data:
+unem = read.csv("/Users/jamescutler/Desktop/Data_Course_cutler/Unempl_1990_2019.csv",
+                skip = 12, header = FALSE)
+
+## 3. Define colnames, rownames, trim:
+colnames(unem) = headers
+unem = unem[,-14]
+rownames(unem) = unem[,1]
+unem = unem[,-1]
+
+## 4. Convert to vector:
+newunem = as.vector(t(as.matrix(unem)))
+newunem
+
+## 5. Plot it just to see:
+plot(newunem, type = "l", lwd = 2, col = "blue")
+
+## 6. Create new df:
+dfunem = data.frame(per_unemplmt = newunem,
+                    months = rep(colnames(unem),30),
+                    year = rep(rownames(unem), each = 12))
+
+# dfunem$dates = as.Date(dfunem$dates, format = "%b-%Y") # DOESN'T WORK!!
+
+## 7. Nifty function:
+# This function will convert the month abbreviations to month numbers:
+monthConvert = function(month_b){
+  strftime(strptime(paste(month_b,strftime(Sys.time(),"%d")), 
+                    format = "%b %d"), 
+           "%m")
+}
+dfunem$monthnums = monthConvert(dfunem$months)
+
+## 8. Paste arbitrary day number to %Y-%m:
+dfunem$dates = strptime(paste0(paste(dfunem$year,dfunem$monthnums, sep = "-"),
+                               "-01"),
+                        format = "%Y-%m-%d")
+
+## 9. Convert to "Date" class using as.Date:
+class(dfunem$dates)
+dfunem$dates = as.Date(dfunem$dates, format = "%Y-%m-%d")
+class(dfunem$dates)
+
+## 10. ggplot2:
+ggplot(dfunem, aes(dates,per_unemplmt)) +
+  geom_line() +
+  scale_x_date(breaks = date_breaks("1 years"),
+               labels = date_format("%Y"),
+               limits = as.Date(c("1990-01-01","2019-04,01"), format = "%Y-%m-%d")) +
+  theme(axis.text.x = element_text(size = 5)) +
+  coord_cartesian(ylim = c(0,10)) +
+  scale_y_continuous(breaks = seq(0,10,.5))
+
+## A better ggplot:
+Vox = dfunem %>% filter(year > 2014)
+ggplot(Vox, aes(dates,per_unemplmt)) +
+  geom_line(colour = "cadetblue", size = .8) +
+  scale_x_date(breaks = date_breaks("1 years"),
+               labels = date_format("%Y"),
+               limits = as.Date(c("2015-01-01","2019-03-01"), format = "%Y-%m-%d")) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 6),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank()) +
+  coord_cartesian(ylim = c(3.5,6)) +
+  scale_y_continuous(breaks = seq(3.5,6,.5),
+                     position = "right") +
+  labs(x = "", y = "")
+# Now I have a plot that is exactly like the one in Vox:
+## https://www.vox.com/policy-and-politics/2019/3/22/18276155/donald-trump-2020-presidential-election-odds
+
+
+
+
+
+
+
+
+
 
 

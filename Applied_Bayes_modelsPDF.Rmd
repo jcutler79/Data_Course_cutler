@@ -1,0 +1,48 @@
+---
+title: "Applied_Bayes_modelsPDF"
+output: pdf_document
+---
+
+
+
+```{r}
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(broom))
+suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(xtable))
+```
+
+
+```{r}
+options(knitr.table.format = 'markdown')
+dcc = read.csv("/Users/jamescutler/Desktop/Bayesian/dcc.csv")
+
+mod1 = aov(fc_kid ~ factor(region), data = dcc)
+mod1.table = xtable(mod1)
+kable(mod1.table, caption = "ANOVA table of the 4 regions")
+
+tuk1 = TukeyHSD(mod1, conf.level = .95)
+tuk1df = tidy(tuk1)
+tuk1.table = xtable(tuk1df)
+kable(tuk1.table, caption = "Tukey comparisons of the 4 regions")
+
+```
+
+### This is all.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,282 @@
+---
+title: "Final Exam Biostats Methods II"
+author: "James Cutler"
+output: pdf_document
+fontsize: 12pt
+
+---
+
+
+```{r echo=FALSE, warning=FALSE}
+# install.packages("qwraps2")
+suppressPackageStartupMessages(library(sas7bdat))
+suppressPackageStartupMessages(library(ggplot2))
+# suppressPackageStartupMessages(library(dplyr))
+# suppressPackageStartupMessages(library(xtable)) # Doesn't work for PDF
+suppressPackageStartupMessages(library(papeR))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(arsenal)) # For the rank by sex table, because kable doesn't actually do it right!
+suppressPackageStartupMessages(library(kableExtra)) # Does work for PDF
+suppressPackageStartupMessages(library(lsmeans))
+suppressPackageStartupMessages(library(emmeans))
+suppressPackageStartupMessages(library(car)) # For Anova, which is for kable input
+suppressPackageStartupMessages(library(stargazer)) # For linear model tables
+```
+
+**Part I**
+
+See exam document.
+
+**Part II**
+
+See exam document.
+
+
+**Part III**
+
+I wasn't sure if you wanted me to copy and paste things to the word document, or if there was just rhetorical language carried over from the earlier parts of the exam, so in this part (and in part IV) I transitioned to having everything output in my own document.
+
+```{r echo=FALSE}
+sal = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/salary.sas7bdat",
+                    debug = TRUE)
+colnames(sal) = c("Sex","Rank","Year","Degree","yr.dg","Salary")
+```
+
+
+1. Distribution of salary by sex:
+
+```{r echo=FALSE, results='asis'}
+edu.sal = sal[,c("Sex","Salary")]
+kable(summarize(edu.sal, type = "numeric", group = "Sex", test = FALSE))
+```
+
+
+2. Distribution of academic rank by sex (Table 1):
+
+```{r echo=FALSE, results='asis'}
+edu.rank = sal[,c("Sex","Rank")]
+sexrank = tableby(Rank ~ ., data = edu.rank)
+summary(sexrank, title = "Academic rank by sex") # TABLE 1
+```
+
+
+3. Crude (unadjusted) difference in mean salary between male and female professors (see Figure 1).
+
+```{r echo=FALSE, out.width="70%"}
+modSex = aov(Salary ~ factor(Sex), data = sal)
+lsm.sex = lsmeans(modSex, specs = ~ Sex)
+
+plot(lsm.sex,
+     xlab = "Figure 1: Means and 95% CIs for salary by sex (unadjusted)",
+     ylab = "")
+
+```
+
+
+4. An interaction is when the effect of one of the predictor variables on the outcome variable depends on the level of one of the other predictor variables. In this situation, the effect of the two predictor variables in question is not additive. My analysis of interaction between sex and academic rank with two-way complete ANOVA is shown in Table 2. This model does not show a significant relationship between rank and sex (p = .847). To aid the understanding of the reader is an interaction plot (Figure 2a), and a barplot of the academic ranks stacked by gender (Figure 2b).
+
+```{r echo=FALSE, results='asis'}
+modSexRank = aov(Salary ~ factor(Sex)*factor(Rank),
+                 data = sal)
+fullSexRank = Anova(modSexRank, type = 2)
+kable(fullSexRank, caption = "ANOVA two-way complete model for sex and rank")
+```
+
+```{r echo=FALSE, out.width="70%"}
+ggplot(sal, aes(x=factor(Rank),y=Salary, col = factor(Sex))) +
+  geom_jitter(width = .1) +
+  stat_summary(fun.y = "mean", geom = "line", aes(group = factor(Sex))) +
+  labs(title = "Figure 2a: Interaction plot for sex and rank", x="Academic Rank",y="Salary in USD",
+       col = "Sex") +
+  theme(panel.grid.major = element_line(colour = "gray"),
+        panel.background = element_blank())
+```
+
+```{r echo=FALSE, out.width="70%"}
+ggplot(sal, aes(x=Rank, fill = Sex)) +
+  geom_bar(stat = "count") +
+  labs(title = "Figure 2b:Proportion of males and females in each rank")
+```
+
+
+5. An appropriately adjusted estimate of the difference in mean salary between male and female professors, in my mind, should adjust for rank, years in rank, and years since degree (degree itself doesn't appear to have any significant effect on salary). In order to adjust for these variables, I decided to create arbitrary categorical variables out of years in rank and years since degree, after analyzing plots of these variables (see Figures 2a, 6, 8). The categories I created for years in rank are 0-4 years, 5-10 years, and over 10 years. The categories I created for years since degree are 0-9 years, 10-19 years, and 20 years and over. I found no interactions in a full/complete ANOVA model, so I have gone with a main effects ANOVA type II sums of squares model here (Table 3).
+
+```{r echo=FALSE, results='asis'}
+sal$yr.dg.cat = NA
+sal$yr.rank.cat = NA
+
+# Years in rank:
+sal[which(sal$Year < 5),"yr.dg.cat"] = 1
+sal[which(sal$Year %in% 5:10),"yr.dg.cat"] = 2
+sal[which(sal$Year > 10),"yr.dg.cat"] = 3
+
+# Years since degree:
+sal[which(sal$yr.dg < 10),"yr.rank.cat"] = 1
+sal[which(sal$yr.dg %in% 10:19),"yr.rank.cat"] = 2
+sal[which(sal$yr.dg > 19),"yr.rank.cat"] = 3
+
+sal$yr.dg.cat = as.factor(sal$yr.dg.cat)
+sal$yr.rank.cat = as.factor(sal$yr.rank.cat)
+
+modSex.R.YR.YD = aov(Salary ~ Sex+Rank+yr.rank.cat+yr.dg.cat, data = sal)
+kmodSex.R.YR.YD = Anova(modSex.R.YR.YD, type = 2)
+kable(kmodSex.R.YR.YD, caption ="Main effects ANOVA model of salary by three variables:\n rank, years in rank, and years since degree")
+```
+
+
+Adjusting for rank: Figure 3 (for why it might be reasonable to adjust for rank, refer back to Figure 2a). These estimates of the adjusted means are somewhat suspicious to me, since men don't appear to be earning ever so slight less in these categories, based on the plot. I'm not sure why the estimates turned out the way they do in Figure 3. This was not expected.
+
+```{r echo=FALSE, out.width="70%"}
+R.Sexmeans = emmeans(modSex.R.YR.YD, ~ Sex | Rank)
+plot(R.Sexmeans,
+     xlab = "Figure 3: Means and 95% CIs for salary by sex,\n adjusted for rank ",
+     ylab="") # THE MOST BIZARRE RESULT OF ALL. COMPARE THESE TWO PLOTS AND YOU'LL SEE THE EMMEANS ACTUALLY THINKS THE MALE MEANS ARE EVER SO SLIGHTLY ***LOWER***, BUT THAT CAN'T BE TRUE.
+```
+
+
+Adjusting for years in rank: Figure 5 (for why it might seem reasonable to adjust for years in rank, see Figure 6). As before, I am still not sure why men are shown as earning very slightly less than women. 
+
+```{r echo=FALSE, out.width="70%"}
+YR.Sexmeans = emmeans(modSex.R.YR.YD, ~ Sex | yr.rank.cat)
+plot(YR.Sexmeans,
+     xlab = "Figure 5: Means and 95% CIs for salary by sex,\n adjusted for years in rank", ylab = "")
+```
+
+```{r echo=FALSE, out.width="70%"}
+ggplot(sal, aes(Year,Salary, col = Sex)) +
+  geom_point(aes(shape = Rank),
+             alpha = .7) +
+  theme(panel.background = element_blank(),
+        panel.grid.major = element_line(colour = "gray")) +
+  labs(title = "Figure 6: Does gender vary with years in rank?",x="Years in current rank",
+       y="Salary in USD")
+```
+
+
+And adjusting for years since degree: Figure 7 (for why it might be reasonable to adjust for years since degree, see Figure 8). As with the past two adjusted means estimates, I also can't say I know why these are similarly seemingly backwards, with males' salaries being very slightly lower.
+
+```{r echo=FALSE, out.width="70%"}
+YD.Sexmeans = emmeans(modSex.R.YR.YD, ~ Sex | yr.dg.cat)
+plot(YD.Sexmeans,
+     xlab = "Figure 7: Means and 95% CIs for salary by sex,\n adjusted for years since degree", ylab = "")
+```
+
+```{r echo=FALSE, out.width="70%"}
+ggplot(sal, aes(x=yr.dg,y=Salary, col = Rank)) +
+  geom_point(aes(shape = Sex)) +
+  theme(panel.background = element_blank(),
+        panel.grid.major = element_line(colour = "gray")) +
+  labs(title = "Figure 8: Do rank and gender vary with years since degree?",
+       x="Years since earning degree", y = "Salary in USD")
+```
+
+
+
+**Part IV**
+
+1. If we treat time as a continuous variable, then it will be a straightforward linear regression model, and we will get regression coefficients for time and for group (one for each group). If, however, time is treated as a categorical variable, then we'll be able to see individual estimates of change by time (=2, =3, =4), as well as an estimate for group 2 in relation to the intercept. So, basically, these choices will lead to somewhat different model outputs. As an aside, ANOVA does not seem justifiable in this case since regarding the time intervals as individual groups would violate the assumption of independence of the subjects in each group from those in the other groups.
+
+2. If, over time, we see that one group (say, the treatment group) does rise in hormone concentration significantly, while the other group does not, then that would indicate an interaction between time and type of agent administered. 
+
+3. Time is a repeated factor/variable in this analysis because I imagine the intent is to see if the hormone levels change between before and after administration of the treatment, and to capture multiple snapshots following treatment, in case the earliest one doesn't capture the effect, or perhaps in case there is a dropoff in hormone concentration following an initial rise. Either way, repeated measures at different intervals after treatment will be more likely to pick that up. Measuring at a before time and an after time will make it at least possible to tell if there was a change. Recording hormone levels at only one time would leave you without a way to tell if the treatment made a difference or not compared to the placebo because it could be that the placebo group was already low, and the treatment was higher, to start out with, and the treatment could have done nothing and it would still give the appearance of working in such a scenario.
+
+4. As long as animals are randomly assigned to either the placebo or the treatment group, then this between subject factor should still enable us to tell if the treatment works or not. Any differences among the animals to start out with would ideally be randomly distributed between the groups so as to neutralize the effects of each other in comparison with the other group, leaving only the treatment and placebo to be reasonably responsible for any difference in outcome. This would justify using a between subject factor.
+
+5. PROC MIXED advantages over PROC GLM: Since I do not use SAS for this class, I would bet that the most important advantage to gain in choice of methodology in this case would be to choose a method that would allow for repeated measures analysis, or mixed models. 
+
+6. Statistical model (with time as a categorical variable) for testing whether the pattern of change over time differs between the two groups (see Table 4).
+
+```{r echo=FALSE, results='asis'}
+hor = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/concentration4.sas7bdat",
+                    debug = TRUE)
+# TABLE 3:
+MEfactors = lm(conc ~ factor(time)+factor(group), data = hor)
+stargazer(MEfactors, title = "Linear model of hormone levels with time, by group", 
+          header = FALSE)
+```
+
+
+7. Estimates for the mean concentration at each time point for both groups are in Tables 5 and 6.
+
+```{r echo=FALSE}
+hor1 = hor[which(hor$group == 1),]
+hor2 = hor[which(hor$group == 2),]
+mod1.time = aov(conc ~ factor(time), data = hor1)
+mod2.time = aov(conc ~ factor(time), data = hor2)
+ls.1 = lsmeans(mod1.time, specs = ~ factor(time))
+ls.2 = lsmeans(mod2.time, specs = ~ factor(time))
+```
+
+```{r echo=FALSE, results='asis'}
+kable(summary(ls.1), caption = "LS means group 1 with 95 percent CI")
+```
+
+```{r echo=FALSE, results='asis'}
+kable(summary(ls.2), caption = "LS means group 2 with 95 percent CI")
+```
+
+
+8. Using my model's results to comment on the group's comparability prior to the intervention, the estimate (with 95% CI) for the means of group 1 and 2 at time 1 are 26.36 mg/dl (20.35, 29.44) and 28.40 mg/dl (25.23, 33.89), respectively. Looking at the CIs here, there is a good deal of overlap (this will be clear in the plot below).
+
+9. Which is the first time at which the two groups of animals differ in the mean hormone concentration? What is the between-group difference? The answer is that at no time do the CIs of the two groups ever distance themselves from each other widely enough to leave no overlap between them. There is a point at which the CIs of neither group overlap the means of the other: That's at time 4. The difference between the two means is 9.61. First, I would like to show a graph of the data without CIs, then CIs below it, to reinforce what I'm saying:
+
+```{r echo=FALSE}
+ggplot(hor, aes(factor(time),conc, col = factor(group))) +
+  geom_jitter(width = .1) + 
+  stat_summary(fun.y = "mean", geom = "line", aes(group = factor(group))) +
+  labs(title = "Change in hormone level over time, by group",
+       x="Times 1-4",y="Hormone levels (mg/dl)")
+```
+
+```{r echo=FALSE}
+ls.1plot = summary(ls.1)
+ls.2plot = summary(ls.2)
+plot(1:4,ls.1plot$lsmean, col = "red", ylim = c(20,45), xlim = c(1,4.3),
+     main = "The differences between the mean concentrations\n of the two groups at each time interval,\n with fitted regression curves",
+     xlab = "Times 1-4", ylab = "Serum concentration of hormone (mg/dl)")
+points(seq(1.1,4.1,1),ls.2plot$lsmean, col = "blue")
+segments(x0=1:4,y0=ls.1plot$lower.CL,x1=1:4,y1=ls.1plot$upper.CL, col = "red")
+segments(x0=seq(1.1,4.1,1),y0=ls.2plot$lower.CL,x1=seq(1.1,4.1,1),y1=ls.2plot$upper.CL, col = "blue")
+red = as.data.frame(cbind(1:4,ls.1plot$lsmean))
+blue = as.data.frame(cbind(1:4,ls.2plot$lsmean))
+red.reg = lm(V2 ~ V1, data = red)
+blue.reg = lm(V2 ~ V1, data = blue)
+abline(red.reg, col = "red")
+abline(blue.reg, col = "blue")
+```
+
+
+10. In group 1, did the hormone levels change between baseline and any of the other three times of measurement? Judging by the linear model in Table 7, there does not appear to be any significant change in hormone levels after baseline.
+
+```{r echo=FALSE, results='asis'}
+# ???? --> TABLE 4 (YES, THE '4' IS OUT OF ORDER):
+mod1 = lm(conc ~ factor(time), data = hor1)
+stargazer(mod1, title = "Linear model of group 1 hormone levels by time",
+          header = FALSE)
+```
+
+
+11. A) What is the advantage of using an unstructured covariance matrix? I believe the advantage is that you are not imposing any constraints on the values in your matrix. In our case, where the variances are not really that equal, this is a benefit and should give us the best model fit, because each of the values in the matrix will be closer to the data.
+
+B) The value in the first row and first column of the [covariance] (I'm not sure which the R matrix is) matrix: 1.2626. The population parameter it estimates is the variance in time.
+
+```{r echo=FALSE}
+cov(hor[,2:4])
+```
+
+C) The value in the third row and third column is 110.4277, and estimates the variance in hormon concentration, in mg/dl.
+
+D) The value in the first row and third column is 3.3684, and estimates the covariance between time and concentration. That is, with every increasing interval in time, there is a 3.37 mg/dl increase in hormone.
+
+E) The appearance of the covariance matrix I'm seeing is symmetric in that it has the same headings going left to right across the top as it does top to bottom down the left side. This means some of the values--the ones situated diagonally from each other in a bottom left to upper right, rather than a lower right to upper left fashion--are identical to one another.
+
+
+**Bonus question:** Response to "The question is, can these two deaths really be treated as independent? Two SIDS deaths occurred in the same home under the supervision of the same two parents. How likely is it that those are unrelated events?"
+
+My response is that these two SIDS events probably should not be treated as independent. If an asteroid had struck the Clarks' home, and they had rebuilt, and then years later, another asteroid had struck their new home, then that would be a case of independent events. But there is a very important causal variable linking the two SIDS deaths--both babies come from the same parents. They inherit much of the same health/disease propensities, and they also are under the supervision of the same parents. Many "SIDS" deaths are only reported as such in order to allay the guilt of the parents that they might not have been practicing safe sleep guidelines as well as they could have. Many parents don't even know what those guidelines are. Often, SIDS could just be suffocation because the baby wasn't positioned on their back on a flat bare surface. This is why the shared supervision is an important element militating against these deaths being unrelated.
+
+The consequence of misusing statistics can be severe, as illustrated by this story. It can affect everything from the general quality of medical literature (see John Ioannidis, for example), to being misled by the statistics people sometimes deliberately use to distort another's perception of reality, either to take risks he or she would not take in their better judgment, or to reach any unsound conclusion about something that could end up harming others. That is why I love statistics. It is vital to our ability to avoid unnecessary waste and harm, as well as to our ability to move closer towards optimization in so many areas of life and society.
+
+
+I have adhered to the University’s standards on academic integrity, have neither given nor received assistance during this examination, and have used no materials that the instructor did not specifically permit. - James Cutler
+

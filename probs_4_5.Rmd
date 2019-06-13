@@ -1,0 +1,121 @@
+---
+title: "prob_5"
+output: pdf_document
+---
+
+```{r echo=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(sas7bdat))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(papeR))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(kableExtra)) # Does work for PDF
+suppressPackageStartupMessages(library(lsmeans))
+suppressPackageStartupMessages(library(emmeans))
+suppressPackageStartupMessages(library(car)) # For Anova, which is for kable input
+suppressPackageStartupMessages(library(stargazer)) # For linear model tables
+```
+
+```{r echo=FALSE}
+sal = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/salary.sas7bdat",
+                    debug = TRUE)
+colnames(sal) = c("Sex","Rank","Year","Degree","yr.dg","Salary")
+```
+
+4. An interaction is when the effect of one of the predictor variables on the outcome variable depends on the level of one of the other predictor variables. In this situation, the effect of the two predictor variables in question is not additive. 
+Analysis of interaction between sex and academic rank with two-way complete ANOVA (see Table 1). This model does not show a significant relationship between rank and sex (p = .847). To aid the understanding of the reader is an interaction plot (Figure 2a) and a barplot (Figure 2b) of the academic ranks stacked by gender.
+
+```{r echo=FALSE, results='asis'}
+modSexRank = aov(Salary ~ factor(Sex)*factor(Rank),
+                 data = sal)
+fullSexRank = Anova(modSexRank, type = 2)
+kable(fullSexRank, caption = "ANOVA two-way complete model for sex and rank")
+```
+
+```{r echo=FALSE, out.width="70%"}
+ggplot(sal, aes(x=factor(Rank),y=Salary, col = factor(Sex))) +
+  geom_jitter(width = .1) +
+  stat_summary(fun.y = "mean", geom = "line", aes(group = factor(Sex))) +
+  labs(title = "Figure 2a: Interaction plot for sex and rank", x="Academic Rank",y="Salary in USD",
+       col = "Sex") +
+  theme(panel.grid.major = element_line(colour = "gray"),
+        panel.background = element_blank())
+```
+
+```{r echo=FALSE, out.width="70%"}
+ggplot(sal, aes(x=Rank, fill = Sex)) +
+  geom_bar(stat = "count") +
+  labs(title = "Figure 2b:Proportion of males and females in each rank")
+```
+
+
+5. An appropriately adjusted estimate of the difference in mean salary between male and female professors, in my mind, should adjust for rank, years in rank, and years since degree (degree itself doesn't appear to have any significant effect on salary). In order to adjust for these variables, I decided to create arbitrary categorical variables out of years in rank and years since degree, after analyzing plots of these variables (see Figures 2a, 6, 8). The categories I created for years in rank are 0-4 years, 5-10 years, and over 10 years. The categories I created for years since degree are 0-9 years, 10-19 years, and 20 years and over. I found no interactions in a full/complete ANOVA model, so I have gone with a main effects ANOVA type II sums of squares model here (Table 2).
+
+```{r echo=FALSE, results='asis'}
+sal$yr.dg.cat = NA
+sal$yr.rank.cat = NA
+
+# Years in rank:
+sal[which(sal$Year < 5),"yr.dg.cat"] = 1
+sal[which(sal$Year %in% 5:10),"yr.dg.cat"] = 2
+sal[which(sal$Year > 10),"yr.dg.cat"] = 3
+
+# Years since degree:
+sal[which(sal$yr.dg < 10),"yr.rank.cat"] = 1
+sal[which(sal$yr.dg %in% 10:19),"yr.rank.cat"] = 2
+sal[which(sal$yr.dg > 19),"yr.rank.cat"] = 3
+
+sal$yr.dg.cat = as.factor(sal$yr.dg.cat)
+sal$yr.rank.cat = as.factor(sal$yr.rank.cat)
+
+modSex.R.YR.YD = aov(Salary ~ Sex+Rank+yr.rank.cat+yr.dg.cat, data = sal)
+kmodSex.R.YR.YD = Anova(modSex.R.YR.YD, type = 2)
+kable(kmodSex.R.YR.YD, caption ="Main effects ANOVA model of salary by three variables:\n rank, years in rank, and years since degree")
+```
+
+
+Adjusting for rank: Figure 3 (for why it might be reasonable to adjust for rank, refer back to Figure 2a).
+
+```{r echo=FALSE, out.width="70%"}
+R.Sexmeans = emmeans(modSex.R.YR.YD, ~ Sex | Rank)
+plot(R.Sexmeans,
+     xlab = "Figure 3: Means and 95% CIs for salary by sex,\n adjusted for rank ",
+     ylab="") # THE MOST BIZARRE RESULT OF ALL. COMPARE THESE TWO PLOTS AND YOU'LL SEE THE EMMEANS ACTUALLY THINKS THE MALE MEANS ARE EVER SO SLIGHTLY ***LOWER***, BUT THAT CAN'T BE TRUE.
+```
+
+
+Adjusting for years in rank: Figure 5 (for why it might seem reasonable to adjust for years in rank, see Figure 6).
+
+```{r echo=FALSE, out.width="70%"}
+YR.Sexmeans = emmeans(modSex.R.YR.YD, ~ Sex | yr.rank.cat)
+plot(YR.Sexmeans,
+     xlab = "Figure 5: Means and 95% CIs for salary by sex,\n adjusted for years in rank", ylab = "")
+```
+
+```{r echo=FALSE, out.width="70%"}
+ggplot(sal, aes(Year,Salary, col = Sex)) +
+  geom_point(aes(shape = Rank),
+             alpha = .7) +
+  theme(panel.background = element_blank(),
+        panel.grid.major = element_line(colour = "gray")) +
+  labs(title = "Figure 6: Does gender vary with years in rank?",x="Years in current rank",
+       y="Salary in USD")
+```
+
+
+And adjusting for years since degree: Figure 7 (for why it might be reasonable to adjust for years since degree, see Figure 8).
+
+```{r echo=FALSE, out.width="70%"}
+YD.Sexmeans = emmeans(modSex.R.YR.YD, ~ Sex | yr.dg.cat)
+plot(YD.Sexmeans,
+     xlab = "Figure 7: Means and 95% CIs for salary by sex,\n adjusted for years since degree", ylab = "")
+```
+
+```{r echo=FALSE, out.width="70%"}
+ggplot(sal, aes(x=yr.dg,y=Salary, col = Rank)) +
+  geom_point(aes(shape = Sex)) +
+  theme(panel.background = element_blank(),
+        panel.grid.major = element_line(colour = "gray")) +
+  labs(title = "Figure 8: Do rank and gender vary with years since degree?",
+       x="Years since earning degree", y = "Salary in USD")
+```
+

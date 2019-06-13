@@ -32,6 +32,7 @@ t.CI.data.mean = function(df.data,t.CI){
   lb = xbar - me
   print(sprintf("The sample mean is %.4f",xbar))
   print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",t.CI*100,lb,ub))
+  return(c(lb,ub))
 }
 
 CI.mean = function(CI,xbar,sd,n,t.or.z){
@@ -53,6 +54,17 @@ CI.mean = function(CI,xbar,sd,n,t.or.z){
     print(sprintf("We are %s percent confident that the population mean is between %.4f and %.4f",CI*100,lb,ub))
   }
 }
+
+CI.for1prop = function(CI,prop1,n1){
+  alpha = 1 - CI
+  z = qnorm(1 - alpha/2)
+  me = z*sqrt( prop1*(1-prop1) / n1 )
+  ub = prop1 + me
+  lb = prop1 - me
+  print(sprintf("We are %s percent confident that the true population proportion is between %.4f and %.4f",CI*100,lb,ub))
+}
+CI.for1prop(.99,80/121,121)
+CI.for1prop(.99,30/95,95)
 
 CI.propdiff = function(CI,prop1,prop2,n1,n2){
   alpha = 1 - CI
@@ -1212,6 +1224,11 @@ tv = data.frame(gender = rep(c("boy","girl"),c(100,200)),
 t.tv = table(tv); t.tv
 chisq.test(t.tv)
 # EASY AS THAT.
+
+
+
+
+
 
 
 

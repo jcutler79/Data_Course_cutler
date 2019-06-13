@@ -1,0 +1,41 @@
+---
+title: "dplyr_tibbles_pretty"
+output: pdf_document
+---
+
+```{r}
+library(sas7bdat)
+library(dplyr)
+library(qwraps2)
+library(stargazer)
+```
+
+```{r}
+smoke = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/SmokingAndFEV.sas7bdat",
+                      debug = TRUE)
+
+smoke$sex = factor(smoke$sex,
+                   levels = c(0,1),
+                   labels = c("female","male"))
+smoke$smoke = factor(smoke$smoke,
+                     levels = c(0,1),
+                     labels = c("nonsmoker","smoker"))
+```
+
+## Descriptive statistics:
+```{r results='asis'}
+
+
+tib1 = smoke %>%
+  count(sex,smoke) %>%
+  group_by(sex) %>%
+  mutate(prop = prop.table(n))
+tib2 = smoke %>%
+  count(smoke,sex) %>%
+  group_by(smoke) %>%
+  mutate(prop = prop.table(n))
+summary_table(tib1) # FUNNY HOW THIS ALMOST DOES WHAT I WANTED IT TO DO
+
+```
+
+### There are more female smokers than male (39 to 26). There are more male nonsmokers than female (310 to 279).

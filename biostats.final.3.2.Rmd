@@ -1,0 +1,34 @@
+---
+title: "biostats.final.3.2"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+```{r echo=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(sas7bdat))
+# suppressPackageStartupMessages(library(papeR))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(arsenal))
+# suppressPackageStartupMessages(library(table1)) # only works for HTML!!! dang it!
+# suppressPackageStartupMessages(library(kableExtra)) # Does work for PDF
+```
+
+
+
+
+
+
+2. Distribution of academic rank by sex:
+
+```{r echo=FALSE, results='asis'}
+sal = read.sas7bdat("/Users/jamescutler/Desktop/Biostats_II/salary.sas7bdat",
+                    debug = TRUE)
+colnames(sal) = c("Sex","Rank","Year","Degree","yr.dg","Salary")
+
+edu.rank = sal[,c("Sex","Rank")]
+sexrank = tableby(Rank ~ ., data = edu.rank)
+summary(sexrank, title = "Academic rank by sex")
+```

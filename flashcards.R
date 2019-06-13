@@ -1,5 +1,7 @@
 ### The flashcards notepad (apps and decks)
 
+library(stringr)
+
    ### The Flashcard functions ###
 
 # variable lengths
@@ -44,14 +46,7 @@ flashcards.many = function(yourlist){
   print("Peace out.")
 }
 
-mypaste = function(yourvector){
-  return(paste(yourvector,collapse = ""))
-}
-M = data.frame(c1 = sample(1:9,5),
-               c2 = sample(1:9,5))
-M$both = apply(M,1,mypaste)
-39 %in% M$both
-38 %in% M$both
+
 
 length(deck.of.decks) # gives number of decks
 deck.of.decks[1] # gives the entire deck
@@ -69,73 +64,71 @@ names(deck.of.decks[[15]]) # names of all the cards (front sides) in that deck
 names(deck.of.decks[[15]][10]) # Gives me what I'm looking for (MUST BE SINGLE BRACKETS AROUND THE SECOND ONE)
 length(deck.of.decks[[15]][[10]]) # Gives me what I'm looking for: itup1 and itup2
 deck.of.decks[[15]][[10]][3] # 1:length in last index gives me what I'm looking for
-x = 2
-y = 3
-paste0(x,y)
 
-ituple.cum = as.data.frame(matrix(NA, nrow = 1, ncol = 3))
-decks.many2 = function(yourlist){
-  continue = readline(prompt = "Hit any button to continue, enter to quit: ")
-  itup1 = 1
-  itup2 = 1
-  ituple = c(itup1,itup2,NA)
-  ituple.cum = as.data.frame(matrix(ituple, nrow = 1, ncol = 3))
-  ituple.cum$V3 = apply(ituple.cum,1,mypaste)
-  while (continue != ""){
-    itup1 = sample(1:length(yourlist),1)
-    itup2 = sample(1:length(yourlist[[itup1]]),1)
-    attempt = paste0(itup1,itup2)
-    if (attempt %in% ituple.cum$V3){
-      continue = ""
-    } else{
-      print(names(yourlist[[itup1]][itup2]))
-      for (j in 1:length(yourlist[[itup1]][[itup2]])){
-        showme = readline(prompt = "Hit 'a' to show next slide: ")
-        if (showme == "a"){
-          print(yourlist[[itup1]][[itup2]][j])
-        } else{print("puck you")}
-      }
-      ituple = as.data.frame(matrix(c(itup1,itup2,NA), nrow = 1, ncol = 3))
-      ituple.cum = rbind(ituple.cum, ituple)
-      ituple.cum$V3 = apply(ituple.cum,1,mypaste)
-      continue = readline(prompt = "Hit any button to continue, enter to quit: ")
-    }
-  }
-  print("peace out.")
+
+###################### FLASHCARD PROGRAM FOR DECK OF DECKS  #########################
+mypaste = function(yourvector){
+  return(paste(yourvector,collapse = "-"))
 }
 
-decks.many1 = function(yourlist){
-  continue = readline(prompt = "Hit any button to continue, enter to quit: ")
-  itup1 = 1
-  itup2 = 1
-  ituple = c(itup1,itup2,NA)
-  ituple.cum = as.data.frame(matrix(ituple,nrow = 1, ncol = 3))
-  ituple.cum$V3 = apply(ituple.cum,1,mypaste)
-  while (continue != ""){
-    mycheck = function(){
-      itup1 = sample(1:length(yourlist),1)
-      itup2 = sample(1:length(yourlist[[itup1]]),1)
-      attempt = paste0(itup1,itup2)
-      if (attempt %in% ituple.cum$V3){
-        mycheck() # match.call()
-      } else{
-        print(names(yourlist[[itup1]][itup2]))
-        for (j in 1:length(yourlist[[itup1]][[itup2]])){
-          showme = readline(prompt = "Hit 'a' to show next slide: ")
-          if (showme == "a"){
-            print(yourlist[[itup1]][[itup2]][j])
-          } else{print("puck you")}
-        }
-        ituple = as.data.frame(matrix(c(itup1,itup2,NA), nrow = 1, ncol = 3))
-        ituple.cum = rbind(ituple.cum, ituple)
-        ituple.cum$V3 = apply(ituple.cum,1,mypaste)
-        continue = readline(prompt = "Hit any button to continue, enter to quit: ")
-      }
-    }
-    
-  }
-  print("Peace out.")
+# mycheck = function(yourlist){
+#   tp1 = sample(1:length(yourlist),1)
+#   tp2 = sample(1:length(yourlist[[tp1]]),1)
+#   attempt = paste0(tp1,tp2)
+#   if (attempt %in% tupC$X3){
+#     mycheck(yourlist)
+#   } else{print(tupC); return(attempt)}
+# }
+cards = vector()
+for (i in 1:length(deck.of.decks)){
+  # cards[i] = length(deck.of.decks[[i]])
+  print(c(i,length(deck.of.decks[[i]])))
 }
+
+Dmany = function(yourlist){
+  continue = readline(prompt = "Hit any button to continue, enter to quit: ")
+  tp1 = 1
+  tp2 = 1
+  tup = c(tp1,tp2)
+  tupC = data.frame(matrix(tup, nrow = 1, ncol = 2))
+  tupC$X3 = apply(tupC,1,mypaste)                                     
+  i = 1
+  mycheck = function(yourlist){
+    print("mycheck's tupC:")
+    print(tupC)
+    tp1 = sample(1:length(yourlist),1)
+    tp2 = sample(1:length(yourlist[[tp1]]),1)
+    attempt = paste(tp1,tp2, sep = "-")
+    print("this is mycheck's attempt:")
+    print(attempt)
+    if (attempt %in% tupC$X3){
+      mycheck(yourlist)
+    } else{print(tupC); return(attempt)}
+  }
+  while (continue != ""){
+    mycheck(yourlist)
+    a = as.numeric(unlist(strsplit(mycheck(yourlist),"-")))
+    newC = data.frame(matrix(c( a[1], a[2], paste(a[1],a[2],sep = "-") ), nrow = 1, ncol = 3))
+    tupC = rbind(tupC,newC)
+    print("r-binded tupC, etc.:")
+    print(tupC)
+    print(c(a[1],a[2]))
+    print(c(i, names(yourlist[[a[1]]][a[2]])))
+    for (j in 1:length(yourlist[[a[1]]][[a[2]]])){
+      showme = readline(prompt = "Hit 'a' to show next side: ")
+      if (showme == "a"){
+        print(yourlist[[a[1]]][[a[2]]][j])
+      } else{print("puck you.")}
+    }
+    i = i+1
+    continue = readline(prompt = "Hit any button to continue, enter to quit: ")
+  }
+  print("Peace.")
+}
+
+##################################################################################
+##################################################################################
+
 
 
 ### flashcards for 3 sided-cards:
@@ -345,6 +338,7 @@ flashback4 = function(yourlist){
 # people.important.variable
 # PharaohList.3 (a list of 30 famous or interesting pharaohs)
 # physics.and.technology.variable (mostly of stuff I learn about in Science and Nature)
+# physiology.variable
 # political.facts.variable
 # psalms.in.BofM.4
 # quotes.variable (author and topic on front, quote on back; could have more than one side for long quotes or words to pay special attention to)
@@ -388,6 +382,10 @@ public.health = list(one = "filler",
                      neurodegenerative.disorders = c("Alzheimer's disease (AD) is the most common neurodegenerative disorder.","Parkinson's is the second most common one, currently affecting 4 million worldwide; WTF: that number is expected to double in the next few decades??? Wow.","Source: Chen-Plotkin et al., 'Finding useful biomarkers for Parkinson’s disease', in Science Translational Medicine, August 2018")
                      )
 
+
+
+
+
                          #########################
                          ### School Flashcards ###
                          #########################
@@ -424,6 +422,18 @@ Probability.Theory = list(one = "filler",
 # All questions I don't have answers to yet will in their c() have this: ???
 
 #################################### EXAM I MATERIAL ####################################
+
+Epi.deck = list(one = list(uno = "filler"),
+                Epi.History = Epi.Intro_History,
+                Epi.Morbid = Epi.Morbidity,
+                Epi.Descript = Epi.Descriptive, 
+                Epi.Infectious = Epi.Infectious.Outbreaks, 
+                Epi.Surveill = Epi.Surveillance, 
+                Epi.Standardize = Epi.Standardization, 
+                Epi.adv.and.disadv.of.measures = Epi.advantages.and.disadvantages.of.measures, 
+                Epi.Eco.and.Cross.Sect = Epi.Ecological.and.Cross.Sectional)
+
+
 Epi.Exam.I.subjects = list(one = "filler",
                            lecture_1 = c("Intro and History"),
                            lecture_2 = c("Morbidity"),
@@ -860,6 +870,7 @@ Epi.rules.of.data.display.only = list(one = "filler",
                                       scatter.plots = c("used to show correlations, trends, and outliers"),
                                       guidelines.for.charts.and.graphs = c("clear and concise title, scale should start at zero, any break in scale should be labeled, avoid clutter and 3D effects, and use legend or proper labels on bars/lines")
                                       )
+
 #################################### EXAM III MATERIAL ####################################
 Epi.Exam.III.subjects = list(one = "filler",
                              association_causation = c(""),
@@ -889,7 +900,7 @@ deck.of.decks = list(one = list(uno = "filler"),
                      #ancient.names.3,
                      BM.trnsltn.facts_V = BofM.translation.facts.variable,
                      BTN_3 = bythenumbers.3,
-                     climate = climate.two.per.lecture,
+                     climate_3 = climate.two.per.lecture,
                      #definitions.variable,
                      geo_V = geography.lists.variable,
                      med.terms_3 = medical.terminology.3,
@@ -905,7 +916,7 @@ deck.of.decks = list(one = list(uno = "filler"),
                      rand.lists_V = random.lists.variable,
                      science.corrob_V = science.corroboration.variable,
                      script_V = scriptures.variable,
-                     TreePhyl = TreeLifeList.3)
+                     TreePhyl_3 = TreeLifeList.3)
 
 length(deck.of.decks)
 deck.of.decks[1] # gives the entire deck
@@ -916,6 +927,7 @@ deck.of.decks[[3]][[2]][1] # gives the SECOND side (the one right after the fron
 deck.of.decks[[3]][[2]][2] # gives the THIRD side of the second card
 names(deck.of.decks[[3]][2]) # HOLY FREAK I FIGURED IT OUT: gives the FIRST side of the second card of the third deck
 
+# for loop for getting the number of cards in the entire deck of decks:
 
 
 # Ancient peoples known by two phonetically dissimilar names:
@@ -981,8 +993,8 @@ BofM.translation.facts.variable = list(one = "filler",
 ## bythenumbers.3 
 # topic, number, source
 bythenumbers.3 = list(one = "filler",
-                      antibody.drug.industry.revenue = c("Antibodies made by the pharmaceutical industry rake in about $100 billion a year.","source: Nature News - 25 May 2018 - Heidi Ledford")
-                      )
+                      antibody.drug.industry.revenue = c("Antibodies made by the pharmaceutical industry rake in about $100 billion a year.","source: Nature News - 25 May 2018 - Heidi Ledford"),
+                      what.percentage.of.wealth.in.the.US.is.inherited = c("60%","Source: Economica (2017) vol. 84, pages 239-260."))
 
 
 ## climate random facts (variable)
@@ -1069,14 +1081,37 @@ medical.terminology.3 = list(one = "filler",
                              accommodation.eyes = c("The eye's ability to focus on objects close up.","E's a t f o o c u."),
                              ACE.inhibitor = c("Angiotensin-converting enzyme inhibitor, a drug used to treat hypertension and congestive heart failure.","A-c e i, a d u to tx h and CHF."),
                              acetaldehyde = c("The main breakdown product of alcohol metabolism; accumulation of it in the bloodstream may produce flushing (feeling of heat in the face or chest) and vomiting.","T m b p of a m; a of it in the b m p f (a f of h in the f or c) and v."),
-                             achlorhydria = c("A condition in which the stomach produces little or no acid. This can affect digestion, cause stomach pain, and keep the body from absorbing vitamins and nutrients.","A c in which the s p l or n a. This c a d, c s p, and k the b f a v and n.")
+                             achlorhydria = c("A condition in which the stomach produces little or no acid. This can affect digestion, cause stomach pain, and keep the body from absorbing vitamins and nutrients.","A c in which the s p l or n a. This c a d, c s p, and k the b f a v and n."),
+                             actinic.keratosis = c("Saly pink or red-brown raised spots or patches on the skin caused by overexposure to the sun. Actinic keratosis may be a precursor to skin cancer.","S p or r-b r s or p on the s c b o to t s. A k m b a p to s c."),
+                             acute.urinary.retention = c("A sudden inability to empty the bladder. Causes include an enlarged prostate gland (in men) or bladder muscle problems.","A s i to e t b. C i an e p g (i m) or b m p."),
+                             adaptive.immunity = c("The ability of the body to learn to fight specific infections after being exposed to the pathogens that causae them.","T a of t b to l to f s i a b e to t p t c t."),
+                             addiction = c("Loss of control over indulging in a substance or performing an action or behavior, and continued craving for it despite negative consequences.","L of c o i in a s or p an a or b, a c c f i d n c."),
+                             adenocarcinoma = c("A type of cancer that grows in the layer of tissue known as the epithelium. This tissue lines organs and structures in the body, protecting or enclosing them.","A t of c t g in t l of t k as t e. T t l o a s in t b, p or e t."),
+                             adenoma = c("A benign growth in the epithelium.","A b g in t e."),
+                             adhesion = c("A band of scar-like tissue that forms between two surfaces inside the body, connecting tissues or organs that aren't normally connected.","A b of s-l t t f b t s i t b, c t or o t a n c."),
+                             adjuvant.therapy = c("Extra therapy given after a primary treatment, to increase the effectiveness of the primary treatment. For example, using chemotherapy after surgery or radiation treatment for cancer.","E t g a a p t, to i t e of t p t. F e, u c a s or r t f c."),
+                             adulterant = c("An ingredient in a medicinal product (herb, supplement, or prescription drug), that dilutes the purity of the product and does not contribute to its therapeutic effects.","A i in a m p (h, s, or p d), w d t p of t p a d n c to i t e."),
+                             advanced.sleep.phase.syndrome = c("A pattern of falling asleep and waking up earlier than wanted that worsens progressively over time."),
+                             aerophagia = c("Excessive swallowing of air."),
+                             aesthetician = c("Licensed skin care professional who performs procedures like deep cleaning, low-grade chemical peels, microdermabrasion, and postsurgical skin care."),
+                             after..cataract = c("Clouding of the lens of the eye that can occur months or years after cataract surgery.","C of t l of t e t c o m or y a c s."),
+                             age..related.macular.degeneration = c("A potentially blinding condition that destroys sharp central vision. aka AMD","A p b c t d s c v."),
+                             agnosia = c("A rare disease in which a person can't recognize objects, shapes, or people. Often due to a neurological condition.","A r d in w a p c r o, s, or p."),
+                             agoraphobia = c("Fear and avoidance of public places and open spaces.","F a a of p p a o s."),
+                             abnormal.albumin.levels = c("Since albumin is made by the liver, abnormal levels of it may indicate liver or kidney (?) disease."),
+                             albuminuria = c("High amounts of albumin in the urine, possibly indicating kidney dysfunction."),
+                             alcohol.abuse = c("Continuing consumption of alcohol despite alcohol-related social or interpersonal problems."),
+                             alcohol.dehydrogenase = c("A liver enzyme that metabolizes alcohol into a substance called acetaldehyde, which is toxic. aka ADH.","A l e t m a i a s c a, w is t. aka ADH."),
+                             alcohol.dependence = c("A chronic, progressive disease characterized by excessive and often compulsive drinking, impaired control over drinking, use of alcohol despite adverse consequences, and withdrawal symptoms when alcohol use is discontinued. aka alcoholism.","A c, p d c b e a o c d, i c o d u of a d a c, a w s w a u is d. aka a."),
+                             aldosterone = c("A hormone secreted by the adrenal glands that helps regulate blood pressure by controllowing sodium and potassium levels in the body.","A h s b t a g t h r BP b c s a p l in t b.")
                              )
 
 
 # name.ten flashcard deck:
 name.ten.variable = list(one = "filler",
                          ten.geniuses = c("(This one is good for showing people like Jordan Peterson how stupid it is to think of Trump as a stable genius). I would think it important to pick ten geniuses who best represent either important contributors to current fields of knowledge, or who have unmistakably exuded unusual thinking abilities in some field.","Albert Einstein","Richard Feynman","Alan Turing","Isaac Newton","James Clerk Maxwell","Emmy Noether","William Shakespeare","Leo Tolstoy","Mozart","Socrates"),
-                         ten.overpaid.CEOs = c(),
+                         ten.overpaid.CEOs = c("1) Mary Barra: Chair[woman?] and CEO of GM ...","She raked in nearly $22 million in compensation for 2017 alone.","2) Jeff Smisek, former executive at United, departed during a federal corruption probe, and got a severance package of ...","... $37 million.","3) John Flannery, former executive at General Electric, lost $100 billion in market value as CEO, and departed with ...","... $10 million.","4) Roger Ailes, former executive at Fox News, departed following a sexual assault scandal, and left with ...","$40 million.","5) Richard Smith: former executive at Equifax who retired in 2017, with a pension of ...","... $18 million, in the wake of a security breach that exposed the personal information of 145 million customers.","6) Carrie Tolstedt, former executive at Wells Fargo, left with an exit package of ...","... $125 million (later forced to return $66 million, leaving her with $59 million), after being in charge of the unit that opened 2 million unauthorized customer accounts."),
+                         ten.most.subsidized.industries.and.corporations.in.America = c(),
                          ten.historians = c(),
                          ten.philosophers = c(),
                          ten.innovators = c(),
@@ -1091,13 +1126,18 @@ name.ten.variable = list(one = "filler",
                          ten.most.socialist.countries = c(),
                          ten.most.capitalist.countries = c(),
                          ten.best.evidences.for.evolution = c(),
-                         ten.common.creationist.arguments = c("Think Gish-galloping."),
+                         ten.common.creationist.arguments = c(),
                          ten.global.warming.evidences = c(),
                          ten.global.warming.denial.arguments = c(),
+                         ten.top.Book.of.Mormon.evidences = c(),
+                         ten.Book.of.Mormon.objections.or.problems = c(),
                          ten.capitalist.victories.by.industry = c("For example, has capitalism been a boon to modern medicine?",""),
                          ten.black.intellectuals.scholars.or.scientists = c(),
+                         ten.top.Jewish.wealthy.people = c(),
+                         ten.top.Jewish.scientists = c(),
+                         ten.top.Jewish.innovators = c(),
+                         ten.top.Jewish.influential.people = c(),
                          ten.economically.important.minerals = c(),
-                         ten.BofM.evidences = c(),
                          ten.examples.of.confounding.factors = c("Duration of treatment for postmenopausal osteoporosis: People who did worse at the end of the study might not have had a poorer outcome because they didn't take alendronate; rather, it might have been because they didn't start out as well in the first place relative to other patients.")
                          )
 
@@ -1160,6 +1200,12 @@ physics.and.technology.variable = list(one = "filler",
                                        ferroelectric.perovskite.oxides = c("Since the discovery of high-performance BaTiO3 and LiNbO3, ferroelectric perovskite oxides have dominated industrial applications. However ... (cost) ...","... However, these ceramics are expensive to produce as high-quality thin films, and they often contain ...","... they often contain heavy metals like lead 2+, which raises health and environmental concerns. So, what's the alternative? ...","Replacing heavy metals with organic components in the perovskite lattice was considered an alternative, but ...","... but hybrid organic-inorganic perovskites have not shown copmarable ferroelectricity and stability."),
                                        Ye.et.al._organic.ferroelectrics_Science.2018.July.13 = c("Because of the cost, and health and environmental concerns of inorganic ferroelectric materials, organic alternatives have been sought. However, hybrid organic-inorganic perovskites have not shown comparable ferroelectricity and stability. Ye et al. have designed a new class of ferroelectric metal-free perovskites that can compete with ferroelectric oxides (BaTiO3 and LiNbO3). The general chemical formula of perovskites ...","Perovskite general chemical formula: ABX3, where A and B are large and small metal cations, respectively, and X is a bitopic anion, like oxygen 2-, for example. X coordinates to B. About structural topology ...","... The structural topology of the perovskite is important. This topology can be maintained if the A- and X-site ions are replaced with organic molecules within certain size ranges. Finally, recap on the advantages of the new metal-free perovskites designed by Ye et al. ...","These new metal-free perovskite ferroelectrics are simple to make, low cost, and lightweight.")
                                        )
+
+
+# Front side: topic; back sides: some facts with sources
+physiology.variable = list(one = "filler",
+                           anxiety.brain.chemistry = c("Little is known about how individual differences in brain chemistry and brain circuit activity correlate with variations in anxiety.","Berry et al. measured self-reported anxiety in healthy adults and investigated its relationship with brain dopamine function and functional connectivity within brain circuits implicated in anxiety regulation.","Individtual differences in anxiety were associated with variation in dopamine release in the amygdala and rostral anterior cingulate cortex of the brain.","There were also hints of a relationship between dopamine release and functional connectivity between these two areas.","These findings provide insights into the relationship between brain activity and neurochemical signaling underlying individual differences in affective function.","Source: Berry et al., Journal of Neuroscience, April 2019")
+                           )
 
 
 ## Political stuff:
@@ -1229,11 +1275,11 @@ psalms.in.BofM.4 = list(zero = "filler",
 
 
 # quotes (author and topic on front, quote on back, citation info behind that (could be on same side); could break quote up into multipe parts if long):
-quotes.variable = c(one = "filler",
-                    Boyd.K.Packer.on.inborn.tendencies.gay = c("Original orally communicated talk as delivered over the pulpit in general conference: 'Some suppose that they were preset and cannot overcome what they feel are inborn tendencies toward the impure and unnatural. Not so! Why would our Heavenly Father do that to anyone? Remember he is our Heavenly Father.' - General Conference October 2010","Subsequent clarification: 'Some suppose that they were preset and cannot overcome what they feel are inborn temptation toward the impure and unnatural. Not so! Remember, God is our Heavenly Father.'","The key difference here is that in the clarification, he didn't imply that God would not have created anyone with same-gender attraction, suggesting that he wanted to take back the claim that God would not create people with inborn same-gender attraction (I know same-gender attraction isn't specifically mentioned in the quote, but that's what no one seems to be debating, as the relevance to same-gender attraction seems rather obvious and not worth debating.)","Some puzzling commentary by Gregory Smith: 'President Packer has an extensive publication record on homosexuality--and, as we will now see, the edited version of his conference talk matches precisely what he has always taught. Far from backpedaling, the edited version is a smooth continuation of principles that he has tuaght for over thirty years.' - G. Smith, 'Shattered Glass: The Traditions of Same-Sex Marriage Advocates Encounter Boyd K Packer'","This is not backpedaling, because it's consistent with his earlier material? What makes something backpedaling is not whether or not the clarification matches an earlier, consistent position, but arises from how the clarification compares to the original message being clarified. If it reduces the boldness or brashness of what was originally said, then that is what makes something backpedaling."),
-                    Howard.W.Hunter.on.the.Spirit = c("From Preach My Gospel: 'President Howard W Hunter offered this counsel: 'Let me offer a word of caution. ... I think if we are not careful ..., we may begin to try to counterfeit the true influence of the Spirit of the Lord by unworthy and manipulative means. I get concerned when it appears that strong emotion or free-flowing tears are equated with the presence of the Spirit. Certainly the Spirit of the Lord can bring strong emotional feelings, including tears, but that outward manifestation ought not to be confused with the presence of the Spirit itself.' (The Teachings of Howard W Hunter, 184). The Spirit of the Lord always edifies.'"),
-                    David.O.McKay.on.evolution = c("Science, dominated by the spirit of religion, is the key to progress and the hope of the future. For example, evolution's beautiful theory of the creation of the world offers many perplexing problems to the inquiring mind. Inevitably, a teacher who denies divine agency in creation, who insists there is no intelligent purpose in it, will infest the student with the thought that all may be chance. I say, that no youth should be so led without a counterbalancing thought ... In the Brigham Young University and every other Church school the teacher can say God is at the helm. - BYU Address, 10 October 1952")
-                    )
+quotes.variable = list(one = "filler",
+                       Boyd.K.Packer.on.inborn.tendencies.gay = c("Original orally communicated talk as delivered over the pulpit in general conference: 'Some suppose that they were preset and cannot overcome what they feel are inborn tendencies toward the impure and unnatural. Not so! Why would our Heavenly Father do that to anyone? Remember he is our Heavenly Father.' - General Conference October 2010","Subsequent clarification: 'Some suppose that they were preset and cannot overcome what they feel are inborn temptation toward the impure and unnatural. Not so! Remember, God is our Heavenly Father.'","The key difference here is that in the clarification, he didn't imply that God would not have created anyone with same-gender attraction, suggesting that he wanted to take back the claim that God would not create people with inborn same-gender attraction (I know same-gender attraction isn't specifically mentioned in the quote, but that's what no one seems to be debating, as the relevance to same-gender attraction seems rather obvious and not worth debating.)","Some puzzling commentary by Gregory Smith: 'President Packer has an extensive publication record on homosexuality--and, as we will now see, the edited version of his conference talk matches precisely what he has always taught. Far from backpedaling, the edited version is a smooth continuation of principles that he has tuaght for over thirty years.' - G. Smith, 'Shattered Glass: The Traditions of Same-Sex Marriage Advocates Encounter Boyd K Packer'","This is not backpedaling, because it's consistent with his earlier material? What makes something backpedaling is not whether or not the clarification matches an earlier, consistent position, but arises from how the clarification compares to the original message being clarified. If it reduces the boldness or brashness of what was originally said, then that is what makes something backpedaling."),
+                       Howard.W.Hunter.on.the.Spirit = c("From Preach My Gospel: 'President Howard W Hunter offered this counsel: 'Let me offer a word of caution. ... I think if we are not careful ..., we may begin to try to counterfeit the true influence of the Spirit of the Lord by unworthy and manipulative means. I get concerned when it appears that strong emotion or free-flowing tears are equated with the presence of the Spirit. Certainly the Spirit of the Lord can bring strong emotional feelings, including tears, but that outward manifestation ought not to be confused with the presence of the Spirit itself.' (The Teachings of Howard W Hunter, 184). The Spirit of the Lord always edifies.'"),
+                       David.O.McKay.on.evolution = c("Science, dominated by the spirit of religion, is the key to progress and the hope of the future. For example, evolution's beautiful theory of the creation of the world offers many perplexing problems to the inquiring mind. Inevitably, a teacher who denies divine agency in creation, who insists there is no intelligent purpose in it, will infest the student with the thought that all may be chance. I say, that no youth should be so led without a counterbalancing thought ... In the Brigham Young University and every other Church school the teacher can say God is at the helm. - BYU Address, 10 October 1952")
+                       )
 
 
 ## Random facts to remember (with 4 components, usually the last one is a source. So, 
